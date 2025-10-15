@@ -21,6 +21,7 @@
                   id="email" 
                   formControlName="email" 
                   placeholder="Enter your email"
+                  autocomplete="email"
                   [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched }"
                 >
               </div>
@@ -40,6 +41,7 @@
                   id="password" 
                   formControlName="password"
                   placeholder="Enter your password"
+                  autocomplete="current-password"
                   [ngClass]="{ 'is-invalid': f['password'].errors && f['password'].touched }"
                 >
               </div>
