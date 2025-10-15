@@ -5,14 +5,22 @@ const nodemailer = require('nodemailer');
  * Handles email and SMS notifications for complaint updates
  */
 
-// Configure email transporter (using Gmail as example)
+// Configure email transporter (using Gmail with explicit settings for better compatibility)
 const createEmailTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // Use STARTTLS
     auth: {
       user: process.env.EMAIL_USER, // Your email
       pass: process.env.EMAIL_PASSWORD // Your email app password
-    }
+    },
+    tls: {
+      rejectUnauthorized: false // Allow self-signed certificates
+    },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
 };
 
@@ -23,6 +31,15 @@ const createEmailTransporter = () => {
  */
 const sendComplaintResolvedEmail = async (user, complaint) => {
   try {
+    // Check if email configuration is available
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      console.log('⚠️ Email not configured. Set EMAIL_USER and EMAIL_PASSWORD in environment variables.');
+      return { success: false, error: 'Email not configured' };
+    }
+
+    console.log(`📧 Attempting to send email to: ${user.email}`);
+    console.log(`Using email account: ${process.env.EMAIL_USER}`);
+    
     const transporter = createEmailTransporter();
 
     const mailOptions = {
