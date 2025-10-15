@@ -4,7 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const Complaint = require('../models/complaint.model');
 const ModerationQueue = require('../models/moderation.model');
+const User = require('../models/user.model');
 const { protect, authorize } = require('../middlewares/auth.middleware');
+const { notifyComplaintStatusChange } = require('../services/notification.service');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -59,7 +61,6 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
     }
 
     // Find a worker before creating the complaint
-    const User = require('../models/user.model');
     let assignedTo = null;
     try {
       const workers = await User.find({ role: 'worker' });
@@ -113,17 +114,6 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
 router.get('/user/:id', protect, async (req, res) => {
   try {
     // Check if the user is trying to access their own complaints or admin accessing anyone's
-    // Automatically assign to a random worker
-    const User = require('../models/user.model');
-    let assignedTo = null;
-    try {
-      const workers = await User.find({ role: 'worker' });
-      if (workers.length > 0) {
-        assignedTo = workers[Math.floor(Math.random() * workers.length)]._id;
-      }
-    } catch (err) {
-      console.error('Error finding workers:', err);
-    }
     if (req.user.id !== req.params.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
@@ -134,7 +124,6 @@ router.get('/user/:id', protect, async (req, res) => {
     const complaints = await Complaint.find({ createdBy: req.params.id })
       .sort({ createdAt: -1 })
       .populate('assignedTo', 'name email');
-      assignedTo: assignedTo
 
     res.status(200).json({
       success: true,
@@ -252,7 +241,7 @@ router.put('/update/:id', protect, authorize(['worker']), async (req, res) => {
   try {
     const { status, resolutionProof } = req.body;
     
-    const complaint = await Complaint.findById(req.params.id);
+    const complaint = await Complaint.findById(req.params.id).populate('createdBy');
     
     if (!complaint) {
       return res.status(404).json({
@@ -269,6 +258,7 @@ router.put('/update/:id', protect, authorize(['worker']), async (req, res) => {
       });
     }
     
+    const oldStatus = complaint.status;
     complaint.status = status;
     
     // Add resolution proof if provided and status is 'resolved'
@@ -281,9 +271,27 @@ router.put('/update/:id', protect, authorize(['worker']), async (req, res) => {
     
     await complaint.save();
     
+    // Send automatic notification to the user who created the complaint
+    if (oldStatus !== status && complaint.createdBy) {
+      try {
+        const notifications = await notifyComplaintStatusChange(
+          complaint.createdBy,
+          complaint,
+          status
+        );
+        console.log(`📧 Notifications sent:`, notifications);
+      } catch (notifyError) {
+        console.error('Error sending notification:', notifyError);
+        // Don't fail the request if notification fails
+      }
+    }
+    
     res.status(200).json({
       success: true,
-      complaint
+      complaint,
+      message: status === 'resolved' 
+        ? 'Complaint marked as resolved and user has been notified!' 
+        : 'Complaint status updated successfully'
     });
   } catch (error) {
     console.error(error);
