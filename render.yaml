@@ -23,19 +23,14 @@ services:
     autoDeploy: true
 
   # Frontend Static Site
-  - type: web
+  - type: static
     name: civicpulse-frontend
-    runtime: node
-    env: node
+    env: static
     region: oregon
-    plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist/civicpulse-frontend
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: NODE_ENV
-        value: production
     autoDeploy: true
