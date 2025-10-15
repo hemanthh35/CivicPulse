@@ -6,7 +6,7 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && cd frontend && npm install --legacy-peer-deps && npx ng build && cd ..
+    buildCommand: npm install && cd frontend && npm install --legacy-peer-deps --include=dev && npx ng build && cd ..
     startCommand: node backend/server.js
     healthCheckPath: /api/test
     envVars:
@@ -18,4 +18,6 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: NPM_CONFIG_PRODUCTION
+        value: false
     autoDeploy: true
