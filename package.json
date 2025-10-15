@@ -2,7 +2,7 @@
   "name": "civicpulse",
   "version": "1.0.0",
   "description": "A MEAN stack application for civic issue reporting and management",
-  "main": "index.js",
+  "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
