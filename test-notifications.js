@@ -9,7 +9,7 @@ const { sendComplaintResolvedEmail, sendComplaintResolvedSMS } = require('./back
 // Sample user data
 const testUser = {
   name: 'Test User',
-  email: process.env.EMAIL_USER || 'test@example.com', // Send to yourself for testing
+  email: '23eg107e37@anurag.edu.in', // Send to your college email
   mobile: '+919876543210' // Change this to your number for SMS testing
 };
 

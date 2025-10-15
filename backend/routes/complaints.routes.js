@@ -86,6 +86,14 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
 
     await complaint.save();
 
+    console.log(`✅ Complaint created successfully:`, {
+      id: complaint._id,
+      title: complaint.title,
+      createdBy: req.user.id,
+      assignedTo: assignedTo,
+      status: complaint.status
+    });
+
     // If user is a student with travel flag on, add to moderation queue
     if (req.user.role === 'student' && req.user.travelFlag) {
       const moderationItem = new ModerationQueue({
@@ -183,11 +191,15 @@ router.get('/all', protect, authorize(['admin']), async (req, res) => {
 // @access  Private/Worker
 router.get('/worker', protect, authorize(['worker']), async (req, res) => {
   try {
+    console.log('🔍 Worker complaints request from user:', req.user.id, req.user.role);
+    
     // Get all complaints, not just assigned ones - workers can see and work on all complaints
     const complaints = await Complaint.find({})
       .sort({ createdAt: -1 })
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email');
+    
+    console.log(`📊 Found ${complaints.length} total complaints for worker`);
       
     res.status(200).json({
       success: true,
@@ -195,7 +207,7 @@ router.get('/worker', protect, authorize(['worker']), async (req, res) => {
       complaints
     });
   } catch (error) {
-    console.error(error);
+    console.error('❌ Error in worker complaints route:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'

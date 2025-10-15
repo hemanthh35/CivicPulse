@@ -23,14 +23,18 @@ export class AssignedComplaintsComponent implements OnInit {
   }
 
   loadAssignedComplaints(): void {
+    console.log('🔍 Loading worker complaints...');
     this.complaintsService.getWorkerComplaints()
       .subscribe({
         next: (response) => {
+          console.log('✅ Worker complaints response:', response);
           this.complaints = response.complaints;
           this.isLoading = false;
+          console.log('📋 Total complaints:', this.complaints.length);
         },
         error: (error) => {
-          console.error('Error loading assigned complaints:', error);
+          console.error('❌ Error loading assigned complaints:', error);
+          console.error('Error details:', error.error);
           this.isLoading = false;
         }
       });
