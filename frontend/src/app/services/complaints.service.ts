@@ -8,7 +8,7 @@ import { Complaint } from '../models/complaint.model';
   providedIn: 'root'
 })
 export class ComplaintsService {
-  private apiUrl = `${environment.apiUrl}/api/complaints`;
+  private apiUrl = `${environment.apiUrl}/complaints`;
   
   constructor(private http: HttpClient) { }
 

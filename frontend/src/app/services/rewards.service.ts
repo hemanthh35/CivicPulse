@@ -9,11 +9,9 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class RewardsService {
-  private apiUrl = `${environment.apiUrl}/api/rewards`;
-  
-  constructor(private http: HttpClient) { }
+  private apiUrl = `${environment.apiUrl}/rewards`;
 
-  getUserRewards(userId: string): Observable<{ success: boolean, reward: Reward }> {
+  constructor(private http: HttpClient) { }  getUserRewards(userId: string): Observable<{ success: boolean, reward: Reward }> {
     return this.http.get<{ success: boolean, reward: Reward }>(`${this.apiUrl}/user/${userId}`);
   }
 

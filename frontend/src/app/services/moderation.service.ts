@@ -8,7 +8,7 @@ import { ModerationQueueItem } from '../models/moderation.model';
   providedIn: 'root'
 })
 export class ModerationService {
-  private apiUrl = `${environment.apiUrl}/api/moderation`;
+  private apiUrl = `${environment.apiUrl}/moderation`;
   
   constructor(private http: HttpClient) { }
 
