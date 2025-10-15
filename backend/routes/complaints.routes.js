@@ -179,13 +179,15 @@ router.get('/all', protect, authorize(['admin']), async (req, res) => {
 });
 
 // @route   GET /api/complaints/worker
-// @desc    Get complaints assigned to the logged in worker
+// @desc    Get all complaints for worker (can view and work on all)
 // @access  Private/Worker
 router.get('/worker', protect, authorize(['worker']), async (req, res) => {
   try {
-    const complaints = await Complaint.find({ assignedTo: req.user.id })
+    // Get all complaints, not just assigned ones - workers can see and work on all complaints
+    const complaints = await Complaint.find({})
       .sort({ createdAt: -1 })
-      .populate('createdBy', 'name email');
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email');
       
     res.status(200).json({
       success: true,
@@ -235,7 +237,7 @@ router.put('/assign/:id', protect, authorize(['admin']), async (req, res) => {
 });
 
 // @route   PUT /api/complaints/update/:id
-// @desc    Update complaint status
+// @desc    Update complaint status (any worker can update any complaint)
 // @access  Private/Worker
 router.put('/update/:id', protect, authorize(['worker']), async (req, res) => {
   try {
@@ -250,12 +252,10 @@ router.put('/update/:id', protect, authorize(['worker']), async (req, res) => {
       });
     }
     
-    // Check if the worker is assigned to this complaint
-    if (complaint.assignedTo.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to update this complaint'
-      });
+    // Allow any worker to update any complaint (removed assignment check)
+    // Auto-assign to this worker if not already assigned
+    if (!complaint.assignedTo) {
+      complaint.assignedTo = req.user.id;
     }
     
     const oldStatus = complaint.status;
