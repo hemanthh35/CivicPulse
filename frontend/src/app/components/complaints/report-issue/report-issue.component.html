@@ -1,0 +1,207 @@
+<div class="row">
+  <div class="col-lg-8 mx-auto">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h4 mb-0">
+          <i class="bi bi-flag-fill me-2"></i>Report a Civic Issue
+        </h2>
+      </div>
+      <div class="card-body">
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+        
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ successMessage }}
+          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+        </div>
+        
+        <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Issue Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="title" formControlName="title" 
+              placeholder="Enter a concise title for the issue" 
+              [ngClass]="{'is-invalid': f['title'].touched && f['title'].invalid}">
+            <div class="invalid-feedback" *ngIf="f['title'].touched && f['title'].errors?.['required']">
+              Title is required
+            </div>
+            <div class="invalid-feedback" *ngIf="f['title'].touched && f['title'].errors?.['minlength']">
+              Title must be at least 5 characters
+            </div>
+          </div>
+          
+          <!-- Category -->
+          <div class="mb-3">
+            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+            <select class="form-select" id="category" formControlName="category" 
+              [ngClass]="{'is-invalid': f['category'].touched && f['category'].invalid}">
+              <option value="" disabled>Select a category</option>
+              <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="f['category'].touched && f['category'].errors?.['required']">
+              Category is required
+            </div>
+          </div>
+          
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="description" formControlName="description" rows="5" 
+              placeholder="Provide a detailed description of the issue"
+              [ngClass]="{'is-invalid': f['description'].touched && f['description'].invalid}"></textarea>
+            <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['required']">
+              Description is required
+            </div>
+            <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['minlength']">
+              Description must be at least 20 characters
+            </div>
+            <small class="form-text text-muted">
+              Please provide clear details about the issue to help in quick resolution.
+            </small>
+          </div>
+          
+          <!-- Location -->
+          <div class="card mb-3 bg-light">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Location Details <span class="text-danger">*</span></span>
+              <button type="button" class="btn btn-sm btn-outline-primary" 
+                      (click)="getCurrentLocation()" 
+                      [disabled]="fetchingLocation">
+                <span class="spinner-border spinner-border-sm me-1" *ngIf="fetchingLocation"></span>
+                <i class="bi bi-geo-alt-fill me-1" *ngIf="!fetchingLocation"></i>
+                {{ fetchingLocation ? 'Getting Location...' : 'Auto-Fill with Current Location' }}
+              </button>
+            </div>
+            <div class="card-body" formGroupName="location">
+              <div *ngIf="locationError" class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ locationError }}
+                <button type="button" class="btn-close" (click)="locationError = ''"></button>
+              </div>
+              
+              <div *ngIf="!coordinates.lat && !coordinates.lng" class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Tip:</strong> Click "Auto-Fill with Current Location" to automatically populate all address fields, or fill them manually.
+              </div>
+              
+              <div class="mb-3">
+                <label for="address" class="form-label">Street Address</label>
+                <div class="input-group">
+                  <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
+                    <i class="bi bi-geo-alt-fill text-success"></i>
+                  </span>
+                  <input type="text" class="form-control" id="address" formControlName="address" 
+                    placeholder="Street address, building number, or landmark"
+                    [ngClass]="{'is-invalid': locationControls['address'].touched && locationControls['address'].invalid}">
+                  <div class="invalid-feedback" *ngIf="locationControls['address'].touched && locationControls['address'].errors?.['required']">
+                    Street address is required
+                  </div>
+                </div>
+                <small class="form-text text-muted" *ngIf="coordinates.lat && coordinates.lng">
+                  <i class="bi bi-check-circle text-success me-1"></i>
+                  GPS Coordinates: {{ coordinates.lat | number:'1.4-4' }}, {{ coordinates.lng | number:'1.4-4' }}
+                  <span *ngIf="locationAccuracy" class="ms-2">
+                    (±{{ locationAccuracy }}m accuracy)
+                  </span>
+                </small>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="city" class="form-label">City/Town</label>
+                  <div class="input-group">
+                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
+                      <i class="bi bi-building text-success"></i>
+                    </span>
+                    <input type="text" class="form-control" id="city" formControlName="city" 
+                      placeholder="City or town name"
+                      [ngClass]="{'is-invalid': locationControls['city'].touched && locationControls['city'].invalid}">
+                    <div class="invalid-feedback" *ngIf="locationControls['city'].touched && locationControls['city'].errors?.['required']">
+                      City is required
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label for="state" class="form-label">State/Region</label>
+                  <div class="input-group">
+                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
+                      <i class="bi bi-map text-success"></i>
+                    </span>
+                    <input type="text" class="form-control" id="state" formControlName="state" 
+                      placeholder="State or region"
+                      [ngClass]="{'is-invalid': locationControls['state'].touched && locationControls['state'].invalid}">
+                    <div class="invalid-feedback" *ngIf="locationControls['state'].touched && locationControls['state'].errors?.['required']">
+                      State is required
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label for="pincode" class="form-label">PIN/ZIP Code</label>
+                  <div class="input-group">
+                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
+                      <i class="bi bi-mailbox text-success"></i>
+                    </span>
+                    <input type="text" class="form-control" id="pincode" formControlName="pincode" 
+                      placeholder="6-digit PIN code"
+                      [ngClass]="{'is-invalid': locationControls['pincode'].touched && locationControls['pincode'].invalid}">
+                    <div class="invalid-feedback" *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['required']">
+                      PIN code is required
+                    </div>
+                    <div class="invalid-feedback" *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['pattern']">
+                      Enter a valid 6-digit PIN code
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Priority -->
+          <div class="mb-3">
+            <label class="form-label d-block">Priority</label>
+            <div class="btn-group" role="group" aria-label="Priority selection">
+              <input type="radio" class="btn-check" formControlName="priority" id="lowPriority" value="low">
+              <label class="btn btn-outline-secondary" for="lowPriority">Low</label>
+              
+              <input type="radio" class="btn-check" formControlName="priority" id="mediumPriority" value="medium">
+              <label class="btn btn-outline-secondary" for="mediumPriority">Medium</label>
+              
+              <input type="radio" class="btn-check" formControlName="priority" id="highPriority" value="high">
+              <label class="btn btn-outline-secondary" for="highPriority">High</label>
+            </div>
+          </div>
+          
+          <!-- Image Upload -->
+          <div class="mb-4">
+            <label for="images" class="form-label">Upload Images (Optional)</label>
+            <input type="file" class="form-control" id="images" multiple accept="image/*" (change)="onFileSelect($event)">
+            <small class="form-text text-muted">
+              Upload up to 5 images to help describe the issue (JPEG, PNG only)
+            </small>
+            
+            <!-- Image Previews -->
+            <div class="image-previews mt-2 d-flex flex-wrap" *ngIf="previewUrls.length > 0">
+              <div class="position-relative me-2 mb-2" *ngFor="let preview of previewUrls; let i = index">
+                <img [src]="preview" class="img-thumbnail" style="height: 100px; width: auto;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" 
+                  (click)="removeImage(i)" title="Remove image">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+              <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+              {{ isSubmitting ? 'Submitting...' : 'Submit Report' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

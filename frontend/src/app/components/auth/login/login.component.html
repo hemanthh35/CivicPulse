@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h3>Login to CivicPulse</h3>
+        </div>
+        <div class="card-body p-4">
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+          
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  formControlName="email" 
+                  placeholder="Enter your email"
+                  [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched }"
+                >
+              </div>
+              <div *ngIf="f['email'].errors && f['email'].touched" class="text-danger">
+                <small *ngIf="f['email'].errors['required']">Email is required</small>
+                <small *ngIf="f['email'].errors['email']">Enter a valid email address</small>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  id="password" 
+                  formControlName="password"
+                  placeholder="Enter your password"
+                  [ngClass]="{ 'is-invalid': f['password'].errors && f['password'].touched }"
+                >
+              </div>
+              <div *ngIf="f['password'].errors && f['password'].touched" class="text-danger">
+                <small *ngIf="f['password'].errors['required']">Password is required</small>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg" 
+                [disabled]="loginForm.invalid || isSubmitting"
+              >
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer text-center py-3">
+          <p class="mb-0">Don't have an account? <a [routerLink]="['/register']">Register</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

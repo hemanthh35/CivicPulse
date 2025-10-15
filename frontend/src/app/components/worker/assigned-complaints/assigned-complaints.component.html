@@ -1,0 +1,309 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Assigned Complaints</h2>
+      
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      
+      <div *ngIf="!isLoading && complaints.length === 0" class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h3 class="mt-3">No assigned complaints</h3>
+        <p class="text-muted">You don't have any complaints assigned to you yet.</p>
+      </div>
+      
+      <div *ngIf="!isLoading && complaints.length > 0" class="row">
+        <div class="col-lg-6 mb-4" *ngFor="let complaint of complaints">
+          <div class="card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ complaint.title }}</h5>
+                <span class="badge bg-info">{{ complaint.status | titlecase }}</span>
+              </div>
+            </div>
+            
+            <!-- Image Display Section -->
+            <div *ngIf="complaint.mediaURL" class="position-relative">
+              <img 
+                [src]="getImageUrl(complaint.mediaURL)" 
+                class="card-img-top complaint-image" 
+                [alt]="complaint.title"
+                (click)="openImageModal(complaint.mediaURL, complaint.title)"
+                (error)="onImageError($event)"
+                (load)="onImageLoad($event)"
+                style="cursor: pointer; height: 250px; object-fit: cover;"
+              >
+              <div class="image-overlay">
+                <i class="bi bi-eye text-white" style="font-size: 1.5rem;"></i>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <p>{{ complaint.description }}</p>
+              <div class="complaint-details mb-3">
+                <p class="text-muted mb-2">
+                  <i class="bi bi-geo-alt me-2"></i>
+                  {{ complaint.location?.address }}, {{ complaint.location?.city }}
+                </p>
+                <p class="text-muted mb-2">
+                  <i class="bi bi-calendar me-2"></i>
+                  Reported: {{ complaint.createdAt | date:'short' }}
+                </p>
+                <p class="text-muted mb-2">
+                  <i class="bi bi-tag me-2"></i>
+                  Category: {{ complaint.category | titlecase }}
+                </p>
+                <p class="text-muted mb-0" *ngIf="complaint.priority">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  Priority: 
+                  <span class="badge" 
+                        [class]="getPriorityBadgeClass(complaint.priority)">
+                    {{ complaint.priority | titlecase }}
+                  </span>
+                </p>
+              </div>
+              
+              <div class="d-flex gap-2 flex-wrap">
+                <button 
+                  class="btn btn-primary btn-sm" 
+                  (click)="updateStatus(complaint._id, 'in-progress')"
+                  [disabled]="complaint.status === 'in-progress' || complaint.status === 'resolved'"
+                >
+                  <i class="bi bi-play-circle me-1"></i>
+                  Start Work
+                </button>
+                <button 
+                  class="btn btn-success btn-sm" 
+                  (click)="updateStatus(complaint._id, 'resolved')"
+                  [disabled]="complaint.status === 'resolved'"
+                >
+                  <i class="bi bi-check-circle me-1"></i>
+                  Mark Resolved
+                </button>
+                <button 
+                  class="btn btn-outline-secondary btn-sm" 
+                  (click)="viewComplaintDetails(complaint)"
+                >
+                  <i class="bi bi-info-circle me-1"></i>
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Image Modal -->
+      <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{ selectedComplaintTitle }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img 
+                [src]="selectedImageUrl" 
+                class="img-fluid rounded" 
+                [alt]="selectedComplaintTitle"
+                style="max-height: 70vh; width: auto;"
+              >
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <a 
+                [href]="selectedImageUrl" 
+                download 
+                class="btn btn-primary"
+                target="_blank"
+              >
+                <i class="bi bi-download me-1"></i>
+                Download Image
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaint Details Modal -->
+      <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                <i class="bi bi-info-circle me-2"></i>
+                Complaint Details
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedComplaint">
+              <div class="row">
+                <!-- Left Column - Basic Info -->
+                <div class="col-md-6">
+                  <div class="card h-100">
+                    <div class="card-header">
+                      <h6 class="mb-0">
+                        <i class="bi bi-file-text me-2"></i>
+                        Basic Information
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Title:</label>
+                        <p class="mb-0">{{ selectedComplaint.title }}</p>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Description:</label>
+                        <p class="mb-0">{{ selectedComplaint.description }}</p>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Category:</label>
+                        <span class="badge bg-primary">{{ selectedComplaint.category | titlecase }}</span>
+                      </div>
+                      <div class="mb-3" *ngIf="selectedComplaint.priority">
+                        <label class="form-label fw-bold">Priority:</label>
+                        <span class="badge" [class]="getPriorityBadgeClass(selectedComplaint.priority)">
+                          {{ selectedComplaint.priority | titlecase }}
+                        </span>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Status:</label>
+                        <span class="badge bg-info">{{ selectedComplaint.status | titlecase }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column - Location & Dates -->
+                <div class="col-md-6">
+                  <div class="card h-100">
+                    <div class="card-header">
+                      <h6 class="mb-0">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Location & Timeline
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3" *ngIf="selectedComplaint.location">
+                        <label class="form-label fw-bold">Address:</label>
+                        <p class="mb-0">
+                          <i class="bi bi-geo-alt text-primary me-1"></i>
+                          {{ selectedComplaint.location.address }}, {{ selectedComplaint.location.city }}
+                        </p>
+                        <p class="text-muted small mb-0" *ngIf="selectedComplaint.location.coordinates">
+                          Coordinates: {{ selectedComplaint.location.coordinates[1] }}, {{ selectedComplaint.location.coordinates[0] }}
+                        </p>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Reported On:</label>
+                        <p class="mb-0">
+                          <i class="bi bi-calendar text-primary me-1"></i>
+                          {{ selectedComplaint.createdAt | date:'full' }}
+                        </p>
+                      </div>
+                      <div class="mb-3" *ngIf="selectedComplaint.updatedAt">
+                        <label class="form-label fw-bold">Last Updated:</label>
+                        <p class="mb-0">
+                          <i class="bi bi-clock text-primary me-1"></i>
+                          {{ selectedComplaint.updatedAt | date:'full' }}
+                        </p>
+                      </div>
+                      <div class="mb-3" *ngIf="selectedComplaint.assignedTo">
+                        <label class="form-label fw-bold">Assigned To:</label>
+                        <p class="mb-0">
+                          <i class="bi bi-person text-primary me-1"></i>
+                          {{ selectedComplaint.assignedTo.firstName }} {{ selectedComplaint.assignedTo.lastName }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Section -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0">
+                        <i class="bi bi-image me-2"></i>
+                        Complaint Photo
+                      </h6>
+                    </div>
+                    <div class="card-body text-center">
+                      <div *ngIf="selectedComplaint?.mediaURL; else noPhotoTemplate">
+                        <img 
+                          [src]="getImageUrl(selectedComplaint.mediaURL)" 
+                          class="img-fluid rounded shadow" 
+                          [alt]="selectedComplaint.title"
+                          style="max-height: 400px; width: auto; cursor: pointer;"
+                          (click)="openImageModal(selectedComplaint.mediaURL, selectedComplaint.title)"
+                          (error)="onModalImageError($event)"
+                          (load)="onImageLoad($event)"
+                        >
+                      </div>
+                      
+                      <ng-template #noPhotoTemplate>
+                        <div class="text-center p-5 bg-light rounded">
+                          <i class="bi bi-image display-4 text-muted mb-3"></i>
+                          <p class="text-muted">No photo available for this complaint</p>
+                          <small class="text-muted">Photo value: {{ selectedComplaint?.mediaURL }}</small>
+                        </div>
+                      </ng-template>
+                      
+                      <div class="mt-3" *ngIf="selectedComplaint.mediaURL">
+                        <button 
+                          class="btn btn-outline-primary me-2" 
+                          (click)="openImageModal(selectedComplaint.mediaURL, selectedComplaint.title)"
+                        >
+                          <i class="bi bi-eye me-1"></i>
+                          View Full Size
+                        </button>
+                        <a 
+                          [href]="getImageUrl(selectedComplaint.mediaURL)" 
+                          download 
+                          class="btn btn-outline-secondary"
+                          target="_blank"
+                        >
+                          <i class="bi bi-download me-1"></i>
+                          Download
+                        </a>
+                        <div class="mt-2">
+                          <small class="text-muted">Image URL: {{ getImageUrl(selectedComplaint.photo) }}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button 
+                type="button" 
+                class="btn btn-primary" 
+                (click)="updateStatus(selectedComplaint._id, 'in-progress')"
+                [disabled]="selectedComplaint?.status === 'in-progress' || selectedComplaint?.status === 'resolved'"
+              >
+                <i class="bi bi-play-circle me-1"></i>
+                Start Work
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-success" 
+                (click)="updateStatus(selectedComplaint._id, 'resolved')"
+                [disabled]="selectedComplaint?.status === 'resolved'"
+              >
+                <i class="bi bi-check-circle me-1"></i>
+                Mark Resolved
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

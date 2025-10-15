@@ -1,0 +1,20 @@
+.table {
+  margin-bottom: 0;
+}
+
+.badge {
+  font-size: 0.875rem;
+}
+
+tr:first-child td {
+  font-weight: 600;
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+tr:nth-child(2) td {
+  background-color: rgba(192, 192, 192, 0.1);
+}
+
+tr:nth-child(3) td {
+  background-color: rgba(205, 127, 50, 0.1);
+}

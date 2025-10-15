@@ -1,0 +1,165 @@
+/* Global Styles */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --info-color: #1abc9c;
+  --dark-color: #34495e;
+  --light-color: #ecf0f1;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+/* Custom Navbar styles */
+.navbar-dark.bg-primary {
+  background-color: var(--primary-color) !important;
+  background-image: linear-gradient(135deg, var(--primary-color) 0%, #2980b9 100%) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-dark .navbar-brand {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+  color: #ffffff !important;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Dropdown improvements */
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.navbar .dropdown-toggle::after {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dropdown-item {
+  transition: background-color 0.2s ease;
+  
+  &:hover, &:focus {
+    background-color: #f8f9fa;
+  }
+}
+
+.dropdown-item-text {
+  font-size: 0.9rem;
+}
+
+/* Custom button styles */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-success {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn-warning {
+  background-color: var(--warning-color);
+  border-color: var(--warning-color);
+}
+
+/* Status badges */
+.badge-pending {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.badge-in-progress {
+  background-color: var(--info-color);
+  color: white;
+}
+
+.badge-resolved {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/* Form styles */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Card styles */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Map container */
+.map-container {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Dashboard stats */
+.stats-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stats-card i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.stats-card .stats-value {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+}

@@ -1,0 +1,69 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Complaint Management</h2>
+      
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      
+      <div *ngIf="!isLoading" class="card">
+        <div class="card-header">
+          <h5 class="mb-0">All Complaints</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let complaint of complaints">
+                  <td>{{ complaint.title }}</td>
+                  <td>{{ complaint.category }}</td>
+                  <td>{{ complaint.location?.city }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
+                      {{ complaint.status | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': complaint.priority === 'low',
+                            'bg-warning': complaint.priority === 'medium', 
+                            'bg-danger': complaint.priority === 'high'
+                          }">
+                      {{ complaint.priority | titlecase }}
+                    </span>
+                  </td>
+                  <td>{{ complaint.createdAt | date:'short' }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" title="View Details">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn btn-outline-secondary" title="Assign Worker">
+                        <i class="bi bi-person-plus"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+.card {
+  transition: transform 0.2s;
+  border: 1px solid rgba(0,0,0,0.125);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.5em 0.75em;
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.display-1 {
+  font-size: 4rem;
+  opacity: 0.3;
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    
+    .badge {
+      margin-bottom: 0.25rem;
+    }
+  }
+}

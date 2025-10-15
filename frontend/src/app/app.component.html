@@ -1,0 +1,105 @@
+<div class="container-fluid">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" [routerLink]="['/home']">
+        <i class="bi bi-geo-alt-fill"></i> CivicPulse
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <!-- Public Links -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/about']" routerLinkActive="active">About</a>
+          </li>
+          
+          <ng-container *ngIf="isLoggedIn() && user">
+            <!-- Citizen & Student Links -->
+            <ng-container *ngIf="hasRole('citizen') || hasRole('student')">
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/dashboard']" routerLinkActive="active">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/report-issue']" routerLinkActive="active">Report Issue</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/my-complaints']" routerLinkActive="active">My Issues</a>
+              </li>
+            </ng-container>
+            
+            <!-- Student-only Links -->
+            <ng-container *ngIf="hasRole('student')">
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/rewards']" routerLinkActive="active">Rewards</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/leaderboard']" routerLinkActive="active">Leaderboard</a>
+              </li>
+            </ng-container>
+            
+            <!-- Worker Links -->
+            <ng-container *ngIf="hasRole('worker')">
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/assigned-complaints']" routerLinkActive="active">Assigned Issues</a>
+              </li>
+            </ng-container>
+            
+            <!-- Admin Links -->
+            <ng-container *ngIf="hasRole('admin')">
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/admin-dashboard']" routerLinkActive="active">Admin Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/complaint-management']" routerLinkActive="active">Complaints</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/moderation']" routerLinkActive="active">Moderation</a>
+              </li>
+            </ng-container>
+          </ng-container>
+        </ul>
+        
+        <!-- Auth Links -->
+        <ul class="navbar-nav">
+          <ng-container *ngIf="!isLoggedIn()">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/login']" routerLinkActive="active">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/register']" routerLinkActive="active">Register</a>
+            </li>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn() && user">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false"
+                 (click)="toggleDropdown($event)">
+                <i class="bi bi-person-circle"></i> {{ user.name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" id="userDropdownMenu">
+                <li>
+                  <span class="dropdown-item-text text-muted">Role: {{ user.role | titlecase }}</span>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

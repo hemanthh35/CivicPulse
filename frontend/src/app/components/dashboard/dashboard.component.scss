@@ -1,0 +1,356 @@
+// Modern dashboard styling with improved spacing
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 1.5rem !important;
+  margin-bottom: 2rem;
+}
+
+// Container spacing
+.container-fluid {
+  padding: 1.5rem;
+  
+  .row {
+    margin-bottom: 2rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Card improvements with better spacing
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.card-header {
+  border-radius: 1rem 1rem 0 0 !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1.25rem 1.5rem;
+  
+  h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #495057;
+  }
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  
+  i {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+  }
+}
+
+// Statistics cards with better spacing
+.statistics-card {
+  .card-body {
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .rounded-circle {
+    margin-bottom: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6c757d;
+  }
+}
+
+// Personal information section
+.personal-info {
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .row > .col-md-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mb-3 {
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+    
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+// Badge improvements
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.badge-sm {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+}
+
+// Status badges with better colors
+.bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+  color: #0d6efd !important;
+  border: 1px solid rgba(13, 110, 253, 0.2);
+}
+
+.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  color: #664d03 !important;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.1) !important;
+  color: #055160 !important;
+  border: 1px solid rgba(13, 202, 240, 0.2);
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+  color: #0a3622 !important;
+  border: 1px solid rgba(25, 135, 84, 0.2);
+}
+
+// Button improvements with better spacing
+.btn {
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 0.75rem 1.5rem;
+  
+  &.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    min-height: 60px;
+  }
+}
+
+// Quick actions section
+.quick-actions {
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .row > .col-md-6 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .btn {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+}
+
+// Recent reports styling with better cards
+.recent-reports {
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .recent-complaint-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    background: #fff;
+    
+    &:hover {
+      border-color: #007bff;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+  
+  .card-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+  
+  .text-small {
+    font-size: 0.85rem;
+    color: #8B9A9A;
+  }
+  
+  .complaint-meta {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f3f4;
+  }
+  
+  .complaint-thumbnail {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// Personal info styling improvements
+.form-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.personal-info-value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  
+  i {
+    margin-right: 0.5rem;
+    color: #007bff;
+    font-size: 1rem;
+  }
+}
+
+// Student rewards section
+.student-rewards {
+  .card-body {
+    padding: 2.5rem;
+    text-align: center;
+  }
+  
+  i {
+    margin-bottom: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .bg-gradient-primary {
+    margin-bottom: 1.5rem;
+    
+    .row .col-md-8 h1 {
+      font-size: 2rem;
+    }
+    
+    .row .col-md-8 p {
+      font-size: 1rem;
+    }
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .card-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .statistics-card .card-body {
+    padding: 1.5rem;
+    
+    h3 {
+      font-size: 2rem;
+    }
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    min-height: 50px;
+  }
+  
+  .recent-complaint-card {
+    padding: 1.25rem;
+  }
+}
+
+// Loading states
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25rem;
+}
+
+// Empty state styling
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  i {
+    opacity: 0.3;
+    margin-bottom: 2rem;
+  }
+  
+  h4 {
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #8B9A9A;
+    margin-bottom: 2rem;
+  }
+}

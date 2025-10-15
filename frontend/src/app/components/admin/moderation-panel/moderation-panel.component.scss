@@ -1,0 +1,20 @@
+.display-1 {
+  opacity: 0.3;
+}
+
+.border-warning {
+  border-color: #ffc107 !important;
+}
+
+.card {
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+  }
+}
+
+.btn-group .btn {
+  margin-right: 0.5rem;
+}

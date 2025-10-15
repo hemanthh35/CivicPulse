@@ -1,0 +1,291 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="container position-relative">
+    <div class="row min-vh-100 align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content">
+          <div class="badge-modern mb-4">
+            <span class="badge-text">🚀 Reimagining Civic Engagement</span>
+          </div>
+          <h1 class="hero-title mb-4">
+            Transform Your 
+            <span class="gradient-text">Community</span>
+            With CivicPulse
+          </h1>
+          <p class="hero-description mb-5">
+            The next-generation platform that connects citizens, officials, and communities. 
+            Report issues with AI-powered categorization, track real-time progress, and 
+            earn rewards for making a difference.
+          </p>
+          <div class="cta-buttons">
+            <button class="btn-primary-modern" (click)="navigateToReportIssue()">
+              <span class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Report Issue
+              </span>
+              <div class="btn-glow"></div>
+            </button>
+            <button class="btn-secondary-modern" (click)="navigateToLogin()">
+              <span class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                Sign In
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-visual">
+          <div class="floating-cards">
+            <div class="card-float card-1">
+              <div class="status-indicator resolved"></div>
+              <span>Issue Resolved</span>
+            </div>
+            <div class="card-float card-2">
+              <div class="status-indicator pending"></div>
+              <span>In Progress</span>
+            </div>
+            <div class="card-float card-3">
+              <div class="status-indicator new"></div>
+              <span>New Report</span>
+            </div>
+          </div>
+          <div class="hero-graphic">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring delay-1"></div>
+            <div class="pulse-ring delay-2"></div>
+            <div class="central-icon">
+              <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="45" stroke="url(#gradient)" stroke-width="2"/>
+                <path d="M30 50L45 65L70 35" stroke="url(#gradient)" stroke-width="3" fill="none"/>
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">
+        How It <span class="gradient-text">Works</span>
+      </h2>
+      <p class="section-subtitle">Three simple steps to transform your community</p>
+    </div>
+    
+    <div class="features-container">
+      <div class="feature-card modern-card">
+        <div class="feature-header">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="step-number">01</div>
+          </div>
+        </div>
+        <div class="feature-content">
+          <h3>Smart Reporting</h3>
+          <p>AI-powered categorization automatically tags and routes your reports to the right departments with precision and speed.</p>
+          <div class="feature-tags">
+            <span class="tag">AI-Powered</span>
+            <span class="tag">Auto-Routing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card modern-card">
+        <div class="feature-header">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div class="step-number">02</div>
+          </div>
+        </div>
+        <div class="feature-content">
+          <h3>Real-time Tracking</h3>
+          <p>Get instant notifications and watch your issues progress through our transparent pipeline with live updates.</p>
+          <div class="feature-tags">
+            <span class="tag">Live Updates</span>
+            <span class="tag">Transparent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card modern-card">
+        <div class="feature-header">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <div class="step-number">03</div>
+          </div>
+        </div>
+        <div class="feature-content">
+          <h3>Gamified Rewards</h3>
+          <p>Earn badges, climb leaderboards, and unlock exclusive rewards for your civic engagement and community impact.</p>
+          <div class="feature-tags">
+            <span class="tag">Badges</span>
+            <span class="tag">Leaderboards</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Process Flow -->
+    <div class="process-flow mt-5">
+      <div class="flow-line"></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-dot"></div>
+          <span>Report</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot"></div>
+          <span>Track</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot"></div>
+          <span>Reward</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+  <div class="stats-bg"></div>
+  <div class="container position-relative">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="stats-title">Making Real Impact</h2>
+        <p class="stats-subtitle">Numbers that matter to our community</p>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div class="stat-number">2,847</div>
+        <div class="stat-label">Issues Reported</div>
+        <div class="stat-trend">↗ +12% this month</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-number">2,156</div>
+        <div class="stat-label">Issues Resolved</div>
+        <div class="stat-trend">↗ +8% this month</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+          </svg>
+        </div>
+        <div class="stat-number">8,942</div>
+        <div class="stat-label">Active Citizens</div>
+        <div class="stat-trend">↗ +23% this month</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+        </div>
+        <div class="stat-number">67</div>
+        <div class="stat-label">Partner Organizations</div>
+        <div class="stat-trend">↗ +15% this month</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="container position-relative">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <div class="cta-content">
+          <h2 class="cta-title">
+            Ready to Shape the Future of Your Community?
+          </h2>
+          <p class="cta-description">
+            Join thousands of engaged citizens who are already making a difference. 
+            Your voice, your community, your impact starts here.
+          </p>
+          <div class="cta-buttons">
+            <button class="btn-primary-modern large" (click)="navigateToRegister()">
+              <span class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-5-5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Join CivicPulse
+              </span>
+              <div class="btn-glow"></div>
+            </button>
+          </div>
+          <p class="cta-note">Free forever • No credit card required • Join 8,942 active citizens</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="modern-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="footer-brand">
+            <h3 class="brand-title">CivicPulse</h3>
+            <p class="brand-subtitle">Empowering communities through technology</p>
+          </div>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="footer-links">
+            <a routerLink="/about" class="footer-link">About</a>
+            <a href="#" class="footer-link">Privacy</a>
+            <a href="#" class="footer-link">Terms</a>
+            <a href="#" class="footer-link">Support</a>
+          </div>
+          <p class="copyright">&copy; 2025 CivicPulse. Crafted with ❤️ for communities.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
