@@ -21,14 +21,34 @@ app.use(cors());
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/civicpulse')
+// Database connection with better error handling
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/civicpulse';
+
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 15000,
+  socketTimeoutMS: 45000,
+})
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('✅ Connected to MongoDB');
+    console.log('📊 Database:', mongoose.connection.name);
+    console.log('🌐 Host:', mongoose.connection.host);
   })
   .catch((err) => {
-    console.error('MongoDB connection error:', err);
+    console.error('❌ MongoDB connection error:', err.message);
+    if (err.message.includes('IP')) {
+      console.error('💡 FIX: Add 0.0.0.0/0 to MongoDB Atlas Network Access whitelist');
+    }
+    // Don't exit - let the app run, but log the error
   });
+
+// Handle MongoDB connection errors after initial connection
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('⚠️  MongoDB disconnected');
+});
 
 // Routes
 app.get('/api/test', (req, res) => {
