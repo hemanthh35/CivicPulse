@@ -51,6 +51,59 @@ const complaintSchema = new mongoose.Schema({
     mediaURL: { type: String },
     timestamp: { type: Date }
   },
+  statusHistory: [{
+    status: {
+      type: String,
+      enum: ['pending', 'in-progress', 'resolved'],
+      required: true
+    },
+    changedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    changedAt: {
+      type: Date,
+      default: Date.now
+    },
+    comment: {
+      type: String
+    }
+  }],
+  assignmentHistory: [{
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    assignedAt: {
+      type: Date,
+      default: Date.now
+    },
+    comment: {
+      type: String
+    }
+  }],
+  feedback: {
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5
+    },
+    comment: {
+      type: String,
+      maxlength: 500
+    },
+    submittedAt: {
+      type: Date
+    }
+  },
+  resolvedAt: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -64,6 +117,46 @@ const complaintSchema = new mongoose.Schema({
 // Update the updatedAt timestamp before saving
 complaintSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
+  next();
+});
+
+// Middleware to track status changes
+complaintSchema.pre('save', function(next) {
+  if (this.isModified('status') && !this.isNew) {
+    // Track status change in history
+    const statusEntry = {
+      status: this.status,
+      changedBy: this._statusChangedBy || this.assignedTo || this.createdBy,
+      changedAt: new Date()
+    };
+    
+    if (!this.statusHistory) {
+      this.statusHistory = [];
+    }
+    this.statusHistory.push(statusEntry);
+    
+    // Set resolvedAt timestamp when status becomes resolved
+    if (this.status === 'resolved' && !this.resolvedAt) {
+      this.resolvedAt = new Date();
+    }
+  }
+  next();
+});
+
+// Middleware to track assignment changes
+complaintSchema.pre('save', function(next) {
+  if (this.isModified('assignedTo') && !this.isNew) {
+    const assignmentEntry = {
+      assignedTo: this.assignedTo,
+      assignedBy: this._assignedBy || this.createdBy,
+      assignedAt: new Date()
+    };
+    
+    if (!this.assignmentHistory) {
+      this.assignmentHistory = [];
+    }
+    this.assignmentHistory.push(assignmentEntry);
+  }
   next();
 });
 

@@ -43,6 +43,21 @@ export class ComplaintsService {
     return this.http.get<{ success: boolean, count: number, complaints: Complaint[] }>(`${this.apiUrl}/worker`);
   }
 
+  getWorkerStats(): Observable<{
+    success: boolean;
+    stats: {
+      totalAssigned: number;
+      pending: number;
+      inProgress: number;
+      resolved: number;
+      completionRate: string;
+      recentAssignments: number;
+      avgCompletionTime: string;
+    }
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/worker/stats`);
+  }
+
   assignComplaint(complaintId: string, workerId: string): Observable<{ success: boolean, complaint: Complaint }> {
     return this.http.put<{ success: boolean, complaint: Complaint }>(`${this.apiUrl}/assign/${complaintId}`, { workerId });
   }
@@ -54,7 +69,49 @@ export class ComplaintsService {
     });
   }
 
+  updateComplaintStatusWithProof(complaintId: string, status: string, file: File): Observable<{ success: boolean, complaint: Complaint }> {
+    const formData = new FormData();
+    formData.append('status', status);
+    formData.append('resolutionProof', file);
+
+    return this.http.put<{ success: boolean, complaint: Complaint }>(`${this.apiUrl}/update/${complaintId}`, formData);
+  }
+
   getComplaintById(complaintId: string): Observable<{ success: boolean, complaint: Complaint }> {
     return this.http.get<{ success: boolean, complaint: Complaint }>(`${this.apiUrl}/${complaintId}`);
+  }
+
+  submitFeedback(complaintId: string, rating: number, comment: string): Observable<{ success: boolean, message: string, feedback: any }> {
+    return this.http.post<{ success: boolean, message: string, feedback: any }>(`${this.apiUrl}/${complaintId}/feedback`, {
+      rating,
+      comment
+    });
+  }
+
+  getComplaintHistory(complaintId: string): Observable<{
+    success: boolean;
+    history: {
+      statusHistory: any[];
+      assignmentHistory: any[];
+      createdAt: Date;
+      resolvedAt?: Date;
+      currentStatus: string;
+      currentAssignee: any;
+    }
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/${complaintId}/history`);
+  }
+
+  getWorkerAnalytics(): Observable<{
+    success: boolean;
+    analytics: {
+      byType: { _id: string; count: number; }[];
+      byPriority: { _id: string; count: number; avgResolutionTime: number; }[];
+      dailyTrends: { date: string; created: number; resolved: number; }[];
+      resolutionTime: { avg: number; min: number; max: number; };
+      monthlyPerformance: { month: string; resolved: number; avgTime: number; }[];
+    }
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/worker/analytics`);
   }
 }

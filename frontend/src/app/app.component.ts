@@ -1,40 +1,48 @@
-import { Component, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { User } from './models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'CivicPulse';
   user: User | null = null;
   dropdownOpen = false;
+  mobileMenuOpen = false;
+  userMenuOpen = false;
+  adminDropdownOpen = false;
+  private userSubscription: Subscription | undefined;
   
   constructor(
     private authService: AuthService, 
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {
-    this.checkLoggedInStatus();
+  ) {}
+
+  ngOnInit() {
+    // Subscribe to user changes
+    this.userSubscription = this.authService.currentUser.subscribe(user => {
+      this.user = user;
+      this.cdr.detectChanges();
+    });
   }
 
-  ngAfterViewInit() {
-    // Detect changes after view initialization to prevent ExpressionChangedAfterItHasBeenCheckedError
-    this.cdr.detectChanges();
-  }
-
-  checkLoggedInStatus() {
-    if (this.authService.isLoggedIn()) {
-      this.user = this.authService.getUser();
+  ngOnDestroy() {
+    // Unsubscribe to prevent memory leaks
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
   logout() {
     this.authService.logout();
     this.user = null;
+    this.closeMobileMenu();
     this.router.navigate(['/login']);
   }
 
@@ -62,17 +70,49 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    
+    // Prevent body scroll when mobile menu is open
+    if (this.mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
+    this.adminDropdownOpen = false;
+    this.userMenuOpen = false;
+    
+    // Re-enable body scroll
+    document.body.style.overflow = '';
+  }
+
+  toggleUserMenu(): void {
+    this.userMenuOpen = !this.userMenuOpen;
+  }
+
+  toggleAdminDropdown(): void {
+    this.adminDropdownOpen = !this.adminDropdownOpen;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
-    const dropdown = document.getElementById('userDropdown');
-    const dropdownMenu = document.getElementById('userDropdownMenu');
+    const userButton = target.closest('.user-button');
+    const userDropdown = target.closest('.user-dropdown');
+    const adminDropdown = target.closest('.dropdown');
     
-    // Close dropdown if clicking outside
-    if (dropdown && dropdownMenu && 
-        !dropdown.contains(target) && !dropdownMenu.contains(target)) {
-      this.dropdownOpen = false;
-      dropdownMenu.classList.remove('show');
+    // Close user menu if clicking outside
+    if (!userButton && !userDropdown && this.userMenuOpen) {
+      this.userMenuOpen = false;
+    }
+
+    // Close admin dropdown if clicking outside
+    if (!adminDropdown && this.adminDropdownOpen) {
+      this.adminDropdownOpen = false;
     }
   }
 }

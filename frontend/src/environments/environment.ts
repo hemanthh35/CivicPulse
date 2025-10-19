@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '/api'
+  apiUrl: '/api'  // Proxy configuration will route to backend in dev, direct path in production
 };

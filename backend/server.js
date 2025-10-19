@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,6 +9,9 @@ const authRoutes = require('./routes/auth.routes');
 const complaintsRoutes = require('./routes/complaints.routes');
 const rewardsRoutes = require('./routes/rewards.routes');
 const moderationRoutes = require('./routes/moderation.routes');
+const geminiRoutes = require('./routes/gemini.routes');
+const leaderboardRoutes = require('./routes/leaderboard.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 // Initialize express app
 const app = express();
@@ -59,6 +62,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/rewards', rewardsRoutes);
 app.use('/api/moderation', moderationRoutes);
+app.use('/api/gemini', geminiRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

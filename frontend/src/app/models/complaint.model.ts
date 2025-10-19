@@ -15,6 +15,11 @@ export interface Complaint {
     mediaURL: string;
     timestamp: Date;
   };
+  feedback?: {
+    rating: number;
+    comment: string;
+    submittedAt: Date;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

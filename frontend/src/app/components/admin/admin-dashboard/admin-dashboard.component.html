@@ -1,89 +1,706 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <h2 class="mb-4">Admin Dashboard</h2>
+<div class="admin-dashboard-pro">
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/dashboard" class="text-decoration-none">
+          <i class="bi bi-house me-1"></i>Main Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+    </ol>
+  </nav>
+  
+  <!-- Top Header Bar -->
+  <div class="top-header">
+    <div class="container-fluid">
+      <div class="header-flex">
+        <div class="header-left">
+          <div class="brand-section">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+            <div>
+              <h1 class="page-title">System Control Panel</h1>
+              <p class="page-subtitle">Real-time system overview & management</p>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="time-display">
+            <i class="bi bi-clock"></i>
+            <span>{{ currentTime | date:'medium' }}</span>
+          </div>
+          <div class="system-status-badge" [class]="getSystemHealth()">
+            <div class="status-dot"></div>
+            <span>{{ getSystemHealth() | titlecase }}</span>
+          </div>
+          <button class="btn-advanced-tools" (click)="openAdvancedTools()" title="Advanced Tools & Database Management">
+            <i class="bi bi-gear"></i>
+          </button>
+          <button class="btn-refresh" (click)="refresh()" [disabled]="loading">
+            <i class="bi bi-arrow-clockwise" [class.spinning]="loading"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !stats" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="refresh()">Retry</button>
+  </div>
+
+  <!-- Main Dashboard Content -->
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <div class="container-fluid">
       
-      <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                    Total Complaints
-                  </div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ stats.totalComplaints }}
-                  </div>
+      <!-- Key Metrics Row -->
+      <div class="metrics-grid">
+        <!-- Total Users Metric -->
+        <div class="metric-card users">
+          <div class="metric-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Total Users</span>
+            <h3 class="metric-value">{{ stats.users.total | number }}</h3>
+            <div class="metric-breakdown">
+              <span class="breakdown-item">
+                <i class="bi bi-person"></i>{{ getRoleCount('citizen') }} Citizens
+              </span>
+              <span class="breakdown-item">
+                <i class="bi bi-mortarboard"></i>{{ getRoleCount('student') }} Students
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Complaints Metric -->
+        <div class="metric-card complaints">
+          <div class="metric-icon">
+            <i class="bi bi-flag-fill"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Total Complaints</span>
+            <h3 class="metric-value">{{ stats.complaints.total | number }}</h3>
+            <div class="metric-breakdown">
+              <span class="breakdown-item warning">
+                <i class="bi bi-circle-fill"></i>{{ getStatusCount('Pending') }} Pending
+              </span>
+              <span class="breakdown-item success">
+                <i class="bi bi-circle-fill"></i>{{ getStatusCount('Resolved') }} Resolved
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution Rate Metric -->
+        <div class="metric-card resolution">
+          <div class="metric-icon">
+            <i class="bi bi-graph-up"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Resolution Rate</span>
+            <h3 class="metric-value">{{ stats.analytics.resolutionRate }}%</h3>
+            <div class="progress-bar-mini">
+              <div class="progress-fill" [style.width.%]="stats.analytics.resolutionRate"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avg Response Time Metric -->
+        <div class="metric-card response">
+          <div class="metric-icon">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Avg Response</span>
+            <h3 class="metric-value">{{ stats.analytics.avgResponseTime }}<span class="unit">days</span></h3>
+            <div class="metric-breakdown">
+              <span class="breakdown-item">
+                <i class="bi bi-speedometer2"></i>System Performance
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Workers Metric -->
+        <div class="metric-card workers">
+          <div class="metric-icon">
+            <i class="bi bi-person-badge"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Active Workers</span>
+            <h3 class="metric-value">{{ getRoleCount('worker') | number }}</h3>
+            <div class="metric-breakdown">
+              <span class="breakdown-item">
+                <i class="bi bi-check-circle"></i>Handling Complaints
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Activity Metric -->
+        <div class="metric-card activity">
+          <div class="metric-icon">
+            <i class="bi bi-activity"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Resolved Today</span>
+            <h3 class="metric-value">{{ getResolvedTodayCount() | number }}</h3>
+            <div class="metric-breakdown">
+              <span class="breakdown-item">
+                <i class="bi bi-trophy"></i>Daily Progress
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts and Analytics Section -->
+      <div class="charts-section">
+        <div class="row g-3">
+          
+          <!-- Trend Chart - Full Width -->
+          <div class="col-12">
+            <div class="chart-card-pro trend-card">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-graph-up"></i>
+                    Complaint Trends (Last 7 Days)
+                  </h4>
+                  <p class="chart-subtitle">Real data: Created, Resolved, and New Users</p>
                 </div>
-                <div class="col-auto">
-                  <i class="bi bi-flag-fill fa-2x text-gray-300"></i>
+                <div class="chart-actions">
+                  <button class="btn-chart-action">
+                    <i class="bi bi-download"></i>
+                  </button>
                 </div>
+              </div>
+              <div class="chart-body">
+                <canvas *ngIf="trendData" 
+                  baseChart 
+                  [data]="trendData" 
+                  [options]="lineChartOptions"
+                  type="line">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Distribution -->
+          <div class="col-lg-3 col-md-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-pie-chart"></i>
+                    By Status
+                  </h4>
+                  <p class="chart-subtitle">Current distribution</p>
+                </div>
+              </div>
+              <div class="chart-body small">
+                <canvas *ngIf="complaintsByStatusData" 
+                  baseChart 
+                  [data]="complaintsByStatusData" 
+                  [options]="doughnutChartOptions"
+                  type="doughnut">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type Distribution -->
+          <div class="col-lg-3 col-md-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-bar-chart"></i>
+                    By Category
+                  </h4>
+                  <p class="chart-subtitle">Issue types</p>
+                </div>
+              </div>
+              <div class="chart-body small">
+                <canvas *ngIf="complaintsByTypeData" 
+                  baseChart 
+                  [data]="complaintsByTypeData" 
+                  [options]="barChartOptions"
+                  type="bar">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priority Distribution -->
+          <div class="col-lg-3 col-md-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    By Priority
+                  </h4>
+                  <p class="chart-subtitle">Severity levels</p>
+                </div>
+              </div>
+              <div class="chart-body small">
+                <canvas *ngIf="complaintsByPriorityData" 
+                  baseChart 
+                  [data]="complaintsByPriorityData" 
+                  [options]="doughnutChartOptions"
+                  type="doughnut">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Roles Distribution -->
+          <div class="col-lg-3 col-md-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-people"></i>
+                    User Roles
+                  </h4>
+                  <p class="chart-subtitle">Role distribution</p>
+                </div>
+              </div>
+              <div class="chart-body small">
+                <canvas *ngIf="usersByRoleData" 
+                  baseChart 
+                  [data]="usersByRoleData" 
+                  [options]="pieChartOptions"
+                  type="pie">
+                </canvas>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                    Pending Complaints
-                  </div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ stats.pendingComplaints }}
-                  </div>
-                </div>
-                <div class="col-auto">
-                  <i class="bi bi-clock-fill fa-2x text-gray-300"></i>
-                </div>
+      </div>
+
+      <!-- Advanced Analytics Section -->
+      <div class="analytics-section" *ngIf="detailedAnalytics">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="bi bi-bar-chart-line"></i>
+            Advanced Analytics
+          </h3>
+          <p class="section-subtitle">Deep insights into system performance and trends</p>
+        </div>
+
+        <!-- Analytics Summary Cards -->
+        <div class="row g-3 mb-4" *ngIf="detailedAnalytics.summary">
+          <div class="col-md-3">
+            <div class="analytics-card">
+              <div class="card-icon">
+                <i class="bi bi-clock"></i>
+              </div>
+              <div class="card-content">
+                <h4>{{ detailedAnalytics.performance.avgResolutionTime }} days</h4>
+                <p>Avg Resolution Time</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="analytics-card">
+              <div class="card-icon">
+                <i class="bi bi-speedometer2"></i>
+              </div>
+              <div class="card-content">
+                <h4>{{ detailedAnalytics.summary.avgDailyComplaints }}</h4>
+                <p>Avg Daily Complaints</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="analytics-card">
+              <div class="card-icon">
+                <i class="bi bi-check-circle"></i>
+              </div>
+              <div class="card-content">
+                <h4>{{ detailedAnalytics.summary.efficiencyRate }}%</h4>
+                <p>Efficiency Rate</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="analytics-card">
+              <div class="card-icon">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <div class="card-content">
+                <h4>{{ detailedAnalytics.summary.totalComplaintsAnalyzed }}</h4>
+                <p>30-Day Total</p>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                    Resolved Complaints
-                  </div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ stats.resolvedComplaints }}
-                  </div>
+
+        <!-- Analytics Charts -->
+        <div class="row g-3">
+          <!-- Peak Hours Chart -->
+          <div class="col-lg-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-clock-history"></i>
+                    Peak Complaint Hours
+                  </h4>
+                  <p class="chart-subtitle">When complaints are most frequently reported</p>
                 </div>
-                <div class="col-auto">
-                  <i class="bi bi-check-circle-fill fa-2x text-gray-300"></i>
+              </div>
+              <div class="chart-body">
+                <canvas *ngIf="peakHoursData"
+                  baseChart
+                  [data]="peakHoursData"
+                  [options]="barChartOptions"
+                  type="bar">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Distribution Chart -->
+          <div class="col-lg-6">
+            <div class="chart-card-pro">
+              <div class="chart-header">
+                <div>
+                  <h4 class="chart-title">
+                    <i class="bi bi-geo-alt"></i>
+                    Top Complaint Locations
+                  </h4>
+                  <p class="chart-subtitle">Cities with highest complaint volume</p>
                 </div>
+              </div>
+              <div class="chart-body">
+                <canvas *ngIf="locationData"
+                  baseChart
+                  [data]="locationData"
+                  [options]="barChartOptions"
+                  type="bar">
+                </canvas>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                    Total Users
+
+        <!-- Performance Insights -->
+        <div class="row g-3 mt-2" *ngIf="detailedAnalytics.performance">
+          <div class="col-12">
+            <div class="insights-card">
+              <h5 class="mb-3">
+                <i class="bi bi-lightbulb"></i>
+                Performance Insights
+              </h5>
+              <div class="insights-grid">
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i class="bi bi-lightning text-warning"></i>
                   </div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ stats.totalUsers }}
+                  <div class="insight-content">
+                    <h6>Fast Resolutions</h6>
+                    <p>{{ detailedAnalytics.performance.fastResolutions }} complaints resolved within 1 day</p>
                   </div>
                 </div>
-                <div class="col-auto">
-                  <i class="bi bi-people-fill fa-2x text-gray-300"></i>
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i class="bi bi-hourglass text-danger"></i>
+                  </div>
+                  <div class="insight-content">
+                    <h6>Slow Resolutions</h6>
+                    <p>{{ detailedAnalytics.performance.slowResolutions }} complaints took longer than 7 days</p>
+                  </div>
+                </div>
+                <div class="insight-item" *ngIf="detailedAnalytics.performance.byPriority && detailedAnalytics.performance.byPriority.length > 0">
+                  <div class="insight-icon">
+                    <i class="bi bi-flag text-info"></i>
+                  </div>
+                  <div class="insight-content">
+                    <h6>Priority Performance</h6>
+                    <p>High priority: {{ getHighPriorityAvgTime() }} days avg</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Quick Actions Panel -->
+      <div class="quick-actions-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="bi bi-lightning-charge"></i>
+            Quick Actions
+          </h3>
+        </div>
+        <div class="actions-grid">
+          <a routerLink="/admin/users" class="action-card">
+            <div class="action-icon blue">
+              <i class="bi bi-people"></i>
+            </div>
+            <div class="action-content">
+              <h5>Manage Users</h5>
+              <p>View, edit, and manage user accounts</p>
+            </div>
+            <i class="bi bi-arrow-right action-arrow"></i>
+          </a>
+
+          <a routerLink="/admin/complaints" class="action-card">
+            <div class="action-icon purple">
+              <i class="bi bi-flag"></i>
+            </div>
+            <div class="action-content">
+              <h5>Handle Complaints</h5>
+              <p>Manage and resolve complaints</p>
+            </div>
+            <i class="bi bi-arrow-right action-arrow"></i>
+          </a>
+
+          <a routerLink="/admin/moderation" class="action-card">
+            <div class="action-icon cyan">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="action-content">
+              <h5>Moderation Panel</h5>
+              <p>Review and moderate reports</p>
+            </div>
+            <i class="bi bi-arrow-right action-arrow"></i>
+          </a>
+
+          <a class="action-card">
+            <div class="action-icon green">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="action-content">
+              <h5>Generate Reports</h5>
+              <p>Export analytics and reports</p>
+            </div>
+            <i class="bi bi-arrow-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Activity Section -->
+      <div class="recent-activity-section">
+        <div class="row g-3">
+          
+          <!-- Recent Complaints -->
+          <div class="col-lg-6">
+            <div class="activity-panel">
+              <div class="panel-header">
+                <h4 class="panel-title">
+                  <i class="bi bi-flag"></i>
+                  Recent Complaints
+                </h4>
+                <a routerLink="/admin/complaints" class="btn-view-all">View All</a>
+              </div>
+              <div class="panel-body">
+                <div *ngIf="stats.recentActivity.complaints.length === 0" class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p>No recent complaints</p>
+                </div>
+                <div *ngFor="let complaint of stats.recentActivity.complaints" class="activity-item">
+                  <div class="activity-indicator" [class]="complaint.status.toLowerCase().replace(' ', '-')"></div>
+                  <div class="activity-details">
+                    <h5 class="activity-title">{{ complaint.title }}</h5>
+                    <p class="activity-meta">
+                      <span class="badge" [class]="'badge-' + complaint.status.toLowerCase().replace(' ', '-')">
+                        {{ complaint.status }}
+                      </span>
+                      <span class="separator">•</span>
+                      <span class="type">{{ complaint.type }}</span>
+                      <span class="separator">•</span>
+                      <span class="time">{{ complaint.createdAt | date:'short' }}</span>
+                    </p>
+                    <p class="activity-user">
+                      <i class="bi bi-person"></i>
+                      {{ complaint.createdBy?.name || 'Unknown' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Users -->
+          <div class="col-lg-6">
+            <div class="activity-panel">
+              <div class="panel-header">
+                <h4 class="panel-title">
+                  <i class="bi bi-person-plus"></i>
+                  New Users
+                </h4>
+                <a routerLink="/admin/users" class="btn-view-all">View All</a>
+              </div>
+              <div class="panel-body">
+                <div *ngIf="stats.recentActivity.users.length === 0" class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p>No recent users</p>
+                </div>
+                <div *ngFor="let user of stats.recentActivity.users" class="activity-item">
+                  <div class="activity-indicator user"></div>
+                  <div class="activity-details">
+                    <h5 class="activity-title">{{ user.name }}</h5>
+                    <p class="activity-meta">
+                      <span class="badge badge-{{ user.role }}">{{ user.role }}</span>
+                      <span class="separator">•</span>
+                      <span class="email">{{ user.email }}</span>
+                    </p>
+                    <p class="activity-user">
+                      <i class="bi bi-calendar"></i>
+                      Joined {{ user.createdAt | date:'short' }}
+                      <span class="separator">•</span>
+                      <i class="bi bi-star-fill"></i>
+                      {{ user.points || 0 }} pts
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Info Footer -->
+      <div class="system-info">
+        <div class="info-item">
+          <i class="bi bi-server"></i>
+          <span>System Version 2.0.1</span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-database"></i>
+          <span>Database: MongoDB</span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-gear"></i>
+          <span>Auto-refresh: 5 min</span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-shield-check"></i>
+          <span>Secure Connection</span>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
+
+  <!-- Advanced Tools Modal -->
+  <div class="advanced-tools-modal" *ngIf="showAdvancedTools">
+    <div class="modal-overlay" (click)="closeAdvancedTools()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">
+            <i class="bi bi-gear-fill"></i>
+            Advanced Tools & Database Management
+          </h2>
+          <p class="modal-subtitle">⚠️ Use with caution - all operations are destructive</p>
+        </div>
+        <button class="btn-close" (click)="closeAdvancedTools()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Database Statistics -->
+        <div class="settings-section">
+          <h3 class="section-title">
+            <i class="bi bi-database"></i>
+            Database Statistics
+          </h3>
+          <div class="db-stats-grid" *ngIf="dbStats">
+            <div class="db-stat">
+              <span class="stat-label">Total Users</span>
+              <span class="stat-value">{{ dbStats.stats?.users || 0 }}</span>
+            </div>
+            <div class="db-stat">
+              <span class="stat-label">Total Complaints</span>
+              <span class="stat-value">{{ dbStats.stats?.complaints || 0 }}</span>
+            </div>
+            <div class="db-stat">
+              <span class="stat-label">Moderation Reports</span>
+              <span class="stat-value">{{ dbStats.stats?.moderationReports || 0 }}</span>
+            </div>
+            <div class="db-stat">
+              <span class="stat-label">Rewards</span>
+              <span class="stat-value">{{ dbStats.stats?.rewards || 0 }}</span>
+            </div>
+          </div>
+          <button class="btn-refresh-stats" (click)="loadDbStats()" [disabled]="dbLoading">
+            <i class="bi bi-arrow-repeat" [class.spinning]="dbLoading"></i>
+            Refresh Database Stats
+          </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-section danger-zone">
+          <h3 class="section-title">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Danger Zone
+          </h3>
+          <p class="danger-description">These operations cannot be undone. Proceed with extreme caution.</p>
+
+          <div class="danger-actions">
+            <div class="action-group">
+              <button class="btn-danger warning" (click)="confirmDropComplaints()" [disabled]="dbLoading">
+                <i class="bi bi-trash"></i>
+                Delete All Complaints
+              </button>
+              <span class="action-info">Permanently delete {{ dbStats?.stats?.complaints || 0 }} complaints</span>
+            </div>
+
+            <div class="action-group">
+              <button class="btn-danger warning" (click)="confirmDropUsers()" [disabled]="dbLoading">
+                <i class="bi bi-trash"></i>
+                Delete All Users
+              </button>
+              <span class="action-info">Permanently delete {{ dbStats?.stats?.users || 0 }} non-admin users</span>
+            </div>
+
+            <div class="action-group">
+              <button class="btn-danger warning" (click)="confirmDropModeration()" [disabled]="dbLoading">
+                <i class="bi bi-trash"></i>
+                Delete All Moderation Reports
+              </button>
+              <span class="action-info">Permanently delete {{ dbStats?.stats?.moderationReports || 0 }} reports</span>
+            </div>
+
+            <div class="action-group critical">
+              <button class="btn-danger critical" (click)="confirmDropAllData()" [disabled]="dbLoading">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                DROP ENTIRE DATABASE
+              </button>
+              <span class="action-info critical">⚠️ IRREVERSIBLE - Delete ALL data (users, complaints, moderation)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div class="settings-section" *ngIf="operationMessage">
+          <div class="status-message" [class]="operationMessageType">
+            <i [class]="operationMessageIcon"></i>
+            {{ operationMessage }}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeAdvancedTools()">Close</button>
+      </div>
+    </div>
+  </div>
+

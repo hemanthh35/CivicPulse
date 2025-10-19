@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ComplaintsService } from '../../../services/complaints.service';
+import { ComplaintTimelineComponent } from '../../shared/complaint-timeline/complaint-timeline.component';
 
 @Component({
   selector: 'app-assigned-complaints',
   templateUrl: './assigned-complaints.component.html',
   styleUrls: ['./assigned-complaints.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, ComplaintTimelineComponent]
 })
 export class AssignedComplaintsComponent implements OnInit {
   complaints: any[] = [];
@@ -15,6 +16,8 @@ export class AssignedComplaintsComponent implements OnInit {
   selectedImageUrl = '';
   selectedComplaintTitle = '';
   selectedComplaint: any = null;
+  selectedFile: File | null = null;
+  isUploading = false;
 
   constructor(private complaintsService: ComplaintsService) { }
 
@@ -41,15 +44,72 @@ export class AssignedComplaintsComponent implements OnInit {
   }
 
   updateStatus(complaintId: string, status: string): void {
-    this.complaintsService.updateComplaintStatus(complaintId, status)
-      .subscribe({
-        next: () => {
-          this.loadAssignedComplaints();
-        },
-        error: (error) => {
-          console.error('Error updating status:', error);
-        }
-      });
+    this.isUploading = true;
+    
+    if (status === 'resolved' && this.selectedFile) {
+      // Handle file upload for resolution proof
+      this.complaintsService.updateComplaintStatusWithProof(complaintId, status, this.selectedFile)
+        .subscribe({
+          next: () => {
+            this.loadAssignedComplaints();
+            this.selectedFile = null;
+            this.isUploading = false;
+            // Close modal if it's open
+            const modal = document.getElementById('complaintModal');
+            if (modal) {
+              (modal as any).classList.remove('show');
+              document.body.classList.remove('modal-open');
+              const backdrop = document.querySelector('.modal-backdrop');
+              if (backdrop) backdrop.remove();
+            }
+          },
+          error: (error) => {
+            console.error('Error updating status with proof:', error);
+            this.isUploading = false;
+          }
+        });
+    } else {
+      // Regular status update without proof
+      this.complaintsService.updateComplaintStatus(complaintId, status)
+        .subscribe({
+          next: () => {
+            this.loadAssignedComplaints();
+            this.isUploading = false;
+          },
+          error: (error) => {
+            console.error('Error updating status:', error);
+            this.isUploading = false;
+          }
+        });
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+      
+      this.selectedFile = file;
+    }
+  }
+
+  removeSelectedFile(): void {
+    this.selectedFile = null;
+    // Reset file input
+    const fileInput = document.getElementById('resolutionProof') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   getImageUrl(photoPath: string): string {

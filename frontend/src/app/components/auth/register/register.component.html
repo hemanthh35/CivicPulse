@@ -1,162 +1,220 @@
-<div class="container">
-  <div class="row justify-content-center mt-4">
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-primary text-white text-center py-3">
-          <h3>Register for CivicPulse</h3>
+<div class="register-container">
+  <!-- Left Side - Branding -->
+  <div class="register-left">
+    <div class="brand-section">
+      <div class="brand-icon">
+        <i class="bi bi-person-plus-fill"></i>
+      </div>
+      <h1 class="brand-title">Join CivicPulse</h1>
+      <p class="brand-tagline">Create your account and start making a difference today</p>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+          <h3>Quick & Easy</h3>
+          <p>Sign up in less than 2 minutes</p>
         </div>
-        <div class="card-body p-4">
-          <div *ngIf="errorMessage" class="alert alert-danger">
-            {{ errorMessage }}
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h3>100% Secure</h3>
+          <p>Your data is safe with us</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <h3>Join Community</h3>
+          <p>Be part of the change</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <h3>Track Impact</h3>
+          <p>See your contributions</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side - Registration Form -->
+  <div class="register-right">
+    <div class="register-box">
+      <div class="register-header">
+        <h2>Create Account</h2>
+        <p>Fill in your details to get started</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"  class="register-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name" class="form-label">Full Name</label>
+            <div class="input-wrapper">
+              <i class="bi bi-person input-icon"></i>
+              <input 
+                type="text" 
+                class="form-control-modern" 
+                id="name" 
+                formControlName="name" 
+                placeholder="John Doe"
+                autocomplete="name"
+                [ngClass]="{ 'is-invalid': f['name'].errors && f['name'].touched }"
+              >
+            </div>
+            <div *ngIf="f['name'].errors && f['name'].touched" class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <span *ngIf="f['name'].errors['required']">Name is required</span>
+              <span *ngIf="f['name'].errors['minlength']">Name must be at least 3 characters</span>
+            </div>
           </div>
 
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="name" class="form-label">Full Name</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-person"></i></span>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="name" 
-                    formControlName="name" 
-                    placeholder="Enter your full name"
-                    autocomplete="name"
-                    [ngClass]="{ 'is-invalid': f['name'].errors && f['name'].touched }"
-                  >
-                </div>
-                <div *ngIf="f['name'].errors && f['name'].touched" class="text-danger">
-                  <small *ngIf="f['name'].errors['required']">Name is required</small>
-                  <small *ngIf="f['name'].errors['minlength']">Name must be at least 3 characters</small>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                  <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
-                    formControlName="email" 
-                    placeholder="Enter your email"
-                    autocomplete="email"
-                    [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched }"
-                  >
-                </div>
-                <div *ngIf="f['email'].errors && f['email'].touched" class="text-danger">
-                  <small *ngIf="f['email'].errors['required']">Email is required</small>
-                  <small *ngIf="f['email'].errors['email']">Enter a valid email address</small>
-                </div>
-              </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <i class="bi bi-envelope input-icon"></i>
+              <input 
+                type="email" 
+                class="form-control-modern" 
+                id="email" 
+                formControlName="email" 
+                placeholder="you@example.com"
+                autocomplete="email"
+                [ngClass]="{ 'is-invalid': f['email'].errors && f['email'].touched }"
+              >
             </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="mobile" class="form-label">Mobile Number (optional)</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-phone"></i></span>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="mobile" 
-                    formControlName="mobile" 
-                    placeholder="10-digit mobile number"
-                    autocomplete="tel"
-                    [ngClass]="{ 'is-invalid': f['mobile'].errors && f['mobile'].touched }"
-                  >
-                </div>
-                <div *ngIf="f['mobile'].errors && f['mobile'].touched" class="text-danger">
-                  <small *ngIf="f['mobile'].errors['pattern']">Enter a valid 10-digit mobile number</small>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="role" class="form-label">Register as</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                  <select 
-                    class="form-select" 
-                    id="role" 
-                    formControlName="role"
-                    [ngClass]="{ 'is-invalid': f['role'].errors && f['role'].touched }"
-                  >
-                    <option value="citizen">Citizen</option>
-                    <option value="student">Student</option>
-                    <option value="worker">Worker</option>
-                  </select>
-                </div>
-              </div>
+            <div *ngIf="f['email'].errors && f['email'].touched" class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <span *ngIf="f['email'].errors['required']">Email is required</span>
+              <span *ngIf="f['email'].errors['email']">Enter a valid email address</span>
             </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                  <input 
-                    type="password" 
-                    class="form-control" 
-                    id="password" 
-                    formControlName="password"
-                    placeholder="Enter your password"
-                    autocomplete="new-password"
-                    [ngClass]="{ 'is-invalid': f['password'].errors && f['password'].touched }"
-                  >
-                </div>
-                <div *ngIf="f['password'].errors && f['password'].touched" class="text-danger">
-                  <small *ngIf="f['password'].errors['required']">Password is required</small>
-                  <small *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</small>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                  <input 
-                    type="password" 
-                    class="form-control" 
-                    id="confirmPassword" 
-                    formControlName="confirmPassword"
-                    placeholder="Confirm your password"
-                    autocomplete="new-password"
-                    [ngClass]="{ 'is-invalid': f['confirmPassword'].errors && f['confirmPassword'].touched }"
-                  >
-                </div>
-                <div *ngIf="f['confirmPassword'].errors && f['confirmPassword'].touched" class="text-danger">
-                  <small *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</small>
-                  <small *ngIf="f['confirmPassword'].errors['mustMatch']">Passwords must match</small>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="termsCheck" required>
-                <label class="form-check-label" for="termsCheck">
-                  I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-                </label>
-              </div>
-
-              <div class="d-grid gap-2">
-                <button 
-                  type="submit" 
-                  class="btn btn-primary btn-lg" 
-                  [disabled]="registerForm.invalid || isSubmitting"
-                >
-                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                  Register
-                </button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-        <div class="card-footer text-center py-3">
-          <p class="mb-0">Already have an account? <a [routerLink]="['/login']">Login</a></p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mobile" class="form-label">Mobile Number <span class="optional">(Optional)</span></label>
+            <div class="input-wrapper">
+              <i class="bi bi-phone input-icon"></i>
+              <input 
+                type="text" 
+                class="form-control-modern" 
+                id="mobile" 
+                formControlName="mobile" 
+                placeholder="10-digit number"
+                autocomplete="tel"
+                [ngClass]="{ 'is-invalid': f['mobile'].errors && f['mobile'].touched }"
+              >
+            </div>
+            <div *ngIf="f['mobile'].errors && f['mobile'].touched" class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <span *ngIf="f['mobile'].errors['pattern']">Enter a valid 10-digit mobile number</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="role" class="form-label">Register as</label>
+            <div class="input-wrapper">
+              <i class="bi bi-person-badge input-icon"></i>
+              <select 
+                class="form-control-modern" 
+                id="role" 
+                formControlName="role"
+                [ngClass]="{ 'is-invalid': f['role'].errors && f['role'].touched }"
+              >
+                <option value="citizen">🏘️ Citizen</option>
+                <option value="student">🎓 Student</option>
+                <option value="worker">🔧 Worker</option>
+              </select>
+            </div>
+          </div>
         </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-lock input-icon"></i>
+              <input 
+                type="password" 
+                class="form-control-modern" 
+                id="password" 
+                formControlName="password"
+                placeholder="Minimum 6 characters"
+                autocomplete="new-password"
+                [ngClass]="{ 'is-invalid': f['password'].errors && f['password'].touched }"
+              >
+            </div>
+            <div *ngIf="f['password'].errors && f['password'].touched" class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <span *ngIf="f['password'].errors['required']">Password is required</span>
+              <span *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-lock-fill input-icon"></i>
+              <input 
+                type="password" 
+                class="form-control-modern" 
+                id="confirmPassword" 
+                formControlName="confirmPassword"
+                placeholder="Re-enter password"
+                autocomplete="new-password"
+                [ngClass]="{ 'is-invalid': f['confirmPassword'].errors && f['confirmPassword'].touched }"
+              >
+            </div>
+            <div *ngIf="f['confirmPassword'].errors && f['confirmPassword'].touched" class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <span *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</span>
+              <span *ngIf="f['confirmPassword'].errors['mustMatch']">Passwords must match</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terms-check">
+          <input class="custom-checkbox" type="checkbox" id="termsCheck" required>
+          <label class="terms-label" for="termsCheck">
+            I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn-register" 
+          [disabled]="registerForm.invalid || isSubmitting"
+          [ngClass]="{ 'loading': isSubmitting }"
+        >
+          <span *ngIf="!isSubmitting">
+            <i class="bi bi-person-plus me-2"></i>Create Account
+          </span>
+          <span *ngIf="isSubmitting">
+            <span class="spinner-border spinner-border-sm me-2"></span>Creating Account...
+          </span>
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <div class="login-prompt">
+        <a [routerLink]="['/login']" class="btn-login-link">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Login to Your Account
+        </a>
       </div>
     </div>
   </div>

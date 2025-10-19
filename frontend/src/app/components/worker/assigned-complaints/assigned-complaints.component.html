@@ -1,6 +1,18 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
+      <!-- Breadcrumb Navigation -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="/worker/dashboard" class="text-decoration-none">
+              <i class="bi bi-speedometer2 me-1"></i>Dashboard
+            </a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Assigned Complaints</li>
+        </ol>
+      </nav>
+      
       <h2 class="mb-4">Assigned Complaints</h2>
       
       <div *ngIf="isLoading" class="text-center py-5">
@@ -223,6 +235,23 @@
                 </div>
               </div>
 
+              <!-- Timeline Section -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Timeline & History
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      <app-complaint-timeline [complaintId]="selectedComplaint._id"></app-complaint-timeline>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Image Section -->
               <div class="row mt-4">
                 <div class="col-12">
@@ -281,12 +310,53 @@
               </div>
             </div>
             <div class="modal-footer">
+              <!-- Resolution Proof Upload (only show when marking as resolved) -->
+              <div class="w-100 mb-3" *ngIf="selectedComplaint && selectedComplaint.status !== 'resolved'">
+                <div class="resolution-proof-section">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-camera me-2"></i>
+                    Resolution Proof (Optional)
+                  </label>
+                  <p class="text-muted small mb-2">Upload a photo showing the completed work</p>
+                  
+                  <div class="file-upload-area" 
+                       [class.has-file]="selectedFile"
+                       (click)="document.getElementById('resolutionProof').click()">
+                    <input 
+                      type="file" 
+                      id="resolutionProof" 
+                      class="d-none" 
+                      accept="image/*"
+                      (change)="onFileSelected($event)">
+                    
+                    <div class="upload-content">
+                      <i class="bi bi-cloud-upload upload-icon" *ngIf="!selectedFile"></i>
+                      <i class="bi bi-file-earmark-image upload-icon" *ngIf="selectedFile"></i>
+                      
+                      <div *ngIf="!selectedFile" class="upload-text">
+                        <strong>Click to upload</strong>
+                        <p class="mb-0">or drag and drop</p>
+                        <small class="text-muted">PNG, JPG up to 5MB</small>
+                      </div>
+                      
+                      <div *ngIf="selectedFile" class="file-info">
+                        <strong>{{ selectedFile.name }}</strong>
+                        <p class="mb-1">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeSelectedFile(); $event.stopPropagation()">
+                          <i class="bi bi-x"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button 
                 type="button" 
                 class="btn btn-primary" 
                 (click)="updateStatus(selectedComplaint._id, 'in-progress')"
-                [disabled]="selectedComplaint?.status === 'in-progress' || selectedComplaint?.status === 'resolved'"
+                [disabled]="selectedComplaint?.status === 'in-progress' || selectedComplaint?.status === 'resolved' || isUploading"
               >
                 <i class="bi bi-play-circle me-1"></i>
                 Start Work
@@ -295,10 +365,10 @@
                 type="button" 
                 class="btn btn-success" 
                 (click)="updateStatus(selectedComplaint._id, 'resolved')"
-                [disabled]="selectedComplaint?.status === 'resolved'"
+                [disabled]="selectedComplaint?.status === 'resolved' || isUploading"
               >
-                <i class="bi bi-check-circle me-1"></i>
-                Mark Resolved
+                <i class="bi bi-check-circle me-1" [class]="isUploading ? 'fa-spin' : ''"></i>
+                {{ isUploading ? 'Uploading...' : 'Mark Resolved' }}
               </button>
             </div>
           </div>

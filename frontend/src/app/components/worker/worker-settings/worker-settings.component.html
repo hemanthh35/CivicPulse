@@ -1,0 +1,227 @@
+<div class="worker-settings">
+  <div class="container-fluid">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/worker/dashboard" class="text-decoration-none">
+            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Settings</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="settings-header mb-4">
+      <h2>
+        <i class="bi bi-gear me-2"></i>
+        Worker Settings
+      </h2>
+      <p class="text-muted">Configure your specializations and work area preferences</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Settings Form -->
+    <div *ngIf="!loading" class="row">
+      <!-- Specializations Section -->
+      <div class="col-lg-6 mb-4">
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <h5>
+              <i class="bi bi-tools me-2"></i>
+              Your Specializations
+            </h5>
+            <p class="text-muted mb-0">Select the types of complaints you can handle</p>
+          </div>
+          <div class="settings-card-body">
+            <div class="specializations-grid">
+              <div 
+                *ngFor="let spec of availableSpecializations" 
+                class="specialization-item"
+                [class.selected]="isSpecializationSelected(spec)"
+                (click)="toggleSpecialization(spec)"
+              >
+                <div class="spec-checkbox">
+                  <i class="bi" [ngClass]="isSpecializationSelected(spec) ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                </div>
+                <div class="spec-label">{{ spec }}</div>
+              </div>
+            </div>
+            
+            <div class="selected-count mt-3">
+              <i class="bi bi-info-circle text-primary me-2"></i>
+              <span>{{ selectedSpecializations.length }} specialization(s) selected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Area Section -->
+      <div class="col-lg-6 mb-4">
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <h5>
+              <i class="bi bi-geo-alt me-2"></i>
+              Work Area
+            </h5>
+            <p class="text-muted mb-0">Define your preferred working location and radius</p>
+          </div>
+          <div class="settings-card-body">
+            <!-- Location Detection -->
+            <div class="location-section mb-4">
+              <button 
+                class="btn btn-outline-primary w-100"
+                (click)="detectCurrentLocation()"
+                [disabled]="detectingLocation"
+              >
+                <i class="bi" [ngClass]="detectingLocation ? 'bi-arrow-repeat spin' : 'bi-crosshair'"></i>
+                {{ detectingLocation ? 'Detecting Location...' : 'Detect Current Location' }}
+              </button>
+              
+              <div *ngIf="locationDetected" class="alert alert-success mt-3 mb-0">
+                <i class="bi bi-check-circle me-2"></i>
+                Location detected successfully!
+              </div>
+            </div>
+
+            <!-- Manual Coordinates -->
+            <div class="coordinates-section">
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">
+                    <i class="bi bi-compass me-1"></i>
+                    Latitude
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    [(ngModel)]="workArea.lat"
+                    step="0.000001"
+                    placeholder="e.g., 28.6139"
+                  >
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">
+                    <i class="bi bi-compass me-1"></i>
+                    Longitude
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    [(ngModel)]="workArea.lng"
+                    step="0.000001"
+                    placeholder="e.g., 77.2090"
+                  >
+                </div>
+              </div>
+
+              <!-- Radius -->
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-circle me-1"></i>
+                  Work Radius (km)
+                </label>
+                <div class="input-group">
+                  <input 
+                    type="range" 
+                    class="form-range" 
+                    min="1" 
+                    max="50" 
+                    step="1"
+                    [(ngModel)]="workArea.radius"
+                  >
+                  <span class="radius-value">{{ workArea.radius }} km</span>
+                </div>
+                <div class="form-text">
+                  Complaints within this radius will be prioritized for you
+                </div>
+              </div>
+
+              <!-- Location Preview -->
+              <div class="location-preview">
+                <div class="preview-header">
+                  <i class="bi bi-pin-map me-2"></i>
+                  Location Preview
+                </div>
+                <div class="preview-body">
+                  <div class="preview-item">
+                    <span class="label">Latitude:</span>
+                    <span class="value">{{ workArea.lat || 'Not set' }}</span>
+                  </div>
+                  <div class="preview-item">
+                    <span class="label">Longitude:</span>
+                    <span class="value">{{ workArea.lng || 'Not set' }}</span>
+                  </div>
+                  <div class="preview-item">
+                    <span class="label">Coverage Area:</span>
+                    <span class="value">{{ workArea.radius }} km radius</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-12">
+        <div class="settings-actions">
+          <!-- Success Message -->
+          <div *ngIf="saveSuccess" class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            Settings saved successfully!
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="saveError" class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ saveError }}
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-3 justify-content-end">
+            <button 
+              class="btn btn-outline-secondary"
+              (click)="resetSettings()"
+              [disabled]="saving"
+            >
+              <i class="bi bi-arrow-counterclockwise me-2"></i>
+              Reset to Default
+            </button>
+            <button 
+              class="btn btn-primary"
+              (click)="saveSettings()"
+              [disabled]="saving"
+            >
+              <i class="bi" [ngClass]="saving ? 'bi-arrow-repeat spin' : 'bi-save'"></i>
+              {{ saving ? 'Saving...' : 'Save Settings' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="col-12 mt-4">
+        <div class="info-box">
+          <h6>
+            <i class="bi bi-lightbulb me-2"></i>
+            How Settings Affect Assignment
+          </h6>
+          <ul>
+            <li><strong>Specializations:</strong> You'll receive complaints matching your selected specializations with higher priority.</li>
+            <li><strong>Work Area:</strong> Complaints closer to your work area will be assigned to you first.</li>
+            <li><strong>Smart Assignment:</strong> The system considers workload, location, specialization, and performance when assigning complaints.</li>
+            <li><strong>Updates:</strong> Changes take effect immediately for new complaint assignments.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

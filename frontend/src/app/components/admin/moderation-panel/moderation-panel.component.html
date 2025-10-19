@@ -1,60 +1,462 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <h2 class="mb-4">Moderation Panel</h2>
-      
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+<div class="moderation-panel">
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/admin/dashboard" class="text-decoration-none">
+          <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Moderation Panel</li>
+    </ol>
+  </nav>
+  
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <h2 class="page-title">
+        <i class="bi bi-shield-check"></i> Moderation Panel
+      </h2>
+      <p class="page-subtitle">Review and manage content reports</p>
+    </div>
+    <button class="btn btn-primary" (click)="exportToCSV()" *ngIf="reports.length > 0" title="Export all reports to CSV">
+      <i class="bi bi-download me-2"></i>Export CSV
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div *ngIf="stats" class="stats-row mb-4">
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.totalReports || 0 }}</div>
+      <div class="stat-label">Total Reports</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-number">{{ stats.pending || 0 }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-number">{{ stats.inProgress || 0 }}</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card resolved">
+      <div class="stat-number">{{ stats.resolved || 0 }}</div>
+      <div class="stat-label">Resolved</div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close" (click)="success = ''"></button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card">
+    <h5 class="filters-title">
+      <i class="bi bi-funnel"></i> Filters & Search
+    </h5>
+    
+    <div class="row g-3">
+      <!-- Search -->
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="form-label">Search Reports</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search by title..."
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="onSearch()"
+          />
         </div>
       </div>
-      
-      <div *ngIf="!isLoading && pendingReports.length === 0" class="text-center py-5">
-        <i class="bi bi-shield-check display-1 text-success"></i>
-        <h3 class="mt-3">All Clear!</h3>
-        <p class="text-muted">No reports pending moderation.</p>
+
+      <!-- Status Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="statusFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
       </div>
-      
-      <div *ngIf="!isLoading && pendingReports.length > 0" class="row">
-        <div class="col-lg-6 mb-4" *ngFor="let report of pendingReports">
-          <div class="card border-warning">
-            <div class="card-header bg-warning text-dark">
-              <h5 class="mb-0">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                {{ report.title }}
-              </h5>
-            </div>
-            <div class="card-body">
-              <p class="card-text">{{ report.description }}</p>
-              <div class="row">
-                <div class="col-sm-6">
-                  <small class="text-muted">
-                    <strong>Reported by:</strong> {{ report.reportedBy }}
-                  </small>
-                </div>
-                <div class="col-sm-6">
-                  <small class="text-muted">
-                    <strong>Date:</strong> {{ report.createdAt | date:'short' }}
-                  </small>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="d-flex gap-2">
-                <button class="btn btn-success btn-sm" (click)="approveReport(report.id)">
-                  <i class="bi bi-check-lg me-1"></i>Approve
-                </button>
-                <button class="btn btn-danger btn-sm" (click)="rejectReport(report.id)">
-                  <i class="bi bi-x-lg me-1"></i>Reject
-                </button>
-                <button class="btn btn-outline-secondary btn-sm">
-                  <i class="bi bi-eye me-1"></i>View Details
-                </button>
-              </div>
-            </div>
-          </div>
+
+      <!-- Priority Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="priorityFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="typeFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Types</option>
+            <option value="Roads & Infrastructure">Roads</option>
+            <option value="Water & Sanitation">Water</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Garbage & Waste">Garbage</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-md-3">
+        <div class="form-group d-flex gap-2 align-items-end h-100">
+          <button class="btn btn-primary flex-grow-1" (click)="onSearch()">
+            <i class="bi bi-search"></i> Search
+          </button>
+          <button class="btn btn-secondary" (click)="loadReports()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading moderation reports...</p>
+  </div>
+
+  <!-- Bulk Actions Bar -->
+  <div *ngIf="selectedReports.size > 0" class="bulk-actions-bar mb-3">
+    <div class="bulk-info">
+      <strong>{{ selectedReports.size }} report(s) selected</strong>
+    </div>
+    <div class="bulk-buttons">
+      <button class="btn btn-success btn-sm" (click)="bulkApprove()">
+        <i class="bi bi-check-circle me-1"></i> Bulk Approve
+      </button>
+      <button class="btn btn-danger btn-sm" (click)="bulkReject()">
+        <i class="bi bi-x-circle me-1"></i> Bulk Reject
+      </button>
+      <button class="btn btn-secondary btn-sm" (click)="selectedReports.clear(); selectAll = false">
+        <i class="bi bi-x me-1"></i> Clear Selection
+      </button>
+    </div>
+  </div>
+
+  <!-- Reports Table -->
+  <div *ngIf="!loading" class="table-card">
+    <div *ngIf="reports.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h5>All Clear!</h5>
+      <p>No reports found matching your filters</p>
+    </div>
+
+    <div *ngIf="reports.length > 0" class="table-responsive">
+      <table class="reports-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;">
+              <input 
+                type="checkbox" 
+                class="form-check-input"
+                [checked]="selectAll"
+                (change)="toggleSelectAll()"
+              />
+            </th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Reported By</th>
+            <th>Created</th>
+            <th style="width: 180px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reports">
+            <td>
+              <input 
+                type="checkbox" 
+                class="form-check-input"
+                [checked]="selectedReports.has(report._id)"
+                (change)="toggleReportSelect(report._id)"
+              />
+            </td>
+            <td>
+              <strong>{{ report.title }}</strong>
+              <br/>
+              <small class="text-muted">{{ report.description | slice:0:50 }}...</small>
+            </td>
+            <td>
+              <span class="badge bg-info">
+                {{ report.type }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getPriorityBadgeClass(report.priority)">
+                <i [ngClass]="getPriorityIcon(report.priority)" class="bi me-1"></i>
+                {{ report.priority | titlecase }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getStatusBadgeClass(report.status)">
+                {{ report.status | titlecase }}
+              </span>
+            </td>
+            <td>
+              {{ report.createdBy?.name || 'Unknown' }}
+            </td>
+            <td>{{ report.createdAt | date:'short' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  class="btn btn-sm btn-outline-primary" 
+                  title="View Details"
+                  (click)="openDetailModal(report)"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-info" 
+                  title="Assign to Worker"
+                  (click)="openAssignModal(report)"
+                >
+                  <i class="bi bi-person-plus"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-success" 
+                  title="Approve"
+                  (click)="openActionModal(report)"
+                  [disabled]="report.status !== 'pending'"
+                >
+                  <i class="bi bi-check"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-danger" 
+                  title="Reject"
+                  (click)="openActionModal(report)"
+                  [disabled]="report.status !== 'pending'"
+                >
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="reports.length > 0" class="pagination-section">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * limit + 1 }} to {{ Math.min(currentPage * limit, total) }} of {{ total }}
+      </div>
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+              Previous
+            </button>
+          </li>
+          <li class="page-item active">
+            <span class="page-link">Page {{ currentPage }} of {{ totalPages }}</span>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div *ngIf="showDetailModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Report Details</h5>
+          <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedReport">
+          <div class="detail-section">
+            <h6 class="section-title">Report Information</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Title:</strong> {{ selectedReport.title }}</p>
+                <p><strong>Type:</strong> {{ selectedReport.reportType | titlecase }}</p>
+                <p><strong>Reason:</strong> 
+                  <span class="badge" [ngClass]="getReasonBadgeClass(selectedReport.reason)">
+                    {{ selectedReport.reason }}
+                  </span>
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Severity:</strong> 
+                  <span class="badge" [ngClass]="getSeverityBadgeClass(selectedReport.severity)">
+                    {{ selectedReport.severity }}
+                  </span>
+                </p>
+                <p><strong>Status:</strong> 
+                  <span class="badge" [ngClass]="getStatusBadgeClass(selectedReport.status)">
+                    {{ selectedReport.status }}
+                  </span>
+                </p>
+                <p><strong>Created:</strong> {{ selectedReport.createdAt | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h6 class="section-title">Description</h6>
+            <p>{{ selectedReport.description }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h6 class="section-title">Report Metadata</h6>
+            <p><strong>Reported By:</strong> {{ selectedReport.reportedBy?.name }} ({{ selectedReport.reportedBy?.email }})</p>
+            <p *ngIf="selectedReport.reviewedBy">
+              <strong>Reviewed By:</strong> {{ selectedReport.reviewedBy?.name }}
+            </p>
+            <p *ngIf="selectedReport.moderatorNotes">
+              <strong>Moderator Notes:</strong> {{ selectedReport.moderatorNotes }}
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Modal -->
+  <div *ngIf="showActionModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Moderation Action</h5>
+          <button type="button" class="btn-close" (click)="closeActionModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3"><strong>Report:</strong> {{ selectedReport?.title }}</p>
+          <form [formGroup]="actionForm">
+            <div class="form-group mb-3">
+              <label class="form-label">Action</label>
+              <select class="form-select" formControlName="action">
+                <option value="">Select action...</option>
+                <option value="none">No Action</option>
+                <option value="warning">Send Warning</option>
+                <option value="suspend">Suspend User</option>
+                <option value="delete">Delete Content</option>
+                <option value="archive">Archive Report</option>
+              </select>
+              <div *ngIf="actionForm.get('action')?.invalid && actionForm.get('action')?.touched" class="invalid-feedback d-block">
+                Action is required
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Moderator Notes</label>
+              <textarea class="form-control" rows="4" formControlName="moderatorNotes" placeholder="Add notes about this moderation decision..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeActionModal()">Cancel</button>
+          <button type="button" class="btn btn-success" (click)="approveReport()" [disabled]="actionForm.invalid">
+            <i class="bi bi-check"></i> Approve & Action
+          </button>
+          <button type="button" class="btn btn-danger" (click)="rejectReport()" [disabled]="!actionForm.get('moderatorNotes')?.value">
+            <i class="bi bi-x"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Worker Assignment Modal -->
+  <div class="modal fade" [class.show]="showAssignModal" [style.display]="showAssignModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-person-plus me-2"></i>
+            Assign to Worker
+          </h5>
+          <button type="button" class="btn-close" (click)="closeAssignModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3">
+            <strong>Complaint:</strong> {{ selectedReport?.title }}
+          </p>
+          <p class="text-muted mb-3" *ngIf="selectedReport?.assignedTo">
+            <i class="bi bi-info-circle me-1"></i>
+            Currently assigned to: <strong>{{ selectedReport.assignedTo?.name || 'Unknown' }}</strong>
+          </p>
+          
+          <div class="form-group">
+            <label class="form-label">Select Worker</label>
+            <select class="form-select" [(ngModel)]="selectedWorkerId">
+              <option value="">Choose a worker...</option>
+              <option *ngFor="let worker of availableWorkers" [value]="worker._id">
+                {{ worker.name }} ({{ worker.email }})
+              </option>
+            </select>
+            <div *ngIf="availableWorkers.length === 0" class="text-warning mt-2">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              No workers available. Please create worker accounts first.
+            </div>
+          </div>
+          
+          <div class="alert alert-info mt-3 mb-0" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            <small>Assigning this complaint will automatically set its status to "In Progress".</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAssignModal()">Cancel</button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="assignToWorker()"
+            [disabled]="!selectedWorkerId || availableWorkers.length === 0"
+          >
+            <i class="bi bi-check me-1"></i> Assign Worker
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade" [class.show]="showAssignModal" *ngIf="showAssignModal"></div>
 </div>

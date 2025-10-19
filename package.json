@@ -4,8 +4,11 @@
   "description": "A MEAN stack application for civic issue reporting and management",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js",
+    "start": "node --no-deprecation backend/server.js",
     "dev": "nodemon backend/server.js",
+    "frontend": "cd frontend && npm start",
+    "backend": "node --no-deprecation backend/server.js",
+    "start:all": "start-all.bat",
     "build": "cd frontend && npm install && npm run build",
     "deploy": "npm install && npm run build && npm start"
   },
@@ -24,6 +27,7 @@
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/forms": "^20.3.0",
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
@@ -35,6 +39,7 @@
     "twilio": "^5.10.3"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.10"
   }
 }

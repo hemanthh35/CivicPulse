@@ -16,8 +16,77 @@
           {{ successMessage }}
           <button type="button" class="btn-close" (click)="successMessage = ''"></button>
         </div>
+
+        <div *ngIf="analyzingImage" class="alert alert-info" role="alert">
+          <div class="d-flex align-items-center">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            <strong>🤖 AI is analyzing your image...</strong>
+            <span class="ms-2">This may take a few seconds</span>
+          </div>
+        </div>
+
+        <div *ngIf="aiSuggestion" class="alert alert-success" role="alert">
+          <i class="bi bi-robot me-2"></i>{{ aiSuggestion }}
+        </div>
         
         <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
+          
+          <!-- AI IMAGE UPLOAD -->
+          <div class="mb-4 ai-upload-section">
+            <div class="card shadow-sm">
+              <div class="card-header text-white">
+                <h5 class="mb-0">
+                  <i class="bi bi-cloud-upload-fill me-2"></i>Smart Upload - AI Auto-Fill
+                </h5>
+              </div>
+              <div class="card-body">
+                <!-- Normal Upload State -->
+                <div class="text-center py-4" *ngIf="!analyzingImage">
+                  <i class="bi bi-robot display-3 mb-3"></i>
+                  <h5>Upload a Photo & Let AI Do the Work</h5>
+                  <p class="text-muted mb-4">Our AI will automatically analyze the image and fill out the form for you</p>
+                  
+                  <div class="upload-container position-relative">
+                    <input type="file" class="form-control" id="images" 
+                           multiple accept="image/*" 
+                           (change)="onFileSelect($event)">
+                  </div>
+                  
+                  <small class="form-text text-muted d-block mt-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Supported formats: JPG, PNG, JPEG • AI will detect issue type, description & location
+                  </small>
+                </div>
+                
+                <!-- AI Analyzing State -->
+                <div class="text-center py-5" *ngIf="analyzingImage">
+                  <div class="ai-loading-overlay">
+                    <div class="ai-loader mb-4">
+                      <div class="spinner-border text-primary" role="status" style="width: 3.5rem; height: 3.5rem;"></div>
+                    </div>
+                    <h5 class="fw-bold mb-2">🤖 AI is analyzing your image...</h5>
+                    <p class="text-muted mb-4">This may take a few seconds</p>
+                    <div class="progress mx-auto" style="width: 70%; height: 8px;">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                           style="width: 100%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Image Previews -->
+                <div class="image-previews mt-3 d-flex flex-wrap gap-2" *ngIf="previewUrls.length > 0">
+                  <div class="position-relative preview-item" *ngFor="let preview of previewUrls; let i = index">
+                    <img [src]="preview" class="img-thumbnail shadow-sm" alt="Preview">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
+                      (click)="removeImage(i)" title="Remove">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Title -->
           <div class="mb-3">
             <label for="title" class="form-label">Issue Title <span class="text-danger">*</span></label>
@@ -63,15 +132,17 @@
           </div>
           
           <!-- Location -->
-          <div class="card mb-3 bg-light">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <span>Location Details <span class="text-danger">*</span></span>
-              <button type="button" class="btn btn-sm btn-outline-primary" 
+          <div class="card mb-3 location-card">
+            <div class="card-header text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="bi bi-geo-alt-fill me-2"></i>Location Details <span class="text-white">*</span>
+              </h5>
+              <button type="button" class="btn btn-sm btn-light" 
                       (click)="getCurrentLocation()" 
                       [disabled]="fetchingLocation">
-                <span class="spinner-border spinner-border-sm me-1" *ngIf="fetchingLocation"></span>
-                <i class="bi bi-geo-alt-fill me-1" *ngIf="!fetchingLocation"></i>
-                {{ fetchingLocation ? 'Getting Location...' : 'Auto-Fill with Current Location' }}
+                <span class="spinner-border spinner-border-sm me-2" *ngIf="fetchingLocation"></span>
+                <i class="bi bi-crosshair me-2" *ngIf="!fetchingLocation"></i>
+                {{ fetchingLocation ? 'Getting Location...' : 'Use My Current Location' }}
               </button>
             </div>
             <div class="card-body" formGroupName="location">
@@ -161,36 +232,22 @@
           
           <!-- Priority -->
           <div class="mb-3">
-            <label class="form-label d-block">Priority</label>
+            <label class="form-label d-block">Priority <span class="text-danger">*</span></label>
             <div class="btn-group" role="group" aria-label="Priority selection">
               <input type="radio" class="btn-check" formControlName="priority" id="lowPriority" value="low">
-              <label class="btn btn-outline-secondary" for="lowPriority">Low</label>
+              <label class="btn btn-outline-secondary" for="lowPriority">
+                <i class="bi bi-dash-circle me-1"></i>Low
+              </label>
               
               <input type="radio" class="btn-check" formControlName="priority" id="mediumPriority" value="medium">
-              <label class="btn btn-outline-secondary" for="mediumPriority">Medium</label>
+              <label class="btn btn-outline-warning" for="mediumPriority">
+                <i class="bi bi-exclamation-circle me-1"></i>Medium
+              </label>
               
               <input type="radio" class="btn-check" formControlName="priority" id="highPriority" value="high">
-              <label class="btn btn-outline-secondary" for="highPriority">High</label>
-            </div>
-          </div>
-          
-          <!-- Image Upload -->
-          <div class="mb-4">
-            <label for="images" class="form-label">Upload Images (Optional)</label>
-            <input type="file" class="form-control" id="images" multiple accept="image/*" (change)="onFileSelect($event)">
-            <small class="form-text text-muted">
-              Upload up to 5 images to help describe the issue (JPEG, PNG only)
-            </small>
-            
-            <!-- Image Previews -->
-            <div class="image-previews mt-2 d-flex flex-wrap" *ngIf="previewUrls.length > 0">
-              <div class="position-relative me-2 mb-2" *ngFor="let preview of previewUrls; let i = index">
-                <img [src]="preview" class="img-thumbnail" style="height: 100px; width: auto;">
-                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" 
-                  (click)="removeImage(i)" title="Remove image">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
+              <label class="btn btn-outline-danger" for="highPriority">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>High
+              </label>
             </div>
           </div>
           

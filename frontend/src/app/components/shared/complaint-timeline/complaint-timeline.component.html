@@ -1,0 +1,73 @@
+<div class="timeline-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Loading timeline...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+
+  <!-- Timeline -->
+  <div *ngIf="!loading && !error && timeline.length > 0" class="timeline">
+    <div *ngFor="let event of timeline; let i = index" class="timeline-item">
+      <div class="timeline-marker">
+        <i class="bi" [ngClass]="getEventIcon(event)"></i>
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-header">
+          <div *ngIf="event.type === 'status'">
+            <strong>Status Changed</strong>
+            <span [ngClass]="getStatusBadgeClass(event.status)" class="ms-2">
+              {{ event.status }}
+            </span>
+          </div>
+          <div *ngIf="event.type === 'assignment'">
+            <strong>Assigned to Worker</strong>
+            <span class="badge bg-primary ms-2">
+              {{ event.assignedTo?.name || 'Worker' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="timeline-body">
+          <div *ngIf="event.type === 'status'">
+            <p class="text-muted mb-1">
+              <i class="bi bi-person-circle me-1"></i>
+              Changed by: {{ event.user?.name || 'System' }} ({{ event.user?.role || 'system' }})
+            </p>
+          </div>
+          <div *ngIf="event.type === 'assignment'">
+            <p class="text-muted mb-1">
+              <i class="bi bi-person-circle me-1"></i>
+              Assigned by: {{ event.assignedBy?.name || 'System' }} ({{ event.assignedBy?.role || 'system' }})
+            </p>
+            <p class="text-muted mb-1">
+              <i class="bi bi-envelope me-1"></i>
+              Worker: {{ event.assignedTo?.email || 'N/A' }}
+            </p>
+          </div>
+          
+          <p *ngIf="event.comment" class="comment-text">
+            <i class="bi bi-chat-left-text me-1"></i>{{ event.comment }}
+          </p>
+          
+          <small class="text-muted">
+            <i class="bi bi-clock me-1"></i>
+            {{ event.timestamp | date: 'short' }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && timeline.length === 0" class="text-center py-4">
+    <i class="bi bi-clock-history display-4 text-muted"></i>
+    <p class="mt-2 text-muted">No timeline history available</p>
+  </div>
+</div>

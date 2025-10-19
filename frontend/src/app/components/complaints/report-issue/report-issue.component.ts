@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { ComplaintsService } from '../../../services/complaints.service';
 import { AuthService } from '../../../services/auth.service';
+import { GeminiService } from '../../../services/gemini.service';
 
 @Component({
   selector: 'app-report-issue',
@@ -30,6 +31,8 @@ export class ReportIssueComponent implements OnInit {
   ];
   uploadedImages: File[] = [];
   previewUrls: string[] = [];
+  analyzingImage = false;
+  aiSuggestion = '';
   
   // Location-related properties
   fetchingLocation = false;
@@ -41,6 +44,7 @@ export class ReportIssueComponent implements OnInit {
     private formBuilder: FormBuilder,
     private complaintsService: ComplaintsService,
     private authService: AuthService,
+    private geminiService: GeminiService,
     private router: Router
   ) {
     this.reportForm = this.formBuilder.group({
@@ -90,8 +94,58 @@ export class ReportIssueComponent implements OnInit {
           this.previewUrls.push(reader.result as string);
         };
         reader.readAsDataURL(file);
+
+        // Auto-analyze first image with Gemini AI
+        if (this.uploadedImages.length === 1) {
+          this.analyzeImageWithAI(file);
+        }
       }
     }
+  }
+
+  analyzeImageWithAI(file: File): void {
+    this.analyzingImage = true;
+    this.aiSuggestion = '';
+    this.errorMessage = '';
+
+    console.log('🤖 Sending image to Gemini AI for analysis...');
+
+    this.geminiService.analyzeImage(file).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          console.log('✅ AI Analysis received:', response.data);
+          
+          // Auto-fill the form with AI suggestions
+          this.reportForm.patchValue({
+            title: response.data.title,
+            category: response.data.category,
+            description: response.data.description,
+            priority: response.data.priority
+          });
+
+          this.aiSuggestion = 'Form auto-filled from image. Please review and edit if needed.';
+          this.successMessage = 'Image analyzed successfully. Form fields updated.';
+          
+          setTimeout(() => {
+            this.successMessage = '';
+            this.aiSuggestion = '';
+          }, 5000);
+        }
+        this.analyzingImage = false;
+      },
+      error: (error) => {
+        console.error('❌ AI Analysis failed:', error);
+        this.analyzingImage = false;
+        
+        if (error.status === 503) {
+          this.errorMessage = 'AI service not configured. Please fill the form manually.';
+        } else {
+          this.errorMessage = 'AI analysis failed. Please fill the form manually.';
+        }
+        
+        setTimeout(() => this.errorMessage = '', 4000);
+      }
+    });
   }
 
   removeImage(index: number): void {

@@ -1,0 +1,128 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h2 class="display-5 mb-2">
+        <i class="bi bi-trophy-fill text-warning me-2"></i>
+        Community Leaderboard
+      </h2>
+      <p class="text-muted">Celebrating our most active citizens and dedicated workers</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading leaderboard...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading" class="row">
+    <!-- Top Citizens -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-gradient-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-people-fill me-2"></i>
+            Top Citizens
+          </h4>
+          <small>Most Reports Submitted</small>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="topCitizens.length === 0" class="text-center py-5 text-muted">
+            <i class="bi bi-inbox display-4"></i>
+            <p class="mt-3">No citizen data available yet</p>
+          </div>
+          
+          <div class="list-group list-group-flush">
+            <div *ngFor="let citizen of topCitizens" 
+                 class="list-group-item list-group-item-action leaderboard-item">
+              <div class="d-flex align-items-center">
+                <div class="rank-badge me-3" [ngClass]="getRankBadgeClass(citizen.rank)">
+                  <i class="bi" [ngClass]="getRankIcon(citizen.rank)"></i>
+                  <span class="rank-number">{{ citizen.rank }}</span>
+                </div>
+                
+                <div class="flex-grow-1">
+                  <h6 class="mb-1 fw-bold">{{ citizen.name }}</h6>
+                  <small class="text-muted">
+                    <i class="bi bi-envelope me-1"></i>{{ citizen.email }}
+                  </small>
+                </div>
+                
+                <div class="text-end">
+                  <div class="count-badge">
+                    <span class="count-number">{{ citizen.count }}</span>
+                    <small class="d-block text-muted">reports</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Workers -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-gradient-success text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-tools me-2"></i>
+            Top Workers
+          </h4>
+          <small>Most Issues Resolved</small>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="topWorkers.length === 0" class="text-center py-5 text-muted">
+            <i class="bi bi-inbox display-4"></i>
+            <p class="mt-3">No worker data available yet</p>
+          </div>
+          
+          <div class="list-group list-group-flush">
+            <div *ngFor="let worker of topWorkers" 
+                 class="list-group-item list-group-item-action leaderboard-item">
+              <div class="d-flex align-items-center">
+                <div class="rank-badge me-3" [ngClass]="getRankBadgeClass(worker.rank)">
+                  <i class="bi" [ngClass]="getRankIcon(worker.rank)"></i>
+                  <span class="rank-number">{{ worker.rank }}</span>
+                </div>
+                
+                <div class="flex-grow-1">
+                  <h6 class="mb-1 fw-bold">{{ worker.name }}</h6>
+                  <small class="text-muted">
+                    <i class="bi bi-envelope me-1"></i>{{ worker.email }}
+                  </small>
+                </div>
+                
+                <div class="text-end">
+                  <div class="count-badge count-badge-success">
+                    <span class="count-number">{{ worker.count }}</span>
+                    <small class="d-block text-muted">resolved</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Summary -->
+  <div class="row mt-4" *ngIf="!isLoading && (topCitizens.length > 0 || topWorkers.length > 0)">
+    <div class="col-12">
+      <div class="card border-0 bg-light">
+        <div class="card-body text-center">
+          <p class="mb-0 text-muted">
+            <i class="bi bi-info-circle me-2"></i>
+            Rankings are updated in real-time based on community activity
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

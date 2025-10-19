@@ -11,6 +11,7 @@ export interface User {
   travelFlag?: boolean;
   points?: number;
   badges?: string[];
+  twoFactorEnabled?: boolean;
 }
 
 export interface AuthResponse {

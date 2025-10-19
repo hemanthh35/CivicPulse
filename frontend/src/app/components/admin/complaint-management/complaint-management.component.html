@@ -1,67 +1,512 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <h2 class="mb-4">Complaint Management</h2>
-      
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+<div class="complaint-management">
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/admin/dashboard" class="text-decoration-none">
+          <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Complaint Management</li>
+    </ol>
+  </nav>
+  
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <h2 class="page-title">
+        <i class="bi bi-flag-fill"></i> Complaint Management
+      </h2>
+      <p class="page-subtitle">Manage, filter, and resolve citizen complaints</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-item">
+        <span class="stat-label">Total Complaints:</span>
+        <span class="stat-value">{{ total }}</span>
+      </div>
+      <button class="btn btn-primary" (click)="exportToCSV()" *ngIf="complaints.length > 0" title="Export all complaints to CSV">
+        <i class="bi bi-download me-2"></i>Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close" (click)="success = ''"></button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card">
+    <h5 class="filters-title">
+      <i class="bi bi-funnel"></i> Filters & Search
+    </h5>
+    
+    <div class="row g-3">
+      <!-- Search -->
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="form-label">Search by Title/Description</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search complaints..."
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="onSearch()"
+          />
         </div>
       </div>
-      
-      <div *ngIf="!isLoading" class="card">
-        <div class="card-header">
-          <h5 class="mb-0">All Complaints</h5>
+
+      <!-- Status Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="statusFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Category</th>
-                  <th>Location</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let complaint of complaints">
-                  <td>{{ complaint.title }}</td>
-                  <td>{{ complaint.category }}</td>
-                  <td>{{ complaint.location?.city }}</td>
-                  <td>
-                    <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
-                      {{ complaint.status | titlecase }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="badge" 
-                          [ngClass]="{
-                            'bg-success': complaint.priority === 'low',
-                            'bg-warning': complaint.priority === 'medium', 
-                            'bg-danger': complaint.priority === 'high'
-                          }">
-                      {{ complaint.priority | titlecase }}
-                    </span>
-                  </td>
-                  <td>{{ complaint.createdAt | date:'short' }}</td>
-                  <td>
-                    <div class="btn-group btn-group-sm">
-                      <button class="btn btn-outline-primary" title="View Details">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <button class="btn btn-outline-secondary" title="Assign Worker">
-                        <i class="bi bi-person-plus"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="priorityFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-md-2">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select 
+            class="form-select"
+            [(ngModel)]="typeFilter"
+            (change)="onFilterChange()"
+          >
+            <option value="">All Types</option>
+            <option value="Road">Road</option>
+            <option value="Water">Water</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Sanitation">Sanitation</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-md-3">
+        <div class="form-group d-flex gap-2 align-items-end h-100">
+          <button class="btn btn-primary flex-grow-1" (click)="onSearch()">
+            <i class="bi bi-search"></i> Search
+          </button>
+          <button class="btn btn-secondary" (click)="loadComplaints()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div *ngIf="selectedComplaints.size > 0" class="bulk-actions mt-3">
+      <p class="text-muted mb-2">
+        <strong>{{ selectedComplaints.size }}</strong> complaint(s) selected
+      </p>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-warning" (click)="bulkUpdateStatus('In Progress')">
+          <i class="bi bi-play-circle"></i> Mark In Progress
+        </button>
+        <button class="btn btn-sm btn-success" (click)="bulkUpdateStatus('Resolved')">
+          <i class="bi bi-check-circle"></i> Mark Resolved
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkUpdateStatus('Rejected')">
+          <i class="bi bi-x-circle"></i> Mark Rejected
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading complaints...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="table-card">
+    <div *ngIf="complaints.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h5>No Complaints Found</h5>
+      <p>Try adjusting your filters or search terms</p>
+    </div>
+
+    <div *ngIf="complaints.length > 0" class="table-responsive">
+      <table class="complaints-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;">
+              <input 
+                type="checkbox" 
+                class="form-check-input"
+                [checked]="selectAll"
+                (change)="toggleSelectAll()"
+              />
+            </th>
+            <th (click)="onSortChange('title')" class="sortable">
+              Title 
+              <i [ngClass]="sortBy === 'title' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
+            </th>
+            <th>Type</th>
+            <th (click)="onSortChange('status')" class="sortable">
+              Status
+              <i [ngClass]="sortBy === 'status' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
+            </th>
+            <th (click)="onSortChange('priority')" class="sortable">
+              Priority
+              <i [ngClass]="sortBy === 'priority' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
+            </th>
+            <th>Assigned To</th>
+            <th (click)="onSortChange('createdAt')" class="sortable">
+              Created
+              <i [ngClass]="sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
+            </th>
+            <th style="width: 180px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let complaint of complaints">
+            <td>
+              <input 
+                type="checkbox" 
+                class="form-check-input"
+                [checked]="selectedComplaints.has(complaint._id)"
+                (change)="toggleComplaintSelect(complaint._id)"
+              />
+            </td>
+            <td>
+              <strong>{{ complaint.title }}</strong>
+              <br/>
+              <small class="text-muted">{{ complaint.description | slice:0:50 }}...</small>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark">{{ complaint.type }}</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
+                <i [ngClass]="getStatusIcon(complaint.status)" class="bi me-1"></i>
+                {{ complaint.status }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getPriorityBadgeClass(complaint.priority)">
+                {{ complaint.priority | titlecase }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="complaint.assignedTo" class="badge bg-success">
+                {{ complaint.assignedTo?.name || 'Worker' }}
+              </span>
+              <span *ngIf="!complaint.assignedTo" class="badge bg-light text-dark">
+                Unassigned
+              </span>
+            </td>
+            <td>{{ complaint.createdAt | date:'short' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  class="btn btn-sm btn-outline-primary" 
+                  title="View Details"
+                  (click)="openDetailModal(complaint)"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-info" 
+                  title="Assign Worker"
+                  (click)="openAssignModal(complaint)"
+                >
+                  <i class="bi bi-person-plus"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-warning" 
+                  title="Update Status"
+                  (click)="openUpdateStatusModal(complaint)"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-danger" 
+                  title="Delete"
+                  (click)="deleteComplaint(complaint)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="complaints.length > 0" class="pagination-section">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * limit + 1 }} to {{ Math.min(currentPage * limit, total) }} of {{ total }}
+      </div>
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+              Previous
+            </button>
+          </li>
+          <li class="page-item active">
+            <span class="page-link">Page {{ currentPage }} of {{ totalPages }}</span>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div *ngIf="showDetailModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Complaint Details</h5>
+          <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedComplaint">
+          <div class="detail-section">
+            <h6 class="section-title">Basic Information</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Title:</strong> {{ selectedComplaint.title }}</p>
+                <p><strong>Type:</strong> {{ selectedComplaint.type }}</p>
+                <p><strong>Priority:</strong> 
+                  <span class="badge" [ngClass]="getPriorityBadgeClass(selectedComplaint.priority)">
+                    {{ selectedComplaint.priority }}
+                  </span>
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Status:</strong> 
+                  <span class="badge" [ngClass]="getStatusBadgeClass(selectedComplaint.status)">
+                    {{ selectedComplaint.status }}
+                  </span>
+                </p>
+                <p><strong>Created:</strong> {{ selectedComplaint.createdAt | date:'medium' }}</p>
+                <p><strong>Updated:</strong> {{ selectedComplaint.updatedAt | date:'medium' }}</p>
+              </div>
+            </div>
           </div>
+
+          <div class="detail-section">
+            <h6 class="section-title">Description</h6>
+            <p>{{ selectedComplaint.description }}</p>
+          </div>
+
+          <!-- Image/Media Section -->
+          <div class="detail-section" *ngIf="selectedComplaint.mediaURL || selectedComplaint.mediaURLs?.length">
+            <h6 class="section-title">
+              <i class="bi bi-image me-2"></i>Attached Media
+            </h6>
+            <div class="media-gallery">
+              <!-- Single Image -->
+              <div *ngIf="selectedComplaint.mediaURL" class="media-item">
+                <img 
+                  [src]="getImageUrl(selectedComplaint.mediaURL)" 
+                  alt="Complaint Image"
+                  class="img-fluid rounded complaint-image"
+                  (error)="onImageError($event)"
+                  (click)="openImageModal(getImageUrl(selectedComplaint.mediaURL))"
+                />
+              </div>
+              <!-- Multiple Images -->
+              <div *ngFor="let mediaUrl of selectedComplaint.mediaURLs" class="media-item">
+                <img 
+                  [src]="getImageUrl(mediaUrl)" 
+                  alt="Complaint Image"
+                  class="img-fluid rounded complaint-image"
+                  (error)="onImageError($event)"
+                  (click)="openImageModal(getImageUrl(mediaUrl))"
+                />
+              </div>
+            </div>
+            <p class="text-muted small mt-2">
+              <i class="bi bi-info-circle me-1"></i>Click image to view full size
+            </p>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedComplaint.location">
+            <h6 class="section-title">Location</h6>
+            <p>{{ selectedComplaint.location.address }} <br/>
+              {{ selectedComplaint.location.city }}, {{ selectedComplaint.location.state }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h6 class="section-title">People Involved</h6>
+            <p *ngIf="selectedComplaint.createdBy">
+              <strong>Reported By:</strong> {{ selectedComplaint.createdBy?.name }} 
+              ({{ selectedComplaint.createdBy?.email }})
+            </p>
+            <p *ngIf="selectedComplaint.assignedTo">
+              <strong>Assigned To:</strong> {{ selectedComplaint.assignedTo?.name }}
+            </p>
+            <p *ngIf="!selectedComplaint.assignedTo" class="text-muted">
+              <em>Not yet assigned</em>
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Modal -->
+  <div *ngIf="showAssignModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign to Worker</h5>
+          <button type="button" class="btn-close" (click)="closeAssignModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3"><strong>Complaint:</strong> {{ selectedComplaint?.title }}</p>
+          <form [formGroup]="assignForm">
+            <div class="form-group">
+              <label class="form-label">Select Worker</label>
+              <select class="form-select" formControlName="assignedTo">
+                <option value="">Choose a worker...</option>
+                <option *ngFor="let worker of availableWorkers" [value]="worker._id">
+                  {{ worker.name }} - {{ worker.email }}
+                </option>
+              </select>
+              <div *ngIf="assignForm.get('assignedTo')?.invalid && assignForm.get('assignedTo')?.touched" class="invalid-feedback d-block">
+                Worker selection is required
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAssignModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="assignComplaint()" [disabled]="assignForm.invalid">
+            <i class="bi bi-check"></i> Assign
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Status Modal -->
+  <div *ngIf="showUpdateStatusModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Complaint Status</h5>
+          <button type="button" class="btn-close" (click)="closeUpdateStatusModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3"><strong>Complaint:</strong> {{ selectedComplaint?.title }}</p>
+          <form [formGroup]="updateStatusForm">
+            <div class="form-group mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" formControlName="status">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label">Priority</label>
+              <select class="form-select" formControlName="priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Internal Notes (Optional)</label>
+              <textarea class="form-control" rows="3" formControlName="notes" placeholder="Add any notes..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeUpdateStatusModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="updateStatus()" [disabled]="updateStatusForm.invalid">
+            <i class="bi bi-check"></i> Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Preview Modal -->
+  <div *ngIf="showImageModal" class="modal fade show d-block" role="dialog">
+    <div class="modal-backdrop fade show" (click)="closeImageModal()"></div>
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-image me-2"></i>Complaint Image
+          </h5>
+          <button type="button" class="btn-close" (click)="closeImageModal()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img 
+            [src]="selectedImageUrl" 
+            alt="Complaint Image Full Size"
+            class="img-fluid rounded"
+            style="max-height: 70vh;"
+          />
+        </div>
+        <div class="modal-footer">
+          <a 
+            [href]="selectedImageUrl" 
+            download 
+            class="btn btn-primary"
+            target="_blank"
+          >
+            <i class="bi bi-download me-2"></i>Download Image
+          </a>
+          <button type="button" class="btn btn-secondary" (click)="closeImageModal()">Close</button>
         </div>
       </div>
     </div>

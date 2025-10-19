@@ -1,0 +1,112 @@
+<div class="otp-container">
+  <div class="otp-card">
+    <!-- Header -->
+    <div class="otp-header">
+      <div class="icon-container">
+        <i class="bi bi-shield-lock"></i>
+      </div>
+      <h2>Two-Factor Authentication</h2>
+      <p class="subtitle">Enter the OTP sent to your email</p>
+    </div>
+
+    <!-- OTP Input Section -->
+    <div class="otp-body">
+      <!-- Alert Messages -->
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ errorMessage }}
+      </div>
+
+      <div class="alert alert-success" *ngIf="successMessage">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ successMessage }}
+      </div>
+
+      <!-- OTP Info Box -->
+      <div class="info-box">
+        <i class="bi bi-envelope-fill"></i>
+        <p>We've sent a 6-digit verification code to your registered email address.</p>
+      </div>
+
+      <!-- OTP Input -->
+      <div class="form-group">
+        <label for="otp" class="form-label">Enter OTP Code</label>
+        <input
+          type="text"
+          id="otp"
+          class="form-control otp-input"
+          [(ngModel)]="otp"
+          (input)="onOTPInput($event)"
+          placeholder="000000"
+          maxlength="6"
+          autocomplete="off"
+          [disabled]="loading"
+        />
+        <small class="form-text text-muted">
+          <i class="bi bi-clock"></i> OTP is valid for 10 minutes
+        </small>
+      </div>
+
+      <!-- Verify Button -->
+      <button
+        type="button"
+        class="btn btn-primary btn-lg w-100 mb-3"
+        (click)="verifyOTP()"
+        [disabled]="loading || otp.length !== 6"
+      >
+        <span *ngIf="!loading">
+          <i class="bi bi-check-circle me-2"></i>
+          Verify & Continue
+        </span>
+        <span *ngIf="loading">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Verifying...
+        </span>
+      </button>
+
+      <!-- Resend OTP Section -->
+      <div class="resend-section">
+        <p class="text-muted mb-2">Didn't receive the code?</p>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="resendOTP()"
+          [disabled]="!canResend || resendingOTP"
+        >
+          <span *ngIf="!resendingOTP && !canResend">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            Resend OTP ({{ countdown }}s)
+          </span>
+          <span *ngIf="!resendingOTP && canResend">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            Resend OTP
+          </span>
+          <span *ngIf="resendingOTP">
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            Sending...
+          </span>
+        </button>
+      </div>
+
+      <!-- Security Tips -->
+      <div class="security-tips">
+        <h6><i class="bi bi-info-circle me-2"></i>Security Tips</h6>
+        <ul>
+          <li>Never share your OTP with anyone</li>
+          <li>The code expires in 10 minutes</li>
+          <li>If you didn't request this, contact support</li>
+        </ul>
+      </div>
+
+      <!-- Cancel Button -->
+      <button
+        type="button"
+        class="btn btn-link w-100 text-center"
+        (click)="cancelLogin()"
+      >
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Login
+      </button>
+    </div>
+  </div>
+</div>

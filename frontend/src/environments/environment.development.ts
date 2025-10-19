@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000'
+  apiUrl: '/api'  // Using proxy configuration to route to http://localhost:5000
 };

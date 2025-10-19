@@ -30,8 +30,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Reset login status
-    this.authService.logout();
+    // Check if user is already logged in
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
     
     // Get return URL from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
@@ -51,7 +54,18 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(this.f['email'].value, this.f['password'].value)
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
+          // Check if 2FA is required (for workers)
+          if (response.require2FA && response.userId) {
+            // Redirect to OTP verification page
+            this.router.navigate(['/verify-otp'], {
+              state: { userId: response.userId }
+            });
+            this.isSubmitting = false;
+            return;
+          }
+
+          // Normal login flow (for non-workers)
           this.authService.storeToken(response.token);
           this.authService.storeUser(response.user);
           this.router.navigate([this.returnUrl]);

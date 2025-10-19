@@ -1,105 +1,188 @@
-<div class="container-fluid">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" [routerLink]="['/home']">
-        <i class="bi bi-geo-alt-fill"></i> CivicPulse
+<div class="app-wrapper">
+  <!-- Mobile Menu Backdrop -->
+  <div class="mobile-backdrop" [class.show]="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+  
+  <nav class="modern-navbar">
+    <div class="navbar-container">
+      <!-- Logo -->
+      <a class="navbar-brand" [routerLink]="['/home']" (click)="closeMobileMenu()">
+        <div class="brand-logo">
+          <i class="bi bi-geo-alt-fill"></i>
+        </div>
+        <span class="brand-text">
+          <span class="brand-name">CivicPulse</span>
+          <span class="brand-tagline">Building Better Communities</span>
+        </span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler" type="button" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+        <span class="toggler-icon" [class.active]="mobileMenuOpen"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
+
+      <!-- Navigation Links -->
+      <div class="navbar-menu" [class.mobile-open]="mobileMenuOpen">
+        <ul class="nav-links">
           <!-- Public Links -->
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active">Home</a>
+            <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active" (click)="closeMobileMenu()">
+              <i class="bi bi-house-door"></i>
+              <span>Home</span>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/about']" routerLinkActive="active">About</a>
+            <a class="nav-link" [routerLink]="['/about']" routerLinkActive="active" (click)="closeMobileMenu()">
+              <i class="bi bi-info-circle"></i>
+              <span>About</span>
+            </a>
           </li>
           
           <ng-container *ngIf="isLoggedIn() && user">
             <!-- Citizen & Student Links -->
             <ng-container *ngIf="hasRole('citizen') || hasRole('student')">
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/dashboard']" routerLinkActive="active">Dashboard</a>
+                <a class="nav-link" [routerLink]="['/dashboard']" routerLinkActive="active" (click)="closeMobileMenu()">
+                  <i class="bi bi-speedometer2"></i>
+                  <span>Dashboard</span>
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/report-issue']" routerLinkActive="active">Report Issue</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/my-complaints']" routerLinkActive="active">My Issues</a>
+                <a class="nav-link" [routerLink]="['/report-issue']" routerLinkActive="active" (click)="closeMobileMenu()">
+                  <i class="bi bi-plus-circle"></i>
+                  <span>Report Issue</span>
+                </a>
               </li>
             </ng-container>
+            
+            <!-- Public Leaderboard (visible to all) -->
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/leaderboard']" routerLinkActive="active" (click)="closeMobileMenu()">
+                <i class="bi bi-trophy"></i>
+                <span>Leaderboard</span>
+              </a>
+            </li>
             
             <!-- Student-only Links -->
             <ng-container *ngIf="hasRole('student')">
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/rewards']" routerLinkActive="active">Rewards</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/leaderboard']" routerLinkActive="active">Leaderboard</a>
+                <a class="nav-link" [routerLink]="['/rewards']" routerLinkActive="active" (click)="closeMobileMenu()">
+                  <i class="bi bi-gift"></i>
+                  <span>Rewards</span>
+                </a>
               </li>
             </ng-container>
             
             <!-- Worker Links -->
             <ng-container *ngIf="hasRole('worker')">
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/assigned-complaints']" routerLinkActive="active">Assigned Issues</a>
+                <a class="nav-link" [routerLink]="['/worker/dashboard']" routerLinkActive="active" (click)="closeMobileMenu()">
+                  <i class="bi bi-speedometer2"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/worker/assigned-complaints']" routerLinkActive="active" (click)="closeMobileMenu()">
+                  <i class="bi bi-tools"></i>
+                  <span>Assigned Issues</span>
+                </a>
               </li>
             </ng-container>
             
             <!-- Admin Links -->
             <ng-container *ngIf="hasRole('admin')">
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/admin-dashboard']" routerLinkActive="active">Admin Dashboard</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/complaint-management']" routerLinkActive="active">Complaints</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/moderation']" routerLinkActive="active">Moderation</a>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" (click)="toggleAdminDropdown(); $event.stopPropagation()" [class.active]="adminDropdownOpen">
+                  <i class="bi bi-shield-fill"></i>
+                  <span>Admin Panel</span>
+                  <i class="bi bi-chevron-down ms-1" [class.rotate]="adminDropdownOpen"></i>
+                </a>
+                <ul class="dropdown-menu" [class.show]="adminDropdownOpen" (click)="$event.stopPropagation()">
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/admin/dashboard']" routerLinkActive="active" (click)="closeMobileMenu()">
+                      <i class="bi bi-speedometer2"></i>
+                      Dashboard
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/admin/users']" routerLinkActive="active" (click)="closeMobileMenu()">
+                      <i class="bi bi-people-fill"></i>
+                      User Management
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/admin/complaints']" routerLinkActive="active" (click)="closeMobileMenu()">
+                      <i class="bi bi-flag-fill"></i>
+                      Complaint Management
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/admin/performance']" routerLinkActive="active" (click)="closeMobileMenu()">
+                      <i class="bi bi-bar-chart-line"></i>
+                      Worker Performance
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/admin/moderation']" routerLinkActive="active" (click)="closeMobileMenu()">
+                      <i class="bi bi-shield-check"></i>
+                      Moderation Panel
+                    </a>
+                  </li>
+                </ul>
               </li>
             </ng-container>
           </ng-container>
         </ul>
         
-        <!-- Auth Links -->
-        <ul class="navbar-nav">
+        <!-- Auth Buttons -->
+        <div class="navbar-actions">
           <ng-container *ngIf="!isLoggedIn()">
-            <li class="nav-item">
-              <a class="nav-link" [routerLink]="['/login']" routerLinkActive="active">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" [routerLink]="['/register']" routerLinkActive="active">Register</a>
-            </li>
+            <a class="btn-nav btn-login" [routerLink]="['/login']">
+              <i class="bi bi-box-arrow-in-right"></i>
+              <span>Login</span>
+            </a>
+            <a class="btn-nav btn-register" [routerLink]="['/register']">
+              <i class="bi bi-person-plus"></i>
+              <span>Register</span>
+            </a>
           </ng-container>
+          
           <ng-container *ngIf="isLoggedIn() && user">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                 data-bs-toggle="dropdown" aria-expanded="false"
-                 (click)="toggleDropdown($event)">
-                <i class="bi bi-person-circle"></i> {{ user.name }}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" id="userDropdownMenu">
-                <li>
-                  <span class="dropdown-item-text text-muted">Role: {{ user.role | titlecase }}</span>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                  </a>
-                </li>
-              </ul>
-            </li>
+            <div class="user-menu">
+              <button class="user-button" (click)="toggleUserMenu()">
+                <div class="user-avatar">
+                  <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="user-info">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="user-role">{{ user.role | titlecase }}</span>
+                </div>
+                <i class="bi bi-chevron-down dropdown-icon"></i>
+              </button>
+              
+              <div class="user-dropdown" [class.show]="userMenuOpen">
+                <div class="dropdown-header">
+                  <div class="user-avatar-lg">
+                    <i class="bi bi-person-circle"></i>
+                  </div>
+                  <div>
+                    <div class="dropdown-user-name">{{ user.name }}</div>
+                    <div class="dropdown-user-email">{{ user.email }}</div>
+                  </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" (click)="logout()">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
           </ng-container>
-        </ul>
+        </div>
       </div>
     </div>
   </nav>
 
-  <main>
+  <main class="main-content">
     <router-outlet></router-outlet>
   </main>
 </div>

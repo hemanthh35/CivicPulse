@@ -30,20 +30,22 @@ const routes: Routes = [
     loadComponent: () => import('./components/auth/register/register.component').then(m => m.RegisterComponent)
   },
   {
+    path: 'verify-otp',
+    loadComponent: () => import('./components/auth/otp-verification/otp-verification.component').then(m => m.OtpVerificationComponent)
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AuthGuard]
   },
   // Citizen & Student routes
   {
-    path: 'report-issue',
-    loadComponent: () => import('./components/complaints/report-issue/report-issue.component').then(m => m.ReportIssueComponent),
-    canActivate: [AuthGuard],
-    data: { roles: ['citizen', 'student'] }
+    path: 'leaderboard',
+    loadComponent: () => import('./components/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent)
   },
   {
-    path: 'my-complaints',
-    loadComponent: () => import('./components/complaints/my-complaints/my-complaints.component').then(m => m.MyComplaintsComponent),
+    path: 'report-issue',
+    loadComponent: () => import('./components/complaints/report-issue/report-issue.component').then(m => m.ReportIssueComponent),
     canActivate: [AuthGuard],
     data: { roles: ['citizen', 'student'] }
   },
@@ -61,29 +63,69 @@ const routes: Routes = [
   },
   // Worker routes
   {
-    path: 'assigned-complaints',
+    path: 'worker/dashboard',
+    loadComponent: () => import('./components/worker/worker-dashboard/worker-dashboard.component').then(m => m.WorkerDashboardComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['worker'] }
+  },
+  {
+    path: 'worker/assigned-complaints',
     loadComponent: () => import('./components/worker/assigned-complaints/assigned-complaints.component').then(m => m.AssignedComplaintsComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['worker'] }
+  },
+  {
+    path: 'worker/settings',
+    loadComponent: () => import('./components/worker/worker-settings/worker-settings.component').then(m => m.WorkerSettingsComponent),
     canActivate: [AuthGuard],
     data: { roles: ['worker'] }
   },
   // Admin routes
   {
-    path: 'admin-dashboard',
+    path: 'admin/dashboard',
     loadComponent: () => import('./components/admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
   },
   {
-    path: 'complaint-management',
+    path: 'admin/users',
+    loadComponent: () => import('./components/admin/user-management/user-management.component').then(m => m.UserManagementComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'admin/complaints',
     loadComponent: () => import('./components/admin/complaint-management/complaint-management.component').then(m => m.ComplaintManagementComponent),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
   },
   {
-    path: 'moderation',
+    path: 'admin/performance',
+    loadComponent: () => import('./components/admin/admin-performance-panel/admin-performance-panel.component').then(m => m.AdminPerformancePanelComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'admin/moderation',
     loadComponent: () => import('./components/admin/moderation-panel/moderation-panel.component').then(m => m.ModerationPanelComponent),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
+  },
+  // Legacy admin routes (redirect to new paths)
+  {
+    path: 'admin-dashboard',
+    redirectTo: 'admin/dashboard',
+    pathMatch: 'full'
+  },
+  {
+    path: 'complaint-management',
+    redirectTo: 'admin/complaints',
+    pathMatch: 'full'
+  },
+  {
+    path: 'moderation',
+    redirectTo: 'admin/moderation',
+    pathMatch: 'full'
   },
   {
     path: '**',

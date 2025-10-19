@@ -40,6 +40,52 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   badges: [String],
+  // Worker specialization
+  specializations: [{
+    type: String,
+    enum: ['Roads & Infrastructure', 'Water & Sanitation', 'Electricity', 'Public Safety', 
+           'Garbage & Waste', 'Parks & Environment', 'Noise & Disturbance', 'Public Transport', 
+           'garbage', 'road', 'water', 'lights', 'other']
+  }],
+  workArea: {
+    lat: { type: Number },
+    lng: { type: Number },
+    radius: { type: Number, default: 10 } // in kilometers
+  },
+  // 2FA OTP fields
+  otp: {
+    type: String
+  },
+  otpExpiry: {
+    type: Date
+  },
+  otpVerified: {
+    type: Boolean,
+    default: false
+  },
+  // 2FA preference (user can enable/disable)
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false  // Optional by default
+  },
+  // User suspension/activation
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  suspendedAt: {
+    type: Date
+  },
+  suspensionReason: {
+    type: String
+  },
+  suspendedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  lastLogin: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -63,6 +109,32 @@ userSchema.pre('save', async function(next) {
 // Compare password method
 userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Generate OTP
+userSchema.methods.generateOTP = function() {
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  this.otp = otp;
+  // OTP expires in 10 minutes
+  this.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+  this.otpVerified = false;
+  return otp;
+};
+
+// Verify OTP
+userSchema.methods.verifyOTP = function(enteredOTP) {
+  if (!this.otp || !this.otpExpiry) {
+    return false;
+  }
+  
+  // Check if OTP expired
+  if (new Date() > this.otpExpiry) {
+    return false;
+  }
+  
+  // Check if OTP matches
+  return this.otp === enteredOTP;
 };
 
 module.exports = mongoose.model('User', userSchema);
