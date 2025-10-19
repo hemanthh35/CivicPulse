@@ -79,6 +79,10 @@
     &.resolved .stat-icon {
       background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     }
+
+    &.rating .stat-icon {
+      background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+    }
   }
 
   // Metric Cards

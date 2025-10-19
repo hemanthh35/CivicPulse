@@ -1,0 +1,176 @@
+<div class="complaint-maps-container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/admin/dashboard" class="text-decoration-none">
+          <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Complaint Maps</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="maps-header mb-4">
+    <h2>
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Report Visualization Map
+    </h2>
+    <p class="text-muted">View all complaints on an interactive map</p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section mb-4">
+    <div class="row g-3">
+      <!-- Status Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Priority</label>
+        <select class="form-select" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+          <option value="">All Priorities</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" [(ngModel)]="typeFilter" (change)="applyFilters()">
+          <option value="">All Types</option>
+          <option value="garbage">Garbage</option>
+          <option value="road">Road</option>
+          <option value="water">Water</option>
+          <option value="lights">Lights</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-md-3 d-flex gap-2 align-items-end">
+        <button class="btn btn-outline-secondary flex-grow-1" (click)="clearFilters()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset
+        </button>
+        <button class="btn btn-outline-primary flex-grow-1" (click)="resetMap()">
+          <i class="bi bi-pin-map me-1"></i> Center
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading map...</p>
+  </div>
+
+  <!-- Map Container and Details -->
+  <div *ngIf="!loading" class="row g-4">
+    <!-- Map -->
+    <div class="col-lg-8">
+      <div class="map-wrapper">
+        <div #mapContainer class="map-container"></div>
+        <div class="map-legend">
+          <div class="legend-title">Legend</div>
+          <div class="legend-item">
+            <span class="legend-color" style="color: #FFD700;">●</span>
+            <span>Pending</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="color: #1E90FF;">●</span>
+            <span>In Progress</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="color: #32CD32;">●</span>
+            <span>Resolved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar - Selected Complaint Details -->
+    <div class="col-lg-4">
+      <div class="details-panel">
+        <div *ngIf="!selectedMarker" class="text-center text-muted py-5">
+          <i class="bi bi-info-circle display-1 mb-3"></i>
+          <p>Click on a marker to view complaint details</p>
+          <small>Total Complaints: {{ filteredComplaints.length }}</small>
+        </div>
+
+        <div *ngIf="selectedMarker" class="complaint-details">
+          <div class="details-header mb-3">
+            <h5 class="mb-2">{{ selectedMarker.title }}</h5>
+            <div class="badge-group">
+              <span class="badge" [ngClass]="getStatusBadgeClass(selectedMarker.status)">
+                {{ selectedMarker.status | titlecase }}
+              </span>
+              <span class="badge" [ngClass]="getPriorityBadgeClass(selectedMarker.priority)">
+                {{ selectedMarker.priority | titlecase }}
+              </span>
+            </div>
+          </div>
+
+          <div class="details-body">
+            <div class="detail-item">
+              <label>Type:</label>
+              <p>{{ selectedMarker.type | titlecase }}</p>
+            </div>
+
+            <div class="detail-item">
+              <label>Location:</label>
+              <p>{{ selectedMarker.location.address }}</p>
+              <small class="text-muted">{{ selectedMarker.location.city }}</small>
+            </div>
+
+            <div class="detail-item">
+              <label>Coordinates:</label>
+              <p><code>{{ selectedMarker.location.lat }}, {{ selectedMarker.location.lng }}</code></p>
+            </div>
+
+            <div class="detail-item">
+              <label>Reported By:</label>
+              <p>{{ selectedMarker.createdBy.name }}</p>
+            </div>
+
+            <div class="detail-item" *ngIf="selectedMarker.assignedTo">
+              <label>Assigned To:</label>
+              <p>{{ selectedMarker.assignedTo.name }}</p>
+            </div>
+
+            <div class="detail-item" *ngIf="!selectedMarker.assignedTo">
+              <label>Status:</label>
+              <p class="text-warning">Not Assigned</p>
+            </div>
+          </div>
+
+          <div class="details-footer mt-3">
+            <a href="/admin/complaints" class="btn btn-sm btn-primary w-100">
+              <i class="bi bi-arrow-right me-1"></i> View in Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

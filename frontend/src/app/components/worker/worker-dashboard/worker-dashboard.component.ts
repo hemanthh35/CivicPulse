@@ -11,6 +11,8 @@ interface WorkerStats {
   completionRate: string;
   recentAssignments: number;
   avgCompletionTime: string;
+  overallRating?: number;
+  ratedComplaints?: number;
 }
 
 @Component({

@@ -92,10 +92,18 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
     // If user is a student with travel flag on, add to moderation queue
     if (req.user.role === 'student' && req.user.travelFlag) {
       const moderationItem = new ModerationQueue({
-        complaintId: complaint._id,
+        reportType: 'complaint',
+        reportedItemId: complaint._id,
+        title: complaint.title,
+        description: complaint.description,
+        reason: 'travel_flag_required_moderation',
+        severity: 'medium',
+        reportedBy: req.user.id,
         AI_flagged: false, // Later integrate with AI for auto-flagging
+        status: 'pending'
       });
       await moderationItem.save();
+      console.log(`✅ Moderation item created for flagged complaint:`, moderationItem._id);
     }
 
     res.status(201).json({
@@ -135,6 +143,150 @@ router.get('/user/:id', protect, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/details/:id
+// @desc    Get single complaint with full details (worker info, status history, comments count)
+// @access  Private
+router.get('/details/:id', protect, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('createdBy', 'name email role mobile')
+      .populate('assignedTo', 'name email role mobile specializations workArea')
+      .populate({
+        path: 'statusHistory.changedBy',
+        select: 'name role'
+      });
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+
+    // Check authorization - only complaint creator, assigned worker, or admin can view
+    const isAuthorized = 
+      complaint.createdBy._id.toString() === req.user.id ||
+      (complaint.assignedTo && complaint.assignedTo._id.toString() === req.user.id) ||
+      req.user.role === 'admin';
+
+    if (!isAuthorized) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this complaint'
+      });
+    }
+
+    // Get comments count
+    const Comment = require('../models/comment.model');
+    const commentsCount = await Comment.countDocuments({ complaintId: req.params.id });
+
+    res.status(200).json({
+      success: true,
+      complaint,
+      commentsCount
+    });
+  } catch (error) {
+    console.error('Error fetching complaint details:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/search
+// @desc    Advanced complaint search with filters
+// @access  Private
+router.get('/search', protect, async (req, res) => {
+  try {
+    const {
+      keyword,
+      status,
+      type,
+      priority,
+      startDate,
+      endDate,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    const query = {};
+
+    // If not admin, only show user's own complaints
+    if (req.user.role !== 'admin' && req.user.role !== 'worker') {
+      query.createdBy = req.user.id;
+    } else if (req.user.role === 'worker') {
+      query.assignedTo = req.user.id;
+    }
+
+    // Keyword search (title, description, location)
+    if (keyword) {
+      query.$or = [
+        { title: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+        { 'location.address': { $regex: keyword, $options: 'i' } },
+        { 'location.city': { $regex: keyword, $options: 'i' } }
+      ];
+    }
+
+    // Status filter
+    if (status) {
+      query.status = status;
+    }
+
+    // Type filter
+    if (type) {
+      query.type = type;
+    }
+
+    // Priority filter
+    if (priority) {
+      query.priority = priority;
+    }
+
+    // Date range filter
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    // Execute query
+    const complaints = await Complaint.find(query)
+      .populate('createdBy', 'name email role')
+      .populate('assignedTo', 'name email role')
+      .sort(sortOptions)
+      .limit(parseInt(limit))
+      .skip(skip);
+
+    const total = await Complaint.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      complaints,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(total / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Error searching complaints:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'
@@ -223,6 +375,28 @@ router.get('/worker/stats', protect, authorize(['worker']), async (req, res) => 
       avgCompletionTime = (totalTime / resolvedComplaints.length / (1000 * 60 * 60 * 24)).toFixed(1); // Convert to days
     }
     
+    // Calculate overall rating from feedback
+    const ratedComplaints = await Complaint.find({
+      assignedTo: workerId,
+      'feedback.rating': { $exists: true, $ne: null }
+    }).select('feedback.rating');
+    
+    let overallRating = 0;
+    let ratedCount = 0;
+    if (ratedComplaints.length > 0) {
+      const totalRating = ratedComplaints.reduce((sum, complaint) => {
+        return sum + (complaint.feedback?.rating || 0);
+      }, 0);
+      overallRating = (totalRating / ratedComplaints.length).toFixed(1);
+      ratedCount = ratedComplaints.length;
+    }
+    
+    console.log('⭐ Worker rating:', {
+      overallRating,
+      ratedCount,
+      totalRatingCount: ratedComplaints.length
+    });
+    
     res.status(200).json({
       success: true,
       stats: {
@@ -232,7 +406,9 @@ router.get('/worker/stats', protect, authorize(['worker']), async (req, res) => 
         resolved,
         completionRate: `${completionRate}%`,
         recentAssignments,
-        avgCompletionTime: `${avgCompletionTime} days`
+        avgCompletionTime: `${avgCompletionTime} days`,
+        overallRating: parseFloat(overallRating),
+        ratedComplaints: ratedCount
       }
     });
   } catch (error) {
@@ -525,46 +701,7 @@ router.put('/update/:id', protect, authorize(['worker']), upload.single('resolut
   }
 });
 
-// @route   GET /api/complaints/:id
-// @desc    Get complaint by ID
-// @access  Private
-router.get('/:id', protect, async (req, res) => {
-  try {
-    const complaint = await Complaint.findById(req.params.id)
-      .populate('createdBy', 'name email role')
-      .populate('assignedTo', 'name email role');
-      
-    if (!complaint) {
-      return res.status(404).json({
-        success: false,
-        message: 'Complaint not found'
-      });
-    }
-    
-    // Check if user is allowed to view this complaint
-    if (
-      req.user.role !== 'admin' && 
-      complaint.createdBy._id.toString() !== req.user.id &&
-      (complaint.assignedTo && complaint.assignedTo._id.toString() !== req.user.id)
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to view this complaint'
-      });
-    }
-    
-    res.status(200).json({
-      success: true,
-      complaint
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Server Error'
-    });
-  }
-});
+// ========== SPECIFIC ROUTES MUST COME BEFORE GENERIC /:id ROUTE ==========
 
 // @route   POST /api/complaints/:id/feedback
 // @desc    Submit feedback for a resolved complaint
@@ -668,6 +805,356 @@ router.get('/:id/history', protect, async (req, res) => {
         currentStatus: complaint.status,
         currentAssignee: complaint.assignedTo
       }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/:id/details
+// @desc    Get full complaint details with worker info
+// @access  Private
+router.get('/:id/details', protect, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('createdBy', 'name email role mobile')
+      .populate('assignedTo', 'name email mobile specializations')
+      .populate('statusHistory.changedBy', 'name role')
+      .populate('assignmentHistory.assignedTo', 'name')
+      .populate('assignmentHistory.assignedBy', 'name');
+    
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+    
+    // Get worker stats if assigned
+    let workerStats = null;
+    if (complaint.assignedTo) {
+      const resolvedCount = await Complaint.countDocuments({
+        assignedTo: complaint.assignedTo._id,
+        status: 'resolved'
+      });
+      
+      const totalAssigned = await Complaint.countDocuments({
+        assignedTo: complaint.assignedTo._id
+      });
+      
+      workerStats = {
+        resolvedCount,
+        totalAssigned,
+        completionRate: totalAssigned > 0 ? ((resolvedCount / totalAssigned) * 100).toFixed(1) : '0'
+      };
+    }
+    
+    res.status(200).json({
+      success: true,
+      complaint,
+      workerStats
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   POST /api/complaints/:id/comments
+// @desc    Add comment to complaint
+// @access  Private
+router.post('/:id/comments', protect, async (req, res) => {
+  try {
+    const { text } = req.body;
+    
+    if (!text || text.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Comment text is required'
+      });
+    }
+    
+    const complaint = await Complaint.findById(req.params.id);
+    
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+    
+    // Initialize comments array if it doesn't exist
+    if (!complaint.comments) {
+      complaint.comments = [];
+    }
+    
+    const comment = {
+      userId: req.user.id,
+      userName: req.user.name,
+      userRole: req.user.role,
+      text: text.trim(),
+      createdAt: new Date()
+    };
+    
+    complaint.comments.push(comment);
+    await complaint.save();
+    
+    // Populate the complaint to get full details
+    await complaint.populate('createdBy assignedTo', 'name email');
+    
+    res.status(201).json({
+      success: true,
+      message: 'Comment added successfully',
+      comment,
+      complaint
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/:id/comments
+// @desc    Get all comments for a complaint
+// @access  Private
+router.get('/:id/comments', protect, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .select('comments')
+      .lean();
+    
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      comments: complaint.comments || []
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   POST /api/complaints/:id/media
+// @desc    Add additional media to complaint
+// @access  Private
+router.post('/:id/media', protect, upload.array('images', 3), async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id);
+    
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+    
+    // Check if user is creator
+    if (complaint.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to add media'
+      });
+    }
+    
+    // Handle uploaded files
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No files uploaded'
+      });
+    }
+    
+    const newMediaURLs = req.files.map(file => `/uploads/${file.filename}`);
+    
+    // Initialize mediaURLs array if it doesn't exist
+    if (!complaint.mediaURLs) {
+      complaint.mediaURLs = [];
+    }
+    
+    complaint.mediaURLs.push(...newMediaURLs);
+    await complaint.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Media added successfully',
+      mediaURLs: newMediaURLs,
+      allMedia: complaint.mediaURLs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/search
+// @desc    Advanced search for complaints
+// @access  Private
+router.get('/search/advanced', protect, async (req, res) => {
+  try {
+    const { 
+      q,           // search query
+      status,
+      type,
+      priority,
+      startDate,
+      endDate,
+      myComplaints,
+      page = 1,
+      limit = 10
+    } = req.query;
+    
+    let query = {};
+    
+    // If myComplaints is true, filter by current user
+    if (myComplaints === 'true') {
+      query.createdBy = req.user.id;
+    }
+    
+    // Text search
+    if (q) {
+      query.$or = [
+        { title: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+        { 'location.address': { $regex: q, $options: 'i' } }
+      ];
+    }
+    
+    // Filters
+    if (status) query.status = status;
+    if (type) query.type = type;
+    if (priority) query.priority = priority;
+    
+    // Date range
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+    
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const complaints = await Complaint.find(query)
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+    
+    const total = await Complaint.countDocuments(query);
+    
+    res.status(200).json({
+      success: true,
+      complaints,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / parseInt(limit)),
+        limit: parseInt(limit)
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   GET /api/complaints/nearby
+// @desc    Get complaints near a location
+// @access  Public
+router.get('/nearby/:lat/:lng', async (req, res) => {
+  try {
+    const { lat, lng } = req.params;
+    const radius = req.query.radius || 5; // Default 5km
+    
+    // Convert radius to radians (radius in km / Earth's radius in km)
+    const radiusInRadians = radius / 6371;
+    
+    const complaints = await Complaint.find({
+      'location.lat': {
+        $gte: parseFloat(lat) - radiusInRadians * (180 / Math.PI),
+        $lte: parseFloat(lat) + radiusInRadians * (180 / Math.PI)
+      },
+      'location.lng': {
+        $gte: parseFloat(lng) - radiusInRadians * (180 / Math.PI),
+        $lte: parseFloat(lng) + radiusInRadians * (180 / Math.PI)
+      }
+    })
+      .select('title type priority status location createdAt')
+      .limit(50);
+    
+    res.status(200).json({
+      success: true,
+      count: complaints.length,
+      complaints,
+      radius: `${radius}km`
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// ========== GENERIC ROUTE MUST BE LAST ==========
+
+// @route   GET /api/complaints/:id
+// @desc    Get complaint by ID
+// @access  Private
+router.get('/:id', protect, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('createdBy', 'name email role')
+      .populate('assignedTo', 'name email role');
+      
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found'
+      });
+    }
+    
+    // Check if user is allowed to view this complaint
+    if (
+      req.user.role !== 'admin' && 
+      complaint.createdBy._id.toString() !== req.user.id &&
+      (complaint.assignedTo && complaint.assignedTo._id.toString() !== req.user.id)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this complaint'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      complaint
     });
   } catch (error) {
     console.error(error);

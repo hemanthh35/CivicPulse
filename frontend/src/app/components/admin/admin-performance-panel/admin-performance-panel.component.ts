@@ -77,10 +77,10 @@ export class AdminPerformancePanelComponent implements OnInit {
 
   getWorkloadBadgeClass(status: string): string {
     switch (status) {
-      case 'light': return 'badge bg-success';
-      case 'moderate': return 'badge bg-warning';
-      case 'heavy': return 'badge bg-danger';
-      default: return 'badge bg-secondary';
+      case 'light': return 'badge-light';
+      case 'moderate': return 'badge-moderate';
+      case 'heavy': return 'badge-heavy';
+      default: return 'badge-light';
     }
   }
 
@@ -94,9 +94,15 @@ export class AdminPerformancePanelComponent implements OnInit {
   }
 
   getCompletionRateClass(rate: number): string {
-    if (rate >= 80) return 'text-success';
-    if (rate >= 60) return 'text-warning';
-    return 'text-danger';
+    if (rate >= 80) return 'high';
+    if (rate >= 60) return 'medium';
+    return 'low';
+  }
+
+  getRateClass(rate: number): string {
+    if (rate >= 80) return 'high';
+    if (rate >= 60) return 'medium';
+    return 'low';
   }
 
   refreshData(): void {

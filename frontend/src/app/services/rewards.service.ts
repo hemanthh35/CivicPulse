@@ -35,7 +35,19 @@ export class RewardsService {
     });
   }
 
-  getLeaderboard(): Observable<{ success: boolean, users: User[] }> {
-    return this.http.get<{ success: boolean, users: User[] }>(`${this.apiUrl}/leaderboard`);
+  getLeaderboard(params?: { limit?: number }): Observable<{ success: boolean, leaderboard: User[] }> {
+    return this.http.get<{ success: boolean, leaderboard: User[] }>(`${this.apiUrl}/leaderboard`, { params: params as any });
+  }
+
+  getAvailableRewards(): Observable<{ success: boolean, rewards: any[] }> {
+    return this.http.get<{ success: boolean, rewards: any[] }>(`${this.apiUrl}/available`);
+  }
+
+  getUserRedeemHistory(): Observable<{ success: boolean, history: any[] }> {
+    return this.http.get<{ success: boolean, history: any[] }>(`${this.apiUrl}/redeem-history`);
+  }
+
+  redeemReward(rewardId: string): Observable<{ success: boolean, message: string }> {
+    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/redeem/${rewardId}`, {});
   }
 }

@@ -211,3 +211,155 @@
     transform: scale(1);
   }
 }
+
+// Details Modal Timeline
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    
+    .timeline-marker {
+      position: absolute;
+      left: -1.4rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #667eea;
+      z-index: 1;
+    }
+    
+    .timeline-content {
+      background: #f8f9fa;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+      
+      h6 {
+        margin: 0;
+        color: #667eea;
+        font-weight: 600;
+      }
+      
+      small {
+        display: block;
+        margin-top: 0.25rem;
+      }
+      
+      p {
+        margin-top: 0.5rem;
+      }
+    }
+    
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+}
+
+// Comments Section
+.comments-list {
+  max-height: 400px;
+  overflow-y: auto;
+  
+  .comment-item {
+    margin-bottom: 1rem;
+    
+    .comment-avatar {
+      flex-shrink: 0;
+    }
+    
+    .comment-header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+      
+      strong {
+        color: #333;
+      }
+    }
+    
+    .comment-text {
+      color: #555;
+      line-height: 1.6;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+    }
+    
+    hr {
+      margin: 1rem 0;
+      opacity: 0.1;
+    }
+    
+    &:last-child hr {
+      display: none;
+    }
+  }
+}
+
+.add-comment-form {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border-top: 2px solid #dee2e6;
+  
+  textarea {
+    resize: none;
+    
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+  }
+}
+
+// Search and Filter Section
+.search-filter-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
+  .input-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .form-control {
+      border-right: none;
+      
+      &:focus {
+        border-color: #667eea;
+        box-shadow: none;
+      }
+    }
+    
+    .input-group-text {
+      background: white;
+      border-left: none;
+      color: #667eea;
+    }
+  }
+  
+  .form-select {
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+  }
+}

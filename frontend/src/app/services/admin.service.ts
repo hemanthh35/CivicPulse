@@ -261,4 +261,80 @@ export class AdminService {
       distributionMethod
     });
   }
+
+  // ==========================================
+  // REWARDS MANAGEMENT
+  // ==========================================
+
+  getRewardsStats(): Observable<{
+    success: boolean;
+    stats: {
+      totalStudents: number;
+      totalPoints: number;
+      totalBadges: number;
+      totalRedemptions: number;
+      avgPointsPerStudent: number;
+    }
+  }> {
+    return this.http.get<{
+      success: boolean;
+      stats: {
+        totalStudents: number;
+        totalPoints: number;
+        totalBadges: number;
+        totalRedemptions: number;
+        avgPointsPerStudent: number;
+      }
+    }>(`${this.apiUrl}/rewards/stats`);
+  }
+
+  addPoints(userId: string, points: number, reason: string): Observable<{
+    success: boolean;
+    message: string;
+    data: any;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      data: any;
+    }>(`${this.apiUrl}/rewards/add-points`, {
+      userId,
+      points,
+      reason
+    });
+  }
+
+  addBadge(userId: string, badgeName: string, description?: string): Observable<{
+    success: boolean;
+    message: string;
+    data: any;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      data: any;
+    }>(`${this.apiUrl}/rewards/add-badge`, {
+      userId,
+      badgeName,
+      description
+    });
+  }
+
+  createReward(data: {
+    name: string;
+    description: string;
+    pointsRequired: number;
+    category: string;
+    available: boolean;
+  }): Observable<{
+    success: boolean;
+    message: string;
+    data: any;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      data: any;
+    }>(`${this.apiUrl}/rewards/create`, data);
+  }
 }

@@ -25,8 +25,44 @@
     </div>
   </div>
 
+  <!-- Quick Actions for Citizen/Student -->
+  <div *ngIf="hasRole(['citizen', 'student'])" class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm bg-gradient-light">
+        <div class="card-body">
+          <h5 class="mb-3">
+            <i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions
+          </h5>
+          <div class="row g-2">
+            <div class="col-md-3">
+              <a routerLink="/my-complaints" class="btn btn-outline-primary w-100">
+                <i class="bi bi-clipboard-check me-2"></i>Track Your Reports
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a routerLink="/report-issue" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle me-2"></i>Report New Issue
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a routerLink="/leaderboard" class="btn btn-outline-info w-100">
+                <i class="bi bi-trophy me-2"></i>View Leaderboard
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a *ngIf="user?.role === 'student'" routerLink="/rewards" class="btn btn-outline-warning w-100">
+                <i class="bi bi-gift me-2"></i>My Rewards
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Citizen/Student Detailed Dashboard -->
-  <div *ngIf="hasRole(['citizen', 'student'])">
+  <div *ngIf="hasRole(['citizen', 'student'])" class="row mb-4">
+    <div class="col-12">
     
     <!-- Personal Information & Security Card -->
     <div class="row mb-4">
@@ -80,7 +116,7 @@
             <hr class="my-4">
             <div class="row">
               <div class="col-12">
-                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
+                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
                   <div class="d-flex align-items-start">
                     <i class="bi bi-shield-lock fs-3 text-primary me-3"></i>
                     <div>
@@ -102,6 +138,32 @@
                       style="width: 48px; height: 24px; cursor: pointer;">
                     <label class="form-check-label visually-hidden" for="twoFactorToggle">
                       Enable Two-Factor Authentication
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Travel Flag for Students -->
+                <div *ngIf="user?.role === 'student'" class="d-flex align-items-center justify-content-between p-3 bg-info-subtle rounded">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-airplane-fill fs-3 text-info me-3"></i>
+                    <div>
+                      <h6 class="mb-1">Travel Flag</h6>
+                      <small class="text-muted">
+                        {{ user?.travelFlag ? 'Enabled: Your complaints will be moderated before assignment to workers.' : 'Enable when traveling to have your complaints reviewed by admin first.' }}
+                      </small>
+                    </div>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      role="switch" 
+                      id="travelFlagToggle"
+                      [checked]="user?.travelFlag"
+                      (change)="toggleTravelFlag()"
+                      style="width: 48px; height: 24px; cursor: pointer;">
+                    <label class="form-check-label visually-hidden" for="travelFlagToggle">
+                      Enable Travel Flag
                     </label>
                   </div>
                 </div>

@@ -92,6 +92,24 @@
           </div>
         </div>
       </div>
+
+      <!-- Overall Rating -->
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card rating">
+          <div class="stat-icon">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          <div class="stat-content">
+            <h3>
+              <span *ngIf="stats.ratedComplaints && stats.ratedComplaints > 0">{{ stats.overallRating | number:'1.1-1' }}</span>
+              <span *ngIf="!stats.ratedComplaints || stats.ratedComplaints === 0">-</span>
+              <small class="ms-1" style="font-size: 0.6em;">/5</small>
+            </h3>
+            <p>Overall Rating</p>
+            <small class="text-muted">From {{ stats.ratedComplaints || 0 }} citizens</small>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Performance Metrics -->

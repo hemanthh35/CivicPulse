@@ -1,0 +1,207 @@
+<div class="assigned-work-map-container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/worker/assigned-complaints" class="text-decoration-none">
+          <i class="bi bi-briefcase me-1"></i>My Assigned Work
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Work Location Map & Navigation</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="map-header mb-4">
+    <h2>
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Work Location & Navigation
+    </h2>
+    <p class="text-muted">View where the work is located and get directions</p>
+  </div>
+
+  <!-- Error & Success Messages -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close" (click)="success = ''"></button>
+  </div>
+
+  <div class="row g-4">
+    <!-- Map Section -->
+    <div class="col-lg-8">
+      <div class="map-wrapper">
+        <div #mapContainer class="map-container"></div>
+        
+        <!-- Map Legend -->
+        <div class="map-legend">
+          <div class="legend-title">Legend</div>
+          <div class="legend-item">
+            <span class="legend-marker" style="background-color: #ff4444;">●</span>
+            <span>Work Location (Destination)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-marker" style="background-color: #4444ff;">●</span>
+            <span>Your Location (Origin)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-marker" style="background-color: #667eea; border-top: 2px dashed #667eea; height: 2px; width: 20px;">━</span>
+            <span>Route</span>
+          </div>
+        </div>
+
+        <!-- Distance Display -->
+        <div class="distance-display" *ngIf="distance > 0">
+          <div class="distance-content">
+            <i class="bi bi-arrow-left-right"></i>
+            <div>
+              <strong>Distance</strong>
+              <p>{{ distance | number:'1.1-1' }} km</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Details & Actions Panel -->
+    <div class="col-lg-4">
+      <div class="details-panel">
+        <!-- Work Information Card -->
+        <div class="card mb-3">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-briefcase-fill me-2"></i>Work Details
+            </h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="workLocation" class="work-details">
+              <!-- Title -->
+              <div class="detail-item mb-3">
+                <label class="detail-label">Title</label>
+                <p class="detail-value">{{ workLocation.title }}</p>
+              </div>
+
+              <!-- Status & Priority -->
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="detail-label">Status</label>
+                  <span class="badge" [ngClass]="getStatusBadgeClass(workLocation.status)">
+                    <i [class]="'bi ' + getStatusIcon(workLocation.status) + ' me-1'"></i>
+                    {{ workLocation.status | titlecase }}
+                  </span>
+                </div>
+                <div class="col-6">
+                  <label class="detail-label">Priority</label>
+                  <span class="badge" [ngClass]="getPriorityBadgeClass(workLocation.priority)">
+                    {{ workLocation.priority | titlecase }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Type -->
+              <div class="detail-item mb-3">
+                <label class="detail-label">Type</label>
+                <p class="detail-value">{{ workLocation.type }}</p>
+              </div>
+
+              <!-- Location Address -->
+              <div class="detail-item mb-3">
+                <label class="detail-label">
+                  <i class="bi bi-geo-alt me-1"></i>Location
+                </label>
+                <p class="detail-value">
+                  {{ workLocation.location.address }}<br/>
+                  <small class="text-muted">{{ workLocation.location.city }}</small>
+                </p>
+              </div>
+
+              <!-- GPS Coordinates -->
+              <div class="detail-item mb-3">
+                <label class="detail-label">Coordinates</label>
+                <p class="detail-value" style="font-size: 12px; font-family: monospace;">
+                  {{ workLocation.location.lat | number:'1.6-6' }},<br/>
+                  {{ workLocation.location.lng | number:'1.6-6' }}
+                </p>
+              </div>
+
+              <!-- Reported By -->
+              <div class="detail-item">
+                <label class="detail-label">Reported By</label>
+                <p class="detail-value">{{ workLocation.createdBy.name }}</p>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="!workLocation" class="text-center py-4">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 small text-muted">Loading work details...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Card -->
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-compass me-2"></i>Navigation
+            </h5>
+          </div>
+          <div class="card-body">
+            <!-- Get Location Button -->
+            <button 
+              type="button" 
+              class="btn btn-outline-primary w-100 mb-3"
+              (click)="getCurrentLocation()"
+              [disabled]="fetchingLocation"
+            >
+              <span class="spinner-border spinner-border-sm me-2" *ngIf="fetchingLocation"></span>
+              <i class="bi bi-crosshair me-2" *ngIf="!fetchingLocation"></i>
+              {{ fetchingLocation ? 'Getting Your Location...' : 'Get My Current Location' }}
+            </button>
+
+            <!-- Distance Display -->
+            <div *ngIf="distance > 0" class="alert alert-info mb-3">
+              <i class="bi bi-info-circle me-2"></i>
+              <strong>Distance to work:</strong><br/>
+              {{ distance | number:'1.1-1' }} km away
+            </div>
+
+            <!-- Navigate Button -->
+            <button 
+              type="button" 
+              class="btn btn-success w-100 btn-lg"
+              (click)="startNavigation()"
+              [disabled]="!workerLocation || !workLocation || navigationStarted"
+            >
+              <i class="bi bi-arrow-right-circle me-2"></i>
+              {{ navigationStarted ? 'Navigation Opened' : 'Start Navigation' }}
+            </button>
+
+            <small class="text-muted d-block mt-3">
+              <i class="bi bi-info-circle me-1"></i>
+              Will open Google Maps for turn-by-turn directions
+            </small>
+
+            <!-- Back Button -->
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary w-100 mt-3"
+              (click)="goBack()"
+            >
+              <i class="bi bi-arrow-left me-2"></i>
+              Back to My Work
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

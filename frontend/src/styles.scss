@@ -1,12 +1,14 @@
 /* Global Styles */
+@import './styles/modern-design.scss';
+
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2ecc71;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
-  --info-color: #1abc9c;
-  --dark-color: #34495e;
-  --light-color: #ecf0f1;
+  --primary-color: #1a73e8;
+  --secondary-color: #34a853;
+  --danger-color: #d32f2f;
+  --warning-color: #fbbc04;
+  --info-color: #00897b;
+  --dark-color: #202124;
+  --light-color: #f8f9fa;
 }
 
 body {

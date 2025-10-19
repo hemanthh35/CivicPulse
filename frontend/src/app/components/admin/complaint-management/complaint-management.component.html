@@ -158,144 +158,163 @@
     <p class="mt-3">Loading complaints...</p>
   </div>
 
-  <!-- Table -->
-  <div *ngIf="!loading" class="table-card">
+  <!-- Card Grid Layout -->
+  <div *ngIf="!loading" class="cards-container">
     <div *ngIf="complaints.length === 0" class="empty-state">
       <i class="bi bi-inbox"></i>
       <h5>No Complaints Found</h5>
       <p>Try adjusting your filters or search terms</p>
     </div>
 
-    <div *ngIf="complaints.length > 0" class="table-responsive">
-      <table class="complaints-table">
-        <thead>
-          <tr>
-            <th style="width: 40px;">
-              <input 
-                type="checkbox" 
-                class="form-check-input"
-                [checked]="selectAll"
-                (change)="toggleSelectAll()"
-              />
-            </th>
-            <th (click)="onSortChange('title')" class="sortable">
-              Title 
-              <i [ngClass]="sortBy === 'title' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
-            </th>
-            <th>Type</th>
-            <th (click)="onSortChange('status')" class="sortable">
-              Status
-              <i [ngClass]="sortBy === 'status' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
-            </th>
-            <th (click)="onSortChange('priority')" class="sortable">
-              Priority
-              <i [ngClass]="sortBy === 'priority' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
-            </th>
-            <th>Assigned To</th>
-            <th (click)="onSortChange('createdAt')" class="sortable">
-              Created
-              <i [ngClass]="sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'" class="bi ms-1"></i>
-            </th>
-            <th style="width: 180px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let complaint of complaints">
-            <td>
-              <input 
-                type="checkbox" 
-                class="form-check-input"
-                [checked]="selectedComplaints.has(complaint._id)"
-                (change)="toggleComplaintSelect(complaint._id)"
-              />
-            </td>
-            <td>
-              <strong>{{ complaint.title }}</strong>
-              <br/>
-              <small class="text-muted">{{ complaint.description | slice:0:50 }}...</small>
-            </td>
-            <td>
-              <span class="badge bg-light text-dark">{{ complaint.type }}</span>
-            </td>
-            <td>
-              <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
-                <i [ngClass]="getStatusIcon(complaint.status)" class="bi me-1"></i>
-                {{ complaint.status }}
-              </span>
-            </td>
-            <td>
-              <span class="badge" [ngClass]="getPriorityBadgeClass(complaint.priority)">
-                {{ complaint.priority | titlecase }}
-              </span>
-            </td>
-            <td>
-              <span *ngIf="complaint.assignedTo" class="badge bg-success">
-                {{ complaint.assignedTo?.name || 'Worker' }}
-              </span>
-              <span *ngIf="!complaint.assignedTo" class="badge bg-light text-dark">
-                Unassigned
-              </span>
-            </td>
-            <td>{{ complaint.createdAt | date:'short' }}</td>
-            <td>
-              <div class="action-buttons">
-                <button 
-                  class="btn btn-sm btn-outline-primary" 
-                  title="View Details"
-                  (click)="openDetailModal(complaint)"
-                >
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button 
-                  class="btn btn-sm btn-outline-info" 
-                  title="Assign Worker"
-                  (click)="openAssignModal(complaint)"
-                >
-                  <i class="bi bi-person-plus"></i>
-                </button>
-                <button 
-                  class="btn btn-sm btn-outline-warning" 
-                  title="Update Status"
-                  (click)="openUpdateStatusModal(complaint)"
-                >
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button 
-                  class="btn btn-sm btn-outline-danger" 
-                  title="Delete"
-                  (click)="deleteComplaint(complaint)"
-                >
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination -->
-    <div *ngIf="complaints.length > 0" class="pagination-section">
-      <div class="pagination-info">
-        Showing {{ (currentPage - 1) * limit + 1 }} to {{ Math.min(currentPage * limit, total) }} of {{ total }}
+    <div *ngIf="complaints.length > 0">
+      <!-- Select All Option -->
+      <div class="select-all-section" *ngIf="complaints.length > 0">
+        <div class="form-check">
+          <input 
+            type="checkbox" 
+            class="form-check-input"
+            id="selectAllCheckbox"
+            [checked]="selectAll"
+            (change)="toggleSelectAll()"
+          />
+          <label class="form-check-label" for="selectAllCheckbox">
+            Select All ({{ complaints.length }} complaints)
+          </label>
+        </div>
       </div>
-      <nav aria-label="Page navigation">
-        <ul class="pagination">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
-              Previous
+
+      <!-- Complaints Cards Grid -->
+      <div class="complaints-grid">
+        <div *ngFor="let complaint of complaints" class="complaint-card" [class.selected]="selectedComplaints.has(complaint._id)">
+          <!-- Checkbox -->
+          <div class="card-checkbox">
+            <input 
+              type="checkbox" 
+              class="form-check-input"
+              [checked]="selectedComplaints.has(complaint._id)"
+              (change)="toggleComplaintSelect(complaint._id)"
+            />
+          </div>
+
+          <!-- Status Color Border -->
+          <div class="status-border" [ngClass]="'status-' + complaint.status.toLowerCase().replace(' ', '-')"></div>
+
+          <!-- Card Content -->
+          <div class="card-header">
+            <div class="card-title-section">
+              <h6 class="card-title">{{ complaint.title }}</h6>
+              <div class="card-meta">
+                <span class="type-badge badge" [ngClass]="'type-' + complaint.type.toLowerCase()">
+                  <i class="bi bi-tag-fill me-1"></i>{{ complaint.type }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <p class="card-description">{{ complaint.description | slice:0:100 }}{{ complaint.description.length > 100 ? '...' : '' }}</p>
+
+            <!-- Image Thumbnail -->
+            <div *ngIf="complaint.mediaURLs?.length > 0" class="card-image-thumbnail">
+              <img 
+                [src]="getImageUrl(complaint.mediaURLs[0])" 
+                alt="Complaint thumbnail"
+                class="thumbnail-img"
+                (error)="onImageError($event)"
+              />
+              <span *ngIf="complaint.mediaURLs.length > 1" class="image-count">
+                +{{ complaint.mediaURLs.length - 1 }}
+              </span>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Status:</span>
+                <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
+                  {{ complaint.status }}
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Priority:</span>
+                <span class="priority-badge" [ngClass]="'priority-' + complaint.priority.toLowerCase()">
+                  {{ complaint.priority | titlecase }}
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Assigned:</span>
+                <span *ngIf="complaint.assignedTo" class="assigned-badge">
+                  <i class="bi bi-person-fill"></i> {{ complaint.assignedTo?.name }}
+                </span>
+                <span *ngIf="!complaint.assignedTo" class="unassigned-badge">
+                  <i class="bi bi-person-dash"></i> Unassigned
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Created:</span>
+                <span class="date-text">{{ complaint.createdAt | date:'short' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer with Actions -->
+          <div class="card-footer">
+            <button 
+              class="btn btn-sm btn-action view-btn" 
+              title="View Details"
+              (click)="openDetailModal(complaint)"
+            >
+              <i class="bi bi-eye"></i> View
             </button>
-          </li>
-          <li class="page-item active">
-            <span class="page-link">Page {{ currentPage }} of {{ totalPages }}</span>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
-              Next
+            <button 
+              class="btn btn-sm btn-action assign-btn" 
+              title="Assign Worker"
+              (click)="openAssignModal(complaint)"
+            >
+              <i class="bi bi-person-plus"></i> Assign
             </button>
-          </li>
-        </ul>
-      </nav>
+            <button 
+              class="btn btn-sm btn-action update-btn" 
+              title="Update Status"
+              (click)="openUpdateStatusModal(complaint)"
+            >
+              <i class="bi bi-pencil"></i> Update
+            </button>
+            <button 
+              class="btn btn-sm btn-action delete-btn" 
+              title="Delete"
+              (click)="deleteComplaint(complaint)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="complaints.length > 0" class="pagination-section">
+        <div class="pagination-info">
+          Showing {{ (currentPage - 1) * limit + 1 }} to {{ Math.min(currentPage * limit, total) }} of {{ total }}
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+                Previous
+              </button>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">Page {{ currentPage }} of {{ totalPages }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 
@@ -339,27 +358,18 @@
           </div>
 
           <!-- Image/Media Section -->
-          <div class="detail-section" *ngIf="selectedComplaint.mediaURL || selectedComplaint.mediaURLs?.length">
+          <div class="detail-section" *ngIf="selectedComplaint.mediaURLs?.length > 0">
             <h6 class="section-title">
-              <i class="bi bi-image me-2"></i>Attached Media
+              <i class="bi bi-image me-2"></i>Complaint Photos (Citizen's Report)
             </h6>
             <div class="media-gallery">
-              <!-- Single Image -->
-              <div *ngIf="selectedComplaint.mediaURL" class="media-item">
-                <img 
-                  [src]="getImageUrl(selectedComplaint.mediaURL)" 
-                  alt="Complaint Image"
-                  class="img-fluid rounded complaint-image"
-                  (error)="onImageError($event)"
-                  (click)="openImageModal(getImageUrl(selectedComplaint.mediaURL))"
-                />
-              </div>
-              <!-- Multiple Images -->
+              <!-- Display all images from mediaURLs array -->
               <div *ngFor="let mediaUrl of selectedComplaint.mediaURLs" class="media-item">
                 <img 
                   [src]="getImageUrl(mediaUrl)" 
                   alt="Complaint Image"
                   class="img-fluid rounded complaint-image"
+                  style="cursor: pointer; border: 2px solid #e9ecef;"
                   (error)="onImageError($event)"
                   (click)="openImageModal(getImageUrl(mediaUrl))"
                 />
@@ -370,10 +380,147 @@
             </p>
           </div>
 
+          <!-- Completion Photos Section (Worker's Upload) -->
+          <div class="detail-section" *ngIf="selectedComplaint.resolutionProof?.mediaURL">
+            <h6 class="section-title">
+              <i class="bi bi-check-circle-fill me-2 text-success"></i>✓ Completion Work Photos (Worker's Upload)
+            </h6>
+            <div class="alert alert-success d-flex align-items-center mb-3">
+              <i class="bi bi-check-circle me-2"></i>
+              <div>
+                <strong>Work Completed!</strong><br/>
+                <small>Worker uploaded completion proof on {{ selectedComplaint.resolutionProof?.timestamp | date:'medium' }}</small>
+              </div>
+            </div>
+            <div class="media-gallery">
+              <div class="media-item">
+                <img 
+                  [src]="getImageUrl(selectedComplaint.resolutionProof.mediaURL)" 
+                  alt="Completion Photo"
+                  class="img-fluid rounded complaint-image"
+                  style="cursor: pointer; border: 3px solid #28a745; box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);"
+                  (error)="onImageError($event)"
+                  (click)="openImageModal(getImageUrl(selectedComplaint.resolutionProof.mediaURL))"
+                />
+              </div>
+            </div>
+            <p class="text-muted small mt-2">
+              <i class="bi bi-info-circle me-1"></i>Click image to view full size
+            </p>
+          </div>
+
+          <!-- No Completion Photos Message -->
+          <div class="detail-section" *ngIf="selectedComplaint.status === 'resolved' && !selectedComplaint.resolutionProof?.mediaURL">
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              This complaint is marked as resolved but no completion photos have been uploaded by the worker.
+            </div>
+          </div>
+
           <div class="detail-section" *ngIf="selectedComplaint.location">
             <h6 class="section-title">Location</h6>
             <p>{{ selectedComplaint.location.address }} <br/>
               {{ selectedComplaint.location.city }}, {{ selectedComplaint.location.state }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h6 class="section-title">
+              <i class="bi bi-chat-dots me-2"></i>Comments & Discussion
+            </h6>
+            
+            <!-- Comments Loading -->
+            <div *ngIf="isLoadingComments" class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading comments...</span>
+              </div>
+            </div>
+
+            <!-- Comments List -->
+            <div *ngIf="!isLoadingComments && complaintComments.length > 0" class="comments-list mb-3">
+              <div class="comment-item mb-3" *ngFor="let comment of complaintComments">
+                <div class="d-flex gap-3">
+                  <div class="comment-avatar bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                    <i class="bi bi-person text-primary"></i>
+                  </div>
+                  <div class="comment-content flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <strong class="d-block">{{ comment.userName }}</strong>
+                        <small class="text-muted">
+                          <span class="badge bg-info me-2">{{ comment.userRole | titlecase }}</span>
+                          {{ comment.createdAt | date:'short' }}
+                        </small>
+                      </div>
+                    </div>
+                    <p class="mt-2 mb-0 text-break">{{ comment.text }}</p>
+                  </div>
+                </div>
+                <hr class="my-2">
+              </div>
+            </div>
+
+            <!-- No Comments -->
+            <div *ngIf="!isLoadingComments && complaintComments.length === 0" class="text-center py-3 text-muted">
+              <p class="mb-0">
+                <i class="bi bi-chat-left text-muted me-2"></i>
+                No comments yet. Be the first to comment!
+              </p>
+            </div>
+
+            <!-- Add Comment Form -->
+            <div class="add-comment-section border-top pt-3">
+              <div class="form-group">
+                <label class="form-label">Add Comment</label>
+                <textarea 
+                  class="form-control" 
+                  rows="2" 
+                  placeholder="Type your comment here..."
+                  [(ngModel)]="newComment"
+                  (keyup.enter)="addCommentToComplaint()"
+                ></textarea>
+              </div>
+              <button 
+                class="btn btn-primary btn-sm" 
+                (click)="addCommentToComplaint()"
+                [disabled]="!newComment.trim()"
+              >
+                <i class="bi bi-send me-1"></i>Post Comment
+              </button>
+            </div>
+          </div>
+
+          <!-- Feedback/Rating Section -->
+          <div class="detail-section" *ngIf="selectedComplaint.status === 'resolved'">
+            <h6 class="section-title">
+              <i class="bi bi-star-fill me-2 text-warning"></i>Citizen Feedback & Rating
+            </h6>
+            
+            <div *ngIf="selectedComplaint.feedback?.rating" class="feedback-card p-3 bg-light rounded border-start border-warning">
+              <div class="rating-display mb-2">
+                <div class="stars-container">
+                  <span *ngFor="let star of [1,2,3,4,5]" class="star">
+                    <i [ngClass]="star <= (selectedComplaint.feedback?.rating || 0) ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
+                  </span>
+                </div>
+                <strong class="ms-2">{{ selectedComplaint.feedback?.rating }}/5 Stars</strong>
+              </div>
+              
+              <div *ngIf="selectedComplaint.feedback?.comment" class="feedback-comment">
+                <p class="mb-0 text-break">
+                  <em>"{{ selectedComplaint.feedback.comment }}"</em>
+                </p>
+              </div>
+              
+              <p class="text-muted small mt-2 mb-0">
+                <i class="bi bi-calendar me-1"></i>
+                Submitted on {{ selectedComplaint.feedback?.submittedAt | date:'medium' }}
+              </p>
+            </div>
+
+            <div *ngIf="!selectedComplaint.feedback?.rating" class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              No feedback has been submitted by the citizen yet.
+            </div>
           </div>
 
           <div class="detail-section">
@@ -391,6 +538,9 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-info" (click)="downloadComplaintDetails()" title="Download complaint details as PDF">
+            <i class="bi bi-file-pdf me-2"></i>Download PDF
+          </button>
           <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
         </div>
       </div>

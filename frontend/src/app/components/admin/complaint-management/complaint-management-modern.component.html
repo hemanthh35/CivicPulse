@@ -1,0 +1,184 @@
+<div class="modern-management-container">
+  <!-- Page Header -->
+  <div class="page-header mb-5">
+    <div class="header-top">
+      <div>
+        <h1 class="page-title">
+          <i class="bi bi-flag-fill me-3" style="color: #1a73e8;"></i>Complaint Management
+        </h1>
+        <p class="page-subtitle">Efficiently manage and resolve citizen complaints</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-modern btn-primary" (click)="exportToCSV()" *ngIf="complaints.length > 0">
+          <i class="bi bi-download me-2"></i>Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="header-stats">
+      <div class="stat-card">
+        <div class="stat-value">{{ getStatusCount('pending') }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ getStatusCount('in-progress') }}</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ getStatusCount('resolved') }}</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show mb-4">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show mb-4">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close" (click)="success = ''"></button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section mb-5">
+    <div class="filter-header">
+      <i class="bi bi-funnel me-2"></i>
+      <span>Filters & Search</span>
+    </div>
+
+    <div class="filter-row">
+      <div class="form-group">
+        <label>Search</label>
+        <input 
+          type="text" 
+          placeholder="Search by title or description..."
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Priority</label>
+        <select [(ngModel)]="priorityFilter" (change)="onFilterChange()">
+          <option value="">All Priorities</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="typeFilter" (change)="onFilterChange()">
+          <option value="">All Types</option>
+          <option value="road">Road</option>
+          <option value="water">Water</option>
+          <option value="electricity">Electricity</option>
+          <option value="sanitation">Sanitation</option>
+        </select>
+      </div>
+
+      <div class="form-group-action">
+        <button class="btn btn-modern btn-primary" (click)="onSearch()">
+          <i class="bi bi-search me-2"></i>Search
+        </button>
+        <button class="btn btn-modern btn-secondary" (click)="loadComplaints()">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-modern"></div>
+    <p class="mt-3 text-muted">Loading complaints...</p>
+  </div>
+
+  <!-- Complaints Grid/List -->
+  <div *ngIf="!isLoading" class="complaints-section">
+    <!-- Empty State -->
+    <div *ngIf="complaints.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h4>No Complaints Found</h4>
+      <p>Try adjusting your filters or search terms to find complaints</p>
+    </div>
+
+    <!-- Grid View -->
+    <div *ngIf="complaints.length > 0" class="complaints-grid">
+      <div *ngFor="let complaint of complaints" class="complaint-card" [ngClass]="'status-' + complaint.status">
+        <div class="complaint-header">
+          <div class="title">{{ complaint.title }}</div>
+          <div class="badges">
+            <span class="badge-status" [ngClass]="complaint.status">{{ complaint.status }}</span>
+            <span class="badge-priority" [ngClass]="complaint.priority">{{ complaint.priority }}</span>
+          </div>
+        </div>
+
+        <div class="complaint-body">
+          <p class="description">{{ complaint.description }}</p>
+          
+          <div class="meta-info">
+            <span *ngIf="complaint.location">
+              <i class="bi bi-geo-alt-fill me-1"></i>
+              {{ complaint.location.city || 'Unknown' }}
+            </span>
+            <span>
+              <i class="bi bi-calendar me-1"></i>
+              {{ complaint.createdAt | date:'MMM dd, yyyy' }}
+            </span>
+            <span>
+              <i class="bi bi-type me-1"></i>
+              {{ complaint.type }}
+            </span>
+          </div>
+        </div>
+
+        <div class="complaint-footer">
+          <div class="assigned">
+            <i class="bi bi-person-circle me-1"></i>
+            <span *ngIf="complaint.assignedTo">{{ complaint.assignedTo?.name }}</span>
+            <span *ngIf="!complaint.assignedTo" class="text-muted">Unassigned</span>
+          </div>
+          
+          <div class="actions">
+            <button class="action-btn" (click)="openDetailModal(complaint)" title="View Details">
+              <i class="bi bi-eye"></i>
+            </button>
+            <button class="action-btn" (click)="openAssignModal(complaint)" title="Assign">
+              <i class="bi bi-person-plus"></i>
+            </button>
+            <button class="action-btn" (click)="openUpdateStatusModal(complaint)" title="Update Status">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="action-btn danger" (click)="deleteComplaint(complaint)" title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals will be added based on your existing code -->
+</div>

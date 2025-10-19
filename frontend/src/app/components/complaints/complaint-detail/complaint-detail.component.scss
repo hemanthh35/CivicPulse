@@ -1,0 +1,146 @@
+.complaint-detail-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+
+  .card {
+    border: none;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
+  .complaint-meta {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .complaint-image {
+    cursor: pointer;
+    transition: transform 0.2s;
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  // Timeline Styles
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #dee2e6;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 25px;
+
+      .timeline-marker {
+        position: absolute;
+        left: -25px;
+        top: 5px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #dee2e6;
+        z-index: 1;
+
+        &.active {
+          border-color: #0d6efd;
+          background: #0d6efd;
+        }
+      }
+
+      .timeline-content {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+      }
+    }
+  }
+
+  // Comments Styles
+  .comment-form {
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  .comment-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #dee2e6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .comment-avatar {
+      font-size: 2.5rem;
+      color: #0d6efd;
+      margin-right: 15px;
+    }
+
+    .comment-content {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .comment-actions {
+      button {
+        padding: 0;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  // Badge Styles
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+  }
+
+  // Responsive
+  @media (max-width: 768px) {
+    .complaint-image {
+      height: 150px;
+    }
+
+    .timeline {
+      padding-left: 25px;
+
+      &::before {
+        left: 5px;
+      }
+
+      .timeline-item {
+        .timeline-marker {
+          left: -22px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    .comment-item {
+      .comment-avatar {
+        font-size: 2rem;
+      }
+    }
+  }
+}

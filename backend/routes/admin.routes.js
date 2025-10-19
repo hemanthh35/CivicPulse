@@ -704,16 +704,16 @@ router.get('/analytics/trends', protect, authorize('admin'), async (req, res) =>
 // ==========================================
 
 // @route   GET /api/admin/moderation
-// @desc    Get all moderation reports (using complaints)
+// @desc    Get all moderation reports from ModerationQueue
 // @access  Private/Admin
 router.get('/moderation', protect, authorize('admin'), async (req, res) => {
   try {
-    const { status, priority, type, search, page = 1, limit = 10 } = req.query;
+    const { status, severity, reason, search, page = 1, limit = 10 } = req.query;
 
     let query = {};
-    if (status) query.status = status; // Only filter by status if provided
-    if (priority) query.priority = priority;
-    if (type) query.type = type;
+    if (status) query.status = status;
+    if (severity) query.severity = severity;
+    if (reason) query.reason = reason;
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -721,14 +721,15 @@ router.get('/moderation', protect, authorize('admin'), async (req, res) => {
       ];
     }
 
-    const reports = await Complaint.find(query)
-      .populate('createdBy', 'name email')
-      .populate('assignedTo', 'name email')
+    const reports = await ModerationQueue.find(query)
+      .populate('reportedBy', 'name email role')
+      .populate('reportedItemId', 'title description type priority')
+      .populate('reviewedBy', 'name email')
       .sort({ createdAt: -1 })
       .limit(parseInt(limit))
       .skip((parseInt(page) - 1) * parseInt(limit));
 
-    const total = await Complaint.countDocuments(query);
+    const total = await ModerationQueue.countDocuments(query);
 
     res.status(200).json({
       success: true,
@@ -784,16 +785,25 @@ router.get('/moderation/:id', protect, authorize('admin'), async (req, res) => {
 router.put('/moderation/:id/approve', protect, authorize('admin'), async (req, res) => {
   try {
     const { action, moderatorNotes } = req.body;
+    const moderationId = req.params.id;
+    
+    console.log('🔍 MODERATION APPROVE DEBUG:');
+    console.log('  ID:', moderationId);
+    console.log('  User:', req.user?.role, req.user?._id);
+    console.log('  Body:', { action, moderatorNotes });
 
-    const report = await ModerationQueue.findById(req.params.id);
-
+    const report = await ModerationQueue.findById(moderationId);
+    
+    console.log('  Report found:', !!report);
     if (!report) {
+      console.log('  ❌ Report not found in ModerationQueue');
       return res.status(404).json({
         success: false,
         message: 'Moderation report not found'
       });
     }
 
+    console.log('  ✅ Report found:', report);
     report.status = 'approved';
     report.action = action || 'none';
     report.moderatorNotes = moderatorNotes;
@@ -813,7 +823,7 @@ router.put('/moderation/:id/approve', protect, authorize('admin'), async (req, r
       report
     });
   } catch (error) {
-    console.error(error);
+    console.error('❌ MODERATION APPROVE ERROR:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'
@@ -827,16 +837,24 @@ router.put('/moderation/:id/approve', protect, authorize('admin'), async (req, r
 router.put('/moderation/:id/reject', protect, authorize('admin'), async (req, res) => {
   try {
     const { moderatorNotes } = req.body;
+    const moderationId = req.params.id;
+    
+    console.log('🔍 MODERATION REJECT DEBUG:');
+    console.log('  ID:', moderationId);
+    console.log('  User:', req.user?.role, req.user?._id);
 
-    const report = await ModerationQueue.findById(req.params.id);
-
+    const report = await ModerationQueue.findById(moderationId);
+    
+    console.log('  Report found:', !!report);
     if (!report) {
+      console.log('  ❌ Report not found in ModerationQueue');
       return res.status(404).json({
         success: false,
         message: 'Moderation report not found'
       });
     }
 
+    console.log('  ✅ Report found:', report);
     report.status = 'rejected';
     report.moderatorNotes = moderatorNotes;
     report.reviewedBy = req.user.id;
@@ -850,7 +868,7 @@ router.put('/moderation/:id/reject', protect, authorize('admin'), async (req, re
       report
     });
   } catch (error) {
-    console.error(error);
+    console.error('❌ MODERATION REJECT ERROR:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'
@@ -1565,6 +1583,204 @@ router.post('/complaints/bulk-assign', protect, authorize('admin'), async (req, 
     });
   } catch (error) {
     console.error('Bulk assignment error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// ==========================================
+// REWARDS MANAGEMENT
+// ==========================================
+
+const Reward = require('../models/reward.model');
+
+// @route   GET /api/admin/rewards/stats
+// @desc    Get rewards system statistics
+// @access  Private/Admin
+router.get('/rewards/stats', protect, authorize('admin'), async (req, res) => {
+  try {
+    // Get all students
+    const students = await User.find({ role: 'student' });
+    const studentIds = students.map(s => s._id);
+    
+    // Get rewards for all students
+    const rewards = await Reward.find({ userId: { $in: studentIds } });
+    
+    // Calculate stats
+    const totalStudents = students.length;
+    const totalPoints = rewards.reduce((sum, r) => sum + (r.points || 0), 0);
+    const totalBadges = rewards.reduce((sum, r) => sum + (r.badges?.length || 0), 0);
+    const totalRedemptions = rewards.reduce((sum, r) => {
+      return sum + (r.coupons?.filter(c => c.redeemed).length || 0);
+    }, 0);
+    const avgPointsPerStudent = totalStudents > 0 ? Math.round(totalPoints / totalStudents) : 0;
+    
+    res.json({
+      success: true,
+      stats: {
+        totalStudents,
+        totalPoints,
+        totalBadges,
+        totalRedemptions,
+        avgPointsPerStudent
+      }
+    });
+  } catch (error) {
+    console.error('Get rewards stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   POST /api/admin/rewards/add-points
+// @desc    Add points to a student's account
+// @access  Private/Admin
+router.post('/rewards/add-points', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { userId, points, reason } = req.body;
+    
+    if (!userId || !points || points < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid userId and points (min: 1) are required'
+      });
+    }
+    
+    // Check if user is a student
+    const user = await User.findById(userId);
+    if (!user || user.role !== 'student') {
+      return res.status(400).json({
+        success: false,
+        message: 'User not found or is not a student'
+      });
+    }
+    
+    // Find or create reward record
+    let reward = await Reward.findOne({ userId });
+    if (!reward) {
+      reward = new Reward({ userId, points: 0, badges: [] });
+    }
+    
+    // Add points
+    reward.points += parseInt(points);
+    await reward.save();
+    
+    res.json({
+      success: true,
+      message: `Successfully added ${points} points to ${user.name}`,
+      data: {
+        userId: user._id,
+        userName: user.name,
+        newPointsTotal: reward.points,
+        reason
+      }
+    });
+  } catch (error) {
+    console.error('Add points error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   POST /api/admin/rewards/add-badge
+// @desc    Add a badge to a student's account
+// @access  Private/Admin
+router.post('/rewards/add-badge', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { userId, badgeName, description } = req.body;
+    
+    if (!userId || !badgeName) {
+      return res.status(400).json({
+        success: false,
+        message: 'userId and badgeName are required'
+      });
+    }
+    
+    // Check if user is a student
+    const user = await User.findById(userId);
+    if (!user || user.role !== 'student') {
+      return res.status(400).json({
+        success: false,
+        message: 'User not found or is not a student'
+      });
+    }
+    
+    // Find or create reward record
+    let reward = await Reward.findOne({ userId });
+    if (!reward) {
+      reward = new Reward({ userId, points: 0, badges: [] });
+    }
+    
+    // Add badge if not already present
+    if (!reward.badges.includes(badgeName)) {
+      reward.badges.push(badgeName);
+      await reward.save();
+      
+      res.json({
+        success: true,
+        message: `Successfully awarded "${badgeName}" badge to ${user.name}`,
+        data: {
+          userId: user._id,
+          userName: user.name,
+          badgeName,
+          description,
+          totalBadges: reward.badges.length
+        }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `${user.name} already has the "${badgeName}" badge`
+      });
+    }
+  } catch (error) {
+    console.error('Add badge error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server Error'
+    });
+  }
+});
+
+// @route   POST /api/admin/rewards/create
+// @desc    Create a new redeemable reward
+// @access  Private/Admin
+router.post('/rewards/create', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { name, description, pointsRequired, category, available } = req.body;
+    
+    if (!name || !pointsRequired) {
+      return res.status(400).json({
+        success: false,
+        message: 'name and pointsRequired are required'
+      });
+    }
+    
+    // TODO: Store in a RewardTemplate collection or similar
+    // For now, just return success
+    const newReward = {
+      id: Date.now().toString(),
+      name,
+      description: description || '',
+      pointsRequired: parseInt(pointsRequired),
+      category: category || 'Other',
+      available: available !== undefined ? available : true,
+      createdAt: new Date()
+    };
+    
+    res.status(201).json({
+      success: true,
+      message: `Reward "${name}" created successfully`,
+      data: newReward
+    });
+  } catch (error) {
+    console.error('Create reward error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'

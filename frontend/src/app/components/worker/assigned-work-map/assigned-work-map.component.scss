@@ -1,0 +1,239 @@
+.assigned-work-map-container {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+
+  .map-header {
+    h2 {
+      color: #2c3e50;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .map-wrapper {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .map-container {
+      width: 100%;
+      height: 600px;
+      border-radius: 12px;
+    }
+
+    .map-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 5;
+      font-size: 13px;
+
+      .legend-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: #5a6c7d;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .legend-marker {
+          font-size: 16px;
+          font-weight: bold;
+          display: inline-block;
+        }
+      }
+    }
+
+    .distance-display {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 5;
+      min-width: 180px;
+
+      .distance-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        i {
+          font-size: 24px;
+          color: #667eea;
+        }
+
+        strong {
+          display: block;
+          color: #5a6c7d;
+          font-size: 12px;
+        }
+
+        p {
+          margin: 5px 0 0 0;
+          font-size: 20px;
+          font-weight: bold;
+          color: #2c3e50;
+        }
+      }
+    }
+  }
+
+  .details-panel {
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .card-header {
+        border-radius: 12px 12px 0 0;
+        font-weight: 600;
+      }
+
+      .card-body {
+        padding: 20px;
+
+        .work-details {
+          .detail-item {
+            margin-bottom: 0;
+
+            .detail-label {
+              font-weight: 600;
+              color: #5a6c7d;
+              display: block;
+              margin-bottom: 8px;
+              font-size: 13px;
+            }
+
+            .detail-value {
+              color: #2c3e50;
+              font-size: 15px;
+              margin: 0;
+              word-break: break-word;
+            }
+          }
+
+          .row {
+            margin-left: 0;
+            margin-right: 0;
+
+            > div {
+              padding-left: 0;
+              padding-right: 0;
+            }
+          }
+
+          .badge {
+            font-size: 12px;
+            padding: 8px 12px;
+            font-weight: 500;
+          }
+        }
+
+        .btn {
+          border-radius: 8px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          &.btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+
+            &:hover:not(:disabled) {
+              background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+            }
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+
+        .alert {
+          border-radius: 8px;
+          border: none;
+
+          &.alert-info {
+            background: #e7f3ff;
+            color: #004085;
+            border-left: 4px solid #0066cc;
+          }
+        }
+
+        small {
+          display: block;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 992px) {
+    .map-wrapper .map-container {
+      height: 400px;
+    }
+
+    .details-panel {
+      margin-top: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 15px;
+
+    .map-wrapper {
+      .map-container {
+        height: 300px;
+      }
+
+      .distance-display {
+        top: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 12px;
+      }
+
+      .map-legend {
+        bottom: 10px;
+        left: 10px;
+        padding: 10px 15px;
+      }
+    }
+
+    .details-panel {
+      margin-top: 15px;
+
+      .card-body {
+        padding: 15px;
+      }
+    }
+  }
+}

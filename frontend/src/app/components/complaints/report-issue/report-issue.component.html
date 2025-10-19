@@ -153,7 +153,32 @@
               
               <div *ngIf="!coordinates.lat && !coordinates.lng" class="alert alert-info" role="alert">
                 <i class="bi bi-info-circle me-2"></i>
-                <strong>Tip:</strong> Click "Auto-Fill with Current Location" to automatically populate all address fields, or fill them manually.
+                <strong>Tip:</strong> Click "Use My Current Location" to automatically populate your location with GPS, or fill them manually.
+              </div>
+              
+              <!-- Accuracy Indicator -->
+              <div *ngIf="locationAccuracy !== null && coordinates.lat && coordinates.lng" class="alert mb-3" 
+                   [ngClass]="{'alert-success': locationAccuracy <= 50, 'alert-info': locationAccuracy > 50 && locationAccuracy <= 100, 'alert-warning': locationAccuracy > 100}">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <i class="bi me-2" [ngClass]="{'bi-check-circle': locationAccuracy <= 100, 'bi-exclamation-triangle': locationAccuracy > 100}"></i>
+                    <strong>📍 Location Accuracy: {{ locationAccuracy }}m</strong>
+                    <div class="small mt-1">
+                      <span *ngIf="locationAccuracy <= 50">🎯 Excellent precision (within 50m) - Very reliable</span>
+                      <span *ngIf="locationAccuracy > 50 && locationAccuracy <= 100">✅ Good accuracy (within 100m) - Reliable</span>
+                      <span *ngIf="locationAccuracy > 100 && locationAccuracy <= 300">⚠️ Moderate accuracy ({{ locationAccuracy }}m) - Acceptable but may vary</span>
+                      <span *ngIf="locationAccuracy > 300">❌ Poor accuracy ({{ locationAccuracy }}m) - Try getting GPS in open area or re-enter manually</span>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-primary" 
+                          (click)="getCurrentLocation()" 
+                          [disabled]="fetchingLocation"
+                          title="Retry to get better accuracy">
+                    <i class="bi bi-arrow-clockwise me-1" *ngIf="!fetchingLocation"></i>
+                    <span class="spinner-border spinner-border-sm me-1" *ngIf="fetchingLocation"></span>
+                    Retry
+                  </button>
+                </div>
               </div>
               
               <div class="mb-3">
@@ -226,6 +251,17 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- Geocode Button for Manual Address Entry -->
+              <div class="mb-3 d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary flex-grow-1" 
+                        (click)="geocodeAddress()"
+                        [disabled]="fetchingLocation || !locationControls['address'].value || !locationControls['city'].value">
+                  <span class="spinner-border spinner-border-sm me-2" *ngIf="fetchingLocation"></span>
+                  <i class="bi bi-search-location me-2" *ngIf="!fetchingLocation"></i>
+                  {{ fetchingLocation ? 'Geocoding Address...' : 'Find Coordinates from Address' }}
+                </button>
               </div>
             </div>
           </div>

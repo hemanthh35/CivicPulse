@@ -1,204 +1,185 @@
-<div class="admin-performance-panel">
-  <!-- Breadcrumb Navigation -->
-  <nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a routerLink="/admin/dashboard" class="text-decoration-none">
-          <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
-        </a>
-      </li>
-      <li class="breadcrumb-item active" aria-current="page">Worker Performance</li>
-    </ol>
-  </nav>
-
-  <!-- Header -->
-  <div class="management-header mb-4">
-    <div class="header-content">
-      <h2 class="page-title">
-        <i class="bi bi-bar-chart-line"></i> Worker Performance Analytics
-      </h2>
-      <p class="page-subtitle">Track worker efficiency, workload distribution, and performance metrics</p>
+<div class="performance-analytics">
+  <!-- Modern Header -->
+  <div class="hero-header">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Worker Performance</h1>
+        <p>Monitor team productivity and workload in real-time</p>
+      </div>
+      <button class="refresh-btn" (click)="refreshData()" [disabled]="loading">
+        <i class="bi bi-arrow-clockwise" [class.spin]="loading"></i>
+      </button>
     </div>
-    <button class="btn btn-primary" (click)="refreshData()" [disabled]="loading">
-      <i class="bi bi-arrow-clockwise me-2" [class]="loading ? 'fa-spin' : ''"></i>
-      Refresh Data
-    </button>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="mt-3">Loading performance data...</p>
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading analytics...</p>
   </div>
 
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
-    <i class="bi bi-exclamation-triangle me-2"></i>
-    {{ error }}
-    <button class="btn btn-sm btn-outline-danger ms-3" (click)="refreshData()">Retry</button>
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-banner">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ error }}</span>
+    <button class="retry-btn" (click)="refreshData()">Retry</button>
   </div>
 
-  <!-- Performance Summary Cards -->
-  <div *ngIf="!loading && !error && summary" class="row mb-4">
-    <div class="col-md-3">
-      <div class="summary-card">
-        <div class="card-icon">
-          <i class="bi bi-people-fill"></i>
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error && summary" class="content-wrapper">
+    
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card purple">
+        <div class="kpi-icon">
+          <i class="bi bi-people"></i>
         </div>
-        <div class="card-content">
-          <h3>{{ summary.totalWorkers }}</h3>
-          <p>Total Workers</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="summary-card">
-        <div class="card-icon">
-          <i class="bi bi-flag-fill"></i>
-        </div>
-        <div class="card-content">
-          <h3>{{ summary.totalComplaints }}</h3>
-          <p>Total Complaints</p>
+        <div class="kpi-data">
+          <div class="kpi-value">{{ summary.totalWorkers }}</div>
+          <div class="kpi-label">Total Workers</div>
         </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="summary-card">
-        <div class="card-icon">
-          <i class="bi bi-check-circle-fill"></i>
+
+      <div class="kpi-card blue">
+        <div class="kpi-icon">
+          <i class="bi bi-clipboard-data"></i>
         </div>
-        <div class="card-content">
-          <h3>{{ summary.totalResolved }}</h3>
-          <p>Resolved</p>
+        <div class="kpi-data">
+          <div class="kpi-value">{{ summary.totalComplaints }}</div>
+          <div class="kpi-label">Total Tasks</div>
         </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="summary-card">
-        <div class="card-icon">
+
+      <div class="kpi-card green">
+        <div class="kpi-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="kpi-data">
+          <div class="kpi-value">{{ summary.totalResolved }}</div>
+          <div class="kpi-label">Completed</div>
+        </div>
+      </div>
+
+      <div class="kpi-card orange">
+        <div class="kpi-icon">
           <i class="bi bi-graph-up"></i>
         </div>
-        <div class="card-content">
-          <h3>{{ summary.avgCompletionRate }}%</h3>
-          <p>Avg Completion Rate</p>
+        <div class="kpi-data">
+          <div class="kpi-value">{{ summary.avgCompletionRate }}%</div>
+          <div class="kpi-label">Success Rate</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Workload Distribution -->
-  <div *ngIf="!loading && !error && summary" class="row mb-4">
-    <div class="col-12">
-      <div class="workload-distribution-card">
-        <h5 class="mb-3">
-          <i class="bi bi-pie-chart me-2"></i>Workload Distribution
-        </h5>
-        <div class="workload-bars">
-          <div class="workload-item">
-            <div class="workload-label">
-              <span class="badge bg-success me-2">Light</span>
-              {{ summary.workloadDistribution.light }} workers
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-success"
-                   [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.light / summary.totalWorkers) * 100 : 0">
-              </div>
-            </div>
+    <!-- Workload Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>Workload Distribution</h2>
+      </div>
+      <div class="workload-grid">
+        <div class="workload-bar">
+          <div class="workload-info">
+            <span class="workload-name">
+              <span class="dot green"></span>
+              Light Workload
+            </span>
+            <span class="workload-count">{{ summary.workloadDistribution.light }}</span>
           </div>
-          <div class="workload-item">
-            <div class="workload-label">
-              <span class="badge bg-warning me-2">Moderate</span>
-              {{ summary.workloadDistribution.moderate }} workers
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-warning"
-                   [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.moderate / summary.totalWorkers) * 100 : 0">
-              </div>
-            </div>
-          </div>
-          <div class="workload-item">
-            <div class="workload-label">
-              <span class="badge bg-danger me-2">Heavy</span>
-              {{ summary.workloadDistribution.heavy }} workers
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-danger"
-                   [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.heavy / summary.totalWorkers) * 100 : 0">
-              </div>
+          <div class="bar">
+            <div class="bar-progress green" 
+                 [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.light / summary.totalWorkers) * 100 : 0">
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Worker Performance Table -->
-  <div *ngIf="!loading && !error" class="row">
-    <div class="col-12">
-      <div class="performance-table-card">
-        <h5 class="mb-3">
-          <i class="bi bi-table me-2"></i>Individual Worker Performance
-        </h5>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Worker</th>
-                <th>Total Assigned</th>
-                <th>Pending</th>
-                <th>In Progress</th>
-                <th>Resolved</th>
-                <th>Completion Rate</th>
-                <th>Avg Time (Days)</th>
-                <th>Recent Activity</th>
-                <th>Workload</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let worker of performanceData">
-                <td>
-                  <div class="worker-info">
-                    <div class="worker-name">{{ worker.worker.name }}</div>
-                    <div class="worker-email text-muted small">{{ worker.worker.email }}</div>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <span class="badge bg-primary">{{ worker.stats.totalAssigned }}</span>
-                </td>
-                <td class="text-center">
-                  <span class="badge bg-warning">{{ worker.stats.pending }}</span>
-                </td>
-                <td class="text-center">
-                  <span class="badge bg-info">{{ worker.stats.inProgress }}</span>
-                </td>
-                <td class="text-center">
-                  <span class="badge bg-success">{{ worker.stats.resolved }}</span>
-                </td>
-                <td class="text-center">
-                  <span [class]="getCompletionRateClass(worker.stats.completionRate)">
-                    {{ worker.stats.completionRate }}%
-                  </span>
-                </td>
-                <td class="text-center">
-                  {{ worker.stats.avgCompletionTime || 'N/A' }}
-                </td>
-                <td class="text-center">
-                  <span class="badge bg-secondary">{{ worker.stats.recentResolved }}</span>
-                  <small class="text-muted d-block">last 30 days</small>
-                </td>
-                <td class="text-center">
-                  <span [class]="getWorkloadBadgeClass(worker.stats.workloadStatus)">
-                    {{ getWorkloadText(worker.stats.workloadStatus) }}
-                  </span>
-                  <small class="text-muted d-block">{{ worker.stats.activeTasks }} active</small>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="workload-bar">
+          <div class="workload-info">
+            <span class="workload-name">
+              <span class="dot yellow"></span>
+              Moderate Load
+            </span>
+            <span class="workload-count">{{ summary.workloadDistribution.moderate }}</span>
+          </div>
+          <div class="bar">
+            <div class="bar-progress yellow" 
+                 [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.moderate / summary.totalWorkers) * 100 : 0">
+            </div>
+          </div>
+        </div>
+
+        <div class="workload-bar">
+          <div class="workload-info">
+            <span class="workload-name">
+              <span class="dot red"></span>
+              Heavy Load
+            </span>
+            <span class="workload-count">{{ summary.workloadDistribution.heavy }}</span>
+          </div>
+          <div class="bar">
+            <div class="bar-progress red" 
+                 [style.width.%]="summary.totalWorkers > 0 ? (summary.workloadDistribution.heavy / summary.totalWorkers) * 100 : 0">
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Performance Table -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>Team Performance</h2>
+      </div>
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th>Assigned</th>
+              <th>Pending</th>
+              <th>Active</th>
+              <th>Done</th>
+              <th>Rate</th>
+              <th>Avg Time</th>
+              <th>Recent</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let worker of performanceData" class="table-row">
+              <td class="worker-col">
+                <div class="worker-avatar">{{ worker.worker.name.charAt(0) }}</div>
+                <div class="worker-details">
+                  <div class="worker-name">{{ worker.worker.name }}</div>
+                  <div class="worker-email">{{ worker.worker.email }}</div>
+                </div>
+              </td>
+              <td><span class="pill blue-pill">{{ worker.stats.totalAssigned }}</span></td>
+              <td><span class="pill orange-pill">{{ worker.stats.pending }}</span></td>
+              <td><span class="pill purple-pill">{{ worker.stats.inProgress }}</span></td>
+              <td><span class="pill green-pill">{{ worker.stats.resolved }}</span></td>
+              <td>
+                <span class="rate-badge" [class]="getRateClass(worker.stats.completionRate)">
+                  {{ worker.stats.completionRate }}%
+                </span>
+              </td>
+              <td class="time-col">{{ worker.stats.avgCompletionTime || 'N/A' }}</td>
+              <td>
+                <div class="recent-col">
+                  <span class="recent-number">{{ worker.stats.recentResolved }}</span>
+                  <span class="recent-text">30d</span>
+                </div>
+              </td>
+              <td>
+                <span class="status-badge" [class]="worker.stats.workloadStatus">
+                  {{ getWorkloadText(worker.stats.workloadStatus) }}
+                </span>
+                <div class="active-count">{{ worker.stats.activeTasks }} active</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>

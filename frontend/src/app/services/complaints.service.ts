@@ -53,6 +53,8 @@ export class ComplaintsService {
       completionRate: string;
       recentAssignments: number;
       avgCompletionTime: string;
+      overallRating?: number;
+      ratedComplaints?: number;
     }
   }> {
     return this.http.get<any>(`${this.apiUrl}/worker/stats`);
@@ -113,5 +115,85 @@ export class ComplaintsService {
     }
   }> {
     return this.http.get<any>(`${this.apiUrl}/worker/analytics`);
+  }
+
+  // New Citizen Features
+  getComplaintDetails(complaintId: string): Observable<{
+    success: boolean;
+    complaint: Complaint;
+    workerStats: any;
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/${complaintId}/details`);
+  }
+
+  addComment(complaintId: string, text: string): Observable<{
+    success: boolean;
+    message: string;
+    comment: any;
+    complaint: Complaint;
+  }> {
+    return this.http.post<any>(`${this.apiUrl}/${complaintId}/comments`, { text });
+  }
+
+  getComments(complaintId: string): Observable<{
+    success: boolean;
+    comments: any[];
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/${complaintId}/comments`);
+  }
+
+  addMedia(complaintId: string, files: File[]): Observable<{
+    success: boolean;
+    message: string;
+    mediaURLs: string[];
+    allMedia: string[];
+  }> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+    
+    return this.http.post<any>(`${this.apiUrl}/${complaintId}/media`, formData);
+  }
+
+  searchAdvanced(params: {
+    q?: string;
+    status?: string;
+    type?: string;
+    priority?: string;
+    startDate?: string;
+    endDate?: string;
+    myComplaints?: boolean;
+    page?: number;
+    limit?: number;
+  }): Observable<{
+    success: boolean;
+    complaints: Complaint[];
+    pagination: {
+      total: number;
+      page: number;
+      pages: number;
+      limit: number;
+    };
+  }> {
+    const queryParams = new URLSearchParams();
+    
+    Object.keys(params).forEach(key => {
+      const value = params[key as keyof typeof params];
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams.append(key, value.toString());
+      }
+    });
+    
+    return this.http.get<any>(`${this.apiUrl}/search/advanced?${queryParams.toString()}`);
+  }
+
+  getNearbyComplaints(lat: number, lng: number, radius?: number): Observable<{
+    success: boolean;
+    count: number;
+    complaints: Complaint[];
+  }> {
+    const radiusParam = radius ? `?radius=${radius}` : '';
+    return this.http.get<any>(`${this.apiUrl}/nearby/${lat}/${lng}${radiusParam}`);
   }
 }

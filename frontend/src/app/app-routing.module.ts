@@ -49,6 +49,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['citizen', 'student'] }
   },
+  {
+    path: 'my-complaints',
+    loadComponent: () => import('./components/complaints/my-complaints/my-complaints.component').then(m => m.MyComplaintsComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['citizen', 'student'] }
+  },
   // Student-only routes
   {
     path: 'rewards',
@@ -80,6 +86,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['worker'] }
   },
+  {
+    path: 'worker/work-map/:id',
+    loadComponent: () => import('./components/worker/assigned-work-map/assigned-work-map.component').then(m => m.AssignedWorkMapComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['worker'] }
+  },
   // Admin routes
   {
     path: 'admin/dashboard',
@@ -108,6 +120,18 @@ const routes: Routes = [
   {
     path: 'admin/moderation',
     loadComponent: () => import('./components/admin/moderation-panel/moderation-panel.component').then(m => m.ModerationPanelComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'admin/maps',
+    loadComponent: () => import('./components/admin/complaint-maps/complaint-maps.component').then(m => m.ComplaintMapsComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'admin/rewards',
+    loadComponent: () => import('./components/admin/rewards-management/rewards-management.component').then(m => m.RewardsManagementComponent),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
   },

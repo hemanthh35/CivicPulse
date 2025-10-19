@@ -55,7 +55,9 @@ export class ReportIssueComponent implements OnInit {
         address: ['', Validators.required],
         city: ['', Validators.required],
         state: ['', Validators.required],
-        pincode: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]]
+        pincode: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]],
+        lat: [null],
+        lng: [null]
       }),
       priority: ['medium', Validators.required]
     });
@@ -162,47 +164,138 @@ export class ReportIssueComponent implements OnInit {
 
     this.fetchingLocation = true;
     this.locationError = '';
-    console.log('Starting geolocation request...');
+    console.log('Starting geolocation request with HIGH ACCURACY...');
 
     const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000
+      enableHighAccuracy: true,  // Request GPS satellite fix (not WiFi)
+      timeout: 30000,            // Wait up to 30 seconds for accurate position
+      maximumAge: 0              // Always get fresh position, don't use cached
     };
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Position received:', position);
-        this.coordinates = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        this.locationAccuracy = Math.round(position.coords.accuracy);
-        console.log('Coordinates set:', this.coordinates);
-        
-        // Reverse geocode to get address
-        this.reverseGeocode(this.coordinates.lat, this.coordinates.lng);
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        this.fetchingLocation = false;
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            this.locationError = 'Location access denied. Please allow location access and try again.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            this.locationError = 'Location information is unavailable.';
-            break;
-          case error.TIMEOUT:
-            this.locationError = 'Location request timed out. Please try again.';
-            break;
-          default:
-            this.locationError = 'An unknown error occurred while retrieving location.';
-            break;
-        }
-      },
+    let attemptCount = 0;
+    const MAX_ATTEMPTS = 3;
+    let bestPosition: any = null;
+    let bestAccuracy = Infinity;
+
+    const successCallback = (position: any) => {
+      attemptCount++;
+      const accuracy = position.coords.accuracy;
+      console.log(`� Attempt ${attemptCount}: Accuracy = ${accuracy}m`);
+
+      // Keep track of best position so far
+      if (accuracy < bestAccuracy) {
+        bestAccuracy = accuracy;
+        bestPosition = position;
+      }
+
+      // If accuracy is excellent (< 50m), use it immediately
+      if (accuracy < 50) {
+        console.log('✅ Excellent accuracy! Using position.');
+        this.finishLocationCapture(bestPosition);
+        return;
+      }
+
+      // If accuracy is good (< 100m), accept it
+      if (accuracy < 100) {
+        console.log('✅ Good accuracy! Using position.');
+        this.finishLocationCapture(bestPosition);
+        return;
+      }
+
+      // If we have more attempts, try again to get better accuracy
+      if (attemptCount < MAX_ATTEMPTS) {
+        console.log(`⏳ Accuracy ${accuracy}m is acceptable but trying again for better fix...`);
+        // Continue - the watch will try again
+        return;
+      }
+
+      // Use best position we got
+      console.log(`✅ Using best position with ${bestAccuracy}m accuracy after ${MAX_ATTEMPTS} attempts`);
+      this.finishLocationCapture(bestPosition);
+    };
+
+    const errorCallback = (error: any) => {
+      console.error('Geolocation error:', error);
+      this.fetchingLocation = false;
+      
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          this.locationError = '❌ Location access denied. Please enable location access in browser settings and try again.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          this.locationError = '❌ Location information is unavailable. Please check your GPS or internet connection and try again.';
+          break;
+        case error.TIMEOUT:
+          this.locationError = '❌ Location request timed out (30 seconds). Please ensure GPS is enabled and try again outdoors.';
+          break;
+        default:
+          this.locationError = '❌ Could not retrieve location. Please try again.';
+          break;
+      }
+    };
+
+    // Use watchPosition to get multiple attempts for best accuracy
+    const watchId = navigator.geolocation.watchPosition(
+      successCallback,
+      errorCallback,
       options
     );
+
+    // Stop watching after max attempts or 35 seconds
+    setTimeout(() => {
+      navigator.geolocation.clearWatch(watchId);
+      
+      if (bestPosition) {
+        // Already captured, finishLocationCapture was called
+      } else if (this.fetchingLocation) {
+        // Never got a position
+        this.fetchingLocation = false;
+        this.locationError = '❌ Could not get accurate location. Please try again outdoors or in an area with clear sky view.';
+      }
+    }, 35000);
+  }
+
+  finishLocationCapture(position: any): void {
+    if (!position) return;
+
+    const accuracy = Math.round(position.coords.accuracy);
+    console.log('📍 Location captured successfully!');
+    console.log('Accuracy:', accuracy, 'meters');
+
+    this.coordinates = {
+      lat: parseFloat(position.coords.latitude.toFixed(8)),
+      lng: parseFloat(position.coords.longitude.toFixed(8))
+    };
+    this.locationAccuracy = accuracy;
+
+    console.log('Coordinates:', this.coordinates);
+    console.log('Accuracy:', this.locationAccuracy, 'm');
+    console.log('DEBUG: Raw GPS - Lat:', position.coords.latitude, 'Lng:', position.coords.longitude);
+
+    // Update form fields with coordinates
+    const locationFormGroup = this.reportForm.get('location') as FormGroup;
+    if (locationFormGroup) {
+      locationFormGroup.patchValue({
+        lat: this.coordinates.lat,
+        lng: this.coordinates.lng
+      });
+      console.log('✅ Form coordinates updated - Lat:', locationFormGroup.get('lat')?.value, 'Lng:', locationFormGroup.get('lng')?.value);
+    }
+
+    // Show accuracy indicator
+    if (accuracy <= 50) {
+      this.successMessage = `✅ Excellent accuracy: ${accuracy}m (Very precise!)`;
+    } else if (accuracy <= 100) {
+      this.successMessage = `✅ Good accuracy: ${accuracy}m (Acceptable)`;
+    } else if (accuracy <= 300) {
+      this.successMessage = `⚠️ Moderate accuracy: ${accuracy}m (Acceptable)`;
+    } else {
+      this.successMessage = `⚠️ Accuracy ${accuracy}m - Please get location in open area or try again`;
+    }
+
+    // Reverse geocode to get address
+    this.reverseGeocode(this.coordinates.lat, this.coordinates.lng);
+    this.fetchingLocation = false;
   }
 
   reverseGeocode(lat: number, lng: number): void {
@@ -253,7 +346,9 @@ export class ReportIssueComponent implements OnInit {
             address: streetAddress,
             city: city,
             state: state,
-            pincode: addr.postcode || ''
+            pincode: addr.postcode || '',
+            lat: lat,
+            lng: lng
           };
           
           console.log('OpenStreetMap extracted data:', addressData);
@@ -273,6 +368,63 @@ export class ReportIssueComponent implements OnInit {
         this.fetchingLocation = false;
         this.locationError = 'Failed to fetch address. Please enter manually.';
         console.error('Geocoding error:', error);
+      });
+  }
+
+  // Forward geocoding: Convert address to coordinates
+  geocodeAddress(): void {
+    const locationForm = this.reportForm.get('location') as FormGroup;
+    const address = locationForm.get('address')?.value;
+    const city = locationForm.get('city')?.value;
+    const state = locationForm.get('state')?.value;
+    
+    if (!address || !city) {
+      this.locationError = 'Please enter address and city to geocode';
+      return;
+    }
+
+    this.fetchingLocation = true;
+    this.locationError = '';
+    
+    // Format full address for geocoding
+    const fullAddress = `${address}, ${city}${state ? ', ' + state : ''}`;
+    console.log('🔍 Forward geocoding address:', fullAddress);
+    
+    // Use OpenStreetMap Nominatim forward geocoding
+    const encodedAddress = encodeURIComponent(fullAddress);
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodedAddress}&limit=1`;
+    
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Geocoding response:', data);
+        this.fetchingLocation = false;
+        
+        if (data && data.length > 0) {
+          const result = data[0];
+          const lat = parseFloat(result.lat);
+          const lng = parseFloat(result.lon);
+          
+          console.log('✅ Geocoded to:', { lat, lng });
+          
+          // Update form with coordinates
+          locationForm.patchValue({
+            lat: lat,
+            lng: lng
+          });
+          
+          this.coordinates = { lat, lng };
+          this.successMessage = `✅ Address geocoded successfully! (${address}, ${city})`;
+          setTimeout(() => this.successMessage = '', 4000);
+        } else {
+          console.warn('No results for address:', fullAddress);
+          this.locationError = `⚠️ Could not find coordinates for "${fullAddress}". Please try a different address or use "Use My Current Location" button.`;
+        }
+      })
+      .catch(error => {
+        console.error('Geocoding error:', error);
+        this.fetchingLocation = false;
+        this.locationError = 'Failed to geocode address. Please try again or use current location.';
       });
   }
 
@@ -299,11 +451,15 @@ export class ReportIssueComponent implements OnInit {
     formData.append('description', this.f['description'].value);
     formData.append('category', this.f['category'].value);
     
-    // Include coordinates if available
+    // Include location with coordinates if available
+    const locationValue = this.reportForm.get('location')?.value;
     const locationData = {
-      ...this.reportForm.get('location')?.value,
-      coordinates: this.coordinates.lat && this.coordinates.lng ? 
-        [this.coordinates.lng, this.coordinates.lat] : null
+      address: locationValue.address,
+      city: locationValue.city,
+      state: locationValue.state,
+      pincode: locationValue.pincode,
+      lat: locationValue.lat || this.coordinates.lat,
+      lng: locationValue.lng || this.coordinates.lng
     };
     
     formData.append('location', JSON.stringify(locationData));

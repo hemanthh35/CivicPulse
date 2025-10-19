@@ -12,6 +12,8 @@ const moderationRoutes = require('./routes/moderation.routes');
 const geminiRoutes = require('./routes/gemini.routes');
 const leaderboardRoutes = require('./routes/leaderboard.routes');
 const adminRoutes = require('./routes/admin.routes');
+const commentsRoutes = require('./routes/comments.routes');
+const notificationsRoutes = require('./routes/notifications.routes');
 
 // Initialize express app
 const app = express();
@@ -65,6 +67,8 @@ app.use('/api/moderation', moderationRoutes);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

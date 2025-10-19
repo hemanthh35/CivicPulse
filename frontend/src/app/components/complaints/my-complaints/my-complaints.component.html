@@ -8,6 +8,61 @@
         </a>
       </div>
 
+      <!-- Search and Filters -->
+      <div class="card mb-4" *ngIf="!isLoading && complaints.length > 0">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Search complaints..."
+                  [(ngModel)]="searchTerm"
+                  (input)="applyFilters()">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+                <option value="">All Priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" [(ngModel)]="typeFilter" (change)="applyFilters()">
+                <option value="">All Types</option>
+                <option value="Roads & Infrastructure">Roads</option>
+                <option value="Water & Sanitation">Water</option>
+                <option value="Electricity">Electricity</option>
+                <option value="Garbage & Waste">Garbage</option>
+                <option value="Public Safety">Safety</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-1">
+              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" title="Clear Filters">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mt-2 text-muted small">
+            <i class="bi bi-info-circle me-1"></i>
+            Showing {{ filteredComplaints.length }} of {{ complaints.length }} reports
+          </div>
+        </div>
+      </div>
+
       <!-- Status Summary Cards -->
       <div class="row mb-4" *ngIf="!isLoading && complaints.length > 0">
         <div class="col-md-4 col-sm-6 mb-3">
@@ -46,8 +101,10 @@
         <p class="mt-2">Loading your reports...</p>
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Error:</strong> {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
       </div>
 
       <div *ngIf="!isLoading && complaints.length === 0" class="text-center py-5">
@@ -57,8 +114,8 @@
         <a routerLink="/report-issue" class="btn btn-primary">Report Your First Issue</a>
       </div>
 
-      <div *ngIf="!isLoading && complaints.length > 0" class="row">
-        <div class="col-lg-4 col-md-6 mb-4" *ngFor="let complaint of complaints">
+      <div *ngIf="!isLoading && filteredComplaints.length > 0" class="row">
+        <div class="col-lg-4 col-md-6 mb-4" *ngFor="let complaint of filteredComplaints">
           <div class="card h-100 shadow-sm complaint-card">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
@@ -148,14 +205,29 @@
                     <i class="bi bi-star-fill"></i> Rated {{ complaint.feedback.rating }}/5
                   </span>
                   
-                  <button class="btn btn-sm btn-outline-primary" title="View Full Details">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="viewDetails(complaint)" title="View Full Details">
                     <i class="bi bi-eye me-1"></i>Details
+                  </button>
+                  
+                  <button class="btn btn-sm btn-outline-secondary" (click)="openCommentsModal(complaint)" title="Comments">
+                    <i class="bi bi-chat-dots me-1"></i>
+                    <span class="badge bg-primary" *ngIf="complaint.comments && complaint.comments.length > 0">
+                      {{ complaint.comments.length }}
+                    </span>
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- No results after filtering -->
+      <div *ngIf="!isLoading && complaints.length > 0 && filteredComplaints.length === 0" class="text-center py-5">
+        <i class="bi bi-search display-1 text-muted"></i>
+        <h3 class="mt-3">No results found</h3>
+        <p class="text-muted">Try adjusting your filters</p>
+        <button class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
       </div>
     </div>
   </div>
@@ -234,3 +306,206 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showFeedbackModal" *ngIf="showFeedbackModal"></div>
+
+<!-- Details Modal -->
+<div class="modal fade" [class.show]="showDetailsModal" [style.display]="showDetailsModal ? 'block' : 'none'" 
+     tabindex="-1" *ngIf="showDetailsModal">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title">
+          <i class="bi bi-info-circle me-2"></i>Complaint Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="loadingDetails" class="text-center py-5">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2">Loading details...</p>
+        </div>
+
+        <div *ngIf="!loadingDetails && selectedComplaintDetails">
+          <!-- Basic Info -->
+          <div class="mb-4">
+            <h6 class="text-primary border-bottom pb-2 mb-3">Basic Information</h6>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <strong>Title:</strong> {{ selectedComplaintDetails.complaint.title }}
+              </div>
+              <div class="col-md-3 mb-2">
+                <strong>Status:</strong> 
+                <span class="badge" [ngClass]="getStatusBadgeClass(selectedComplaintDetails.complaint.status)">
+                  {{ selectedComplaintDetails.complaint.status | titlecase }}
+                </span>
+              </div>
+              <div class="col-md-3 mb-2">
+                <strong>Priority:</strong> 
+                <span class="badge" [ngClass]="getPriorityBadgeClass(selectedComplaintDetails.complaint.priority)">
+                  {{ selectedComplaintDetails.complaint.priority | titlecase }}
+                </span>
+              </div>
+              <div class="col-12 mt-2">
+                <strong>Description:</strong>
+                <p class="text-muted mb-0">{{ selectedComplaintDetails.complaint.description }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Worker Info -->
+          <div class="mb-4" *ngIf="selectedComplaintDetails.complaint.assignedTo">
+            <h6 class="text-primary border-bottom pb-2 mb-3">Assigned Worker</h6>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-8">
+                    <h6 class="mb-1">{{ selectedComplaintDetails.complaint.assignedTo.name }}</h6>
+                    <p class="mb-1 text-muted small">
+                      <i class="bi bi-envelope me-1"></i>{{ selectedComplaintDetails.complaint.assignedTo.email }}
+                    </p>
+                    <div *ngIf="selectedComplaintDetails.complaint.assignedTo.specializations" class="mt-2">
+                      <small class="text-muted">Specializations:</small><br>
+                      <span 
+                        *ngFor="let spec of selectedComplaintDetails.complaint.assignedTo.specializations" 
+                        class="badge bg-info me-1 mt-1">
+                        {{ spec }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="selectedComplaintDetails.workerStats">
+                    <div class="text-center">
+                      <h5 class="mb-1">{{ selectedComplaintDetails.workerStats.completionRate }}%</h5>
+                      <small class="text-muted">Completion Rate</small>
+                      <p class="mb-0 small mt-2">
+                        {{ selectedComplaintDetails.workerStats.resolvedCount }} of 
+                        {{ selectedComplaintDetails.workerStats.totalAssigned }} resolved
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="mb-4" *ngIf="selectedComplaintDetails.complaint.statusHistory">
+            <h6 class="text-primary border-bottom pb-2 mb-3">Status Timeline</h6>
+            <div class="timeline">
+              <div class="timeline-item" *ngFor="let history of selectedComplaintDetails.complaint.statusHistory">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <h6 class="mb-1">{{ history.status | titlecase }}</h6>
+                  <small class="text-muted">
+                    <i class="bi bi-calendar me-1"></i>{{ history.changedAt | date:'MMM d, y h:mm a' }}
+                  </small>
+                  <p class="mb-0 small" *ngIf="history.comment">{{ history.comment }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="mb-4">
+            <h6 class="text-primary border-bottom pb-2 mb-3">Location</h6>
+            <p class="mb-1">
+              <i class="bi bi-geo-alt me-2"></i>{{ selectedComplaintDetails.complaint.location.address }}
+            </p>
+            <p class="mb-0 text-muted small">
+              {{ selectedComplaintDetails.complaint.location.city }}, 
+              {{ selectedComplaintDetails.complaint.location.state }} - 
+              {{ selectedComplaintDetails.complaint.location.pincode }}
+            </p>
+          </div>
+
+          <!-- Images -->
+          <div class="mb-4" *ngIf="selectedComplaintDetails.complaint.mediaURLs && selectedComplaintDetails.complaint.mediaURLs.length > 0">
+            <h6 class="text-primary border-bottom pb-2 mb-3">Photos</h6>
+            <div class="row g-2">
+              <div class="col-md-4" *ngFor="let media of selectedComplaintDetails.complaint.mediaURLs">
+                <img [src]="'http://localhost:5000' + media" class="img-fluid rounded" alt="Complaint photo">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="openCommentsModal(selectedComplaint!)">
+          <i class="bi bi-chat-dots me-1"></i>View Comments
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDetailsModal" *ngIf="showDetailsModal"></div>
+
+<!-- Comments Modal -->
+<div class="modal fade" [class.show]="showCommentsModal" [style.display]="showCommentsModal ? 'block' : 'none'" 
+     tabindex="-1" *ngIf="showCommentsModal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title">
+          <i class="bi bi-chat-dots me-2"></i>Comments & Discussion
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeCommentsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Comments List -->
+        <div class="comments-list mb-3">
+          <div *ngIf="comments.length === 0" class="text-center text-muted py-4">
+            <i class="bi bi-chat-square-text display-4"></i>
+            <p class="mt-2">No comments yet. Be the first to comment!</p>
+          </div>
+
+          <div class="comment-item" *ngFor="let comment of comments">
+            <div class="d-flex">
+              <div class="comment-avatar me-2">
+                <i class="bi bi-person-circle text-primary" style="font-size: 2rem;"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="comment-header">
+                  <strong>{{ comment.userName }}</strong>
+                  <span class="badge bg-secondary ms-2">{{ comment.userRole | titlecase }}</span>
+                  <small class="text-muted ms-2">
+                    {{ comment.createdAt | date:'MMM d, y h:mm a' }}
+                  </small>
+                </div>
+                <div class="comment-text mt-1">
+                  {{ comment.text }}
+                </div>
+              </div>
+            </div>
+            <hr>
+          </div>
+        </div>
+
+        <!-- Add Comment Form -->
+        <div class="add-comment-form">
+          <label class="form-label"><strong>Add a comment</strong></label>
+          <textarea 
+            class="form-control mb-2" 
+            rows="3" 
+            [(ngModel)]="newComment"
+            placeholder="Type your comment here..."
+            [disabled]="submittingComment"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCommentsModal()">Close</button>
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          [disabled]="!newComment.trim() || submittingComment"
+          (click)="addComment()">
+          <span *ngIf="!submittingComment">
+            <i class="bi bi-send me-1"></i>Post Comment
+          </span>
+          <span *ngIf="submittingComment">
+            <span class="spinner-border spinner-border-sm me-1"></span>Posting...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showCommentsModal" *ngIf="showCommentsModal"></div>

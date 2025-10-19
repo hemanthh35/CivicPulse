@@ -247,4 +247,39 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+
+  toggleTravelFlag(): void {
+    if (!this.user) return;
+
+    const newState = !this.user.travelFlag;
+    const confirmMessage = newState 
+      ? 'Enable Travel Flag? Your complaints will be moderated by admin before assignment to workers.'
+      : 'Disable Travel Flag? Your complaints will go directly to admin for assignment.';
+
+    if (!confirm(confirmMessage)) {
+      // Revert the checkbox
+      if (this.user) {
+        this.user.travelFlag = !newState;
+      }
+      return;
+    }
+
+    this.authService.updateProfile({ travelFlag: newState }).subscribe({
+      next: (response) => {
+        if (response.success && response.user) {
+          this.user = response.user;
+          this.authService.storeUser(this.user);
+          alert(`Travel flag ${newState ? 'enabled' : 'disabled'} successfully!`);
+        }
+      },
+      error: (error) => {
+        console.error('Error updating travel flag:', error);
+        alert('Failed to update travel flag. Please try again.');
+        // Revert the change
+        if (this.user) {
+          this.user.travelFlag = !newState;
+        }
+      }
+    });
+  }
 }

@@ -101,6 +101,22 @@ const complaintSchema = new mongoose.Schema({
       type: Date
     }
   },
+  comments: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    userName: String,
+    userRole: String,
+    text: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   resolvedAt: {
     type: Date
   },

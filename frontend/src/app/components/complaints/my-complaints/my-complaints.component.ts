@@ -15,8 +15,15 @@ import { Complaint } from '../../../models/complaint.model';
 })
 export class MyComplaintsComponent implements OnInit {
   complaints: Complaint[] = [];
+  filteredComplaints: Complaint[] = [];
   isLoading = true;
   errorMessage = '';
+  
+  // Search & Filter
+  searchTerm = '';
+  statusFilter = '';
+  priorityFilter = '';
+  typeFilter = '';
   
   // Feedback modal
   showFeedbackModal = false;
@@ -24,6 +31,17 @@ export class MyComplaintsComponent implements OnInit {
   feedbackRating = 0;
   feedbackComment = '';
   feedbackSubmitting = false;
+
+  // Details modal
+  showDetailsModal = false;
+  selectedComplaintDetails: any = null;
+  loadingDetails = false;
+
+  // Comments
+  showCommentsModal = false;
+  comments: any[] = [];
+  newComment = '';
+  submittingComment = false;
 
   constructor(
     private complaintsService: ComplaintsService,
@@ -50,19 +68,52 @@ export class MyComplaintsComponent implements OnInit {
 
   loadMyComplaints(): void {
     const user = this.authService.getUser();
+    console.log('🔍 Loading complaints for user:', user);
+    
     if (user) {
+      console.log('📡 Fetching complaints for user ID:', user.id);
       this.complaintsService.getUserComplaints(user.id)
         .subscribe({
           next: (response) => {
-            this.complaints = response.complaints;
+            console.log('✅ Got response:', response);
+            this.complaints = response.complaints || [];
+            this.filteredComplaints = this.complaints;
             this.isLoading = false;
+            console.log('📊 Total complaints:', this.complaints.length);
           },
           error: (error) => {
-            this.errorMessage = 'Failed to load your complaints';
+            console.error('❌ Error loading complaints:', error);
+            this.errorMessage = 'Failed to load your complaints: ' + (error.error?.message || error.message);
             this.isLoading = false;
           }
         });
+    } else {
+      console.error('❌ User not found in localStorage');
+      this.errorMessage = 'User not logged in. Please login again.';
+      this.isLoading = false;
     }
+  }
+
+  applyFilters(): void {
+    this.filteredComplaints = this.complaints.filter(complaint => {
+      const matchesSearch = !this.searchTerm || 
+        complaint.title?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        complaint.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesStatus = !this.statusFilter || complaint.status === this.statusFilter;
+      const matchesPriority = !this.priorityFilter || complaint.priority === this.priorityFilter;
+      const matchesType = !this.typeFilter || complaint.type === this.typeFilter;
+      
+      return matchesSearch && matchesStatus && matchesPriority && matchesType;
+    });
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = '';
+    this.priorityFilter = '';
+    this.typeFilter = '';
+    this.filteredComplaints = this.complaints;
   }
 
   getStatusBadgeClass(status: string): string {
@@ -146,6 +197,73 @@ export class MyComplaintsComponent implements OnInit {
     this.selectedComplaint = null;
     this.feedbackRating = 0;
     this.feedbackComment = '';
+  }
+
+  viewDetails(complaint: Complaint): void {
+    this.selectedComplaint = complaint;
+    this.loadingDetails = true;
+    this.showDetailsModal = true;
+    
+    this.complaintsService.getComplaintDetails(complaint._id).subscribe({
+      next: (response) => {
+        this.selectedComplaintDetails = response;
+        this.loadingDetails = false;
+      },
+      error: (error) => {
+        console.error('Error loading details:', error);
+        this.loadingDetails = false;
+      }
+    });
+  }
+
+  closeDetailsModal(): void {
+    this.showDetailsModal = false;
+    this.selectedComplaint = null;
+    this.selectedComplaintDetails = null;
+  }
+
+  openCommentsModal(complaint: Complaint): void {
+    this.selectedComplaint = complaint;
+    this.showCommentsModal = true;
+    this.loadComments(complaint._id);
+  }
+
+  closeCommentsModal(): void {
+    this.showCommentsModal = false;
+    this.selectedComplaint = null;
+    this.comments = [];
+    this.newComment = '';
+  }
+
+  loadComments(complaintId: string): void {
+    this.complaintsService.getComments(complaintId).subscribe({
+      next: (response) => {
+        this.comments = response.comments;
+      },
+      error: (error) => {
+        console.error('Error loading comments:', error);
+      }
+    });
+  }
+
+  addComment(): void {
+    if (!this.selectedComplaint || !this.newComment.trim()) {
+      return;
+    }
+
+    this.submittingComment = true;
+    
+    this.complaintsService.addComment(this.selectedComplaint._id, this.newComment).subscribe({
+      next: (response) => {
+        this.comments.push(response.comment);
+        this.newComment = '';
+        this.submittingComment = false;
+      },
+      error: (error) => {
+        console.error('Error adding comment:', error);
+        this.submittingComment = false;
+      }
+    });
   }
 
   setRating(rating: number): void {

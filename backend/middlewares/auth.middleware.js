@@ -59,7 +59,10 @@ const authorize = (roles) => {
       });
     }
 
-    if (!roles.includes(req.user.role)) {
+    // Convert string to array if needed
+    const rolesArray = Array.isArray(roles) ? roles : [roles];
+
+    if (!rolesArray.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
         message: `Role ${req.user.role} is not authorized to access this route`
