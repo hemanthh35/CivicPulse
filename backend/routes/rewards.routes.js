@@ -348,12 +348,14 @@ router.get('/redeem-history', protect, async (req, res) => {
 router.post('/redeem/:id', protect, async (req, res) => {
   try {
     const rewardId = req.params.id;
-    const user = await User.findById(req.user.id);
     
-    if (!user) {
-      return res.status(404).json({
+    // Get user's reward record
+    let userReward = await Reward.findOne({ userId: req.user.id });
+    
+    if (!userReward) {
+      return res.status(400).json({
         success: false,
-        message: 'User not found'
+        message: 'You have no points yet. Start reporting issues to earn points!'
       });
     }
     
@@ -376,26 +378,36 @@ router.post('/redeem/:id', protect, async (req, res) => {
     }
     
     // Check if user has enough points
-    if (user.points < reward.points) {
+    if (userReward.points < reward.points) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient points. You need ${reward.points} points but have ${user.points} points.`
+        message: `Insufficient points. You need ${reward.points} points but have ${userReward.points} points.`
       });
     }
     
     // Deduct points
-    user.points -= reward.points;
-    await user.save();
+    userReward.points -= reward.points;
+    
+    // Add to coupons/redemption history
+    const couponCode = `CIVIC-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    userReward.coupons.push({
+      code: couponCode,
+      value: reward.name,
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
+      redeemed: false
+    });
+    
+    await userReward.save();
     
     // In a real system, you would:
-    // 1. Create a redemption record in database
-    // 2. Send email with reward details/code
-    // 3. Generate unique voucher codes
+    // 1. Send email with reward details/code
+    // 2. Integrate with actual reward providers
     
     res.status(200).json({
       success: true,
-      message: `Successfully redeemed ${reward.name}! Check your email for details.`,
-      remainingPoints: user.points
+      message: `Successfully redeemed ${reward.name}! Your code: ${couponCode}`,
+      remainingPoints: userReward.points,
+      couponCode: couponCode
     });
   } catch (error) {
     console.error(error);
