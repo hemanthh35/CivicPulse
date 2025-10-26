@@ -1,949 +1,136 @@
-// CRAZY 3D HOME PAGE - NEXT LEVEL DESIGN
+// Simple Clean Home Page
 :host {
   display: block;
-  overflow-x: hidden;
 }
 
-// ============================================
-// VARIABLES & MIXINS
-// ============================================
-$primary: #667eea;
-$secondary: #764ba2;
-$accent: #f093fb;
-$dark: #1a202c;
-$light: #f7fafc;
-
-@mixin gradient-bg {
-  background: linear-gradient(135deg, $primary 0%, $secondary 50%, $accent 100%);
-}
-
-@mixin glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-// ============================================
-// ANIMATED BACKGROUND
-// ============================================
-.home-container {
-  position: relative;
-  background: #0f0c29;
-  background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
-}
-
-.background-animation {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.floating-shapes {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  .shape {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(40px);
-    animation: float 20s infinite ease-in-out;
-    
-    &.shape-1 {
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
-      top: 10%;
-      left: 10%;
-      animation-delay: 0s;
-    }
-    
-    &.shape-2 {
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(118, 75, 162, 0.3) 0%, transparent 70%);
-      top: 50%;
-      right: 10%;
-      animation-delay: 5s;
-    }
-    
-    &.shape-3 {
-      width: 250px;
-      height: 250px;
-      background: radial-gradient(circle, rgba(240, 147, 251, 0.3) 0%, transparent 70%);
-      bottom: 20%;
-      left: 30%;
-      animation-delay: 10s;
-    }
-    
-    &.shape-4 {
-      width: 350px;
-      height: 350px;
-      background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
-      top: 30%;
-      right: 30%;
-      animation-delay: 7s;
-    }
-    
-    &.shape-5 {
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(118, 75, 162, 0.4) 0%, transparent 70%);
-      bottom: 10%;
-      right: 20%;
-      animation-delay: 3s;
-    }
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(50px, -50px) scale(1.1);
-  }
-  50% {
-    transform: translate(-30px, 30px) scale(0.9);
-  }
-  75% {
-    transform: translate(30px, 50px) scale(1.05);
-  }
-}
-
-// ============================================
-// HERO SECTION - 3D MADNESS
-// ============================================
-.hero-3d {
-  position: relative;
-  min-height: 100vh;
+.hero {
+  min-height: 80vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  z-index: 1;
-  overflow: hidden;
-
-  .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-    z-index: -1;
-  }
-
-  .container {
-    z-index: 2;
-  }
-}
-
-.hero-content {
   text-align: center;
-  color: white;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.hero-badge {
-  display: inline-block;
-  margin-bottom: 2rem;
+  padding: 4rem 2rem;
   
-  .badge-text {
-    @include glass-effect;
-    padding: 0.75rem 2rem;
-    border-radius: 50px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-    animation: pulse 3s infinite;
+  h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+  
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
   }
 }
 
-.hero-title {
-  font-size: 4.5rem;
-  font-weight: 900;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: titleFloat 3s ease-in-out infinite;
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes titleFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.hero-subtitle {
-  font-size: 1.35rem;
-  opacity: 0.9;
-  margin-bottom: 3rem;
-  font-weight: 300;
-  line-height: 1.6;
-}
-
-// ============================================
-// 3D BUTTONS
-// ============================================
 .hero-buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 4rem;
-}
-
-.btn-3d {
-  position: relative;
-  padding: 1.2rem 3rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   
-  .btn-text {
-    position: relative;
-    z-index: 2;
-  }
-  
-  .btn-icon {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    transition: transform 0.4s;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s;
-  }
-  
-  &:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-    
-    &::before {
-      left: 100%;
-    }
-    
-    .btn-icon {
-      transform: translateX(5px);
-    }
-  }
-  
-  &:active {
-    transform: translateY(-2px) scale(1);
-  }
-}
-
-.btn-primary-3d {
-  @include gradient-bg;
-  color: white;
-}
-
-.btn-secondary-3d {
-  @include glass-effect;
-  color: white;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
-// ============================================
-// FLOATING STATS CARDS
-// ============================================
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  margin-top: 4rem;
-}
-
-.stat-card {
-  @include glass-effect;
-  padding: 2rem;
-  border-radius: 20px;
-  text-align: center;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    transform: rotate(45deg);
-    transition: all 0.6s;
-  }
-  
-  &:hover {
-    transform: translateY(-10px) rotateX(5deg);
-    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
-    
-    &::before {
-      top: -10%;
-      left: -10%;
-    }
-    
-    .stat-icon {
-      transform: scale(1.2) rotateY(360deg);
-    }
-  }
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 1rem;
-  @include gradient-bg;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  transition: all 0.8s;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-}
-
-.stat-number {
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin: 0;
-  @include gradient-bg;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stat-label {
-  font-size: 0.95rem;
-  opacity: 0.8;
-  margin: 0.5rem 0 0;
-  color: white;
-}
-
-// ============================================
-// SCROLL INDICATOR
-// ============================================
-.scroll-indicator {
-  position: absolute;
-  bottom: 3rem;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: white;
-  opacity: 0.8;
-  animation: bounce 2s infinite;
-  
-  .mouse {
-    width: 26px;
-    height: 40px;
-    border: 2px solid white;
-    border-radius: 13px;
-    margin: 0 auto 0.5rem;
-    position: relative;
-    
-    .wheel {
-      width: 4px;
-      height: 8px;
-      background: white;
-      border-radius: 2px;
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: scroll 2s infinite;
-    }
-  }
-  
-  p {
-    font-size: 0.85rem;
-    margin: 0;
-  }
-}
-
-@keyframes scroll {
-  0% {
-    opacity: 1;
-    top: 8px;
-  }
-  100% {
-    opacity: 0;
-    top: 20px;
-  }
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-10px);
-  }
-  60% {
-    transform: translateX(-50%) translateY(-5px);
-  }
-}
-
-// ============================================
-// FEATURES SECTION - 3D CARDS
-// ============================================
-.features-3d {
-  position: relative;
-  padding: 8rem 2rem;
-  background: linear-gradient(180deg, #0f0c29 0%, #1a1535 100%);
-  z-index: 1;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 5rem;
-  color: white;
-}
-
-.section-title {
-  font-size: 3.5rem;
-  font-weight: 900;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: 1.25rem;
-  opacity: 0.8;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 3rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.feature-card-3d {
-  position: relative;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 30px;
-  padding: 3rem 2rem;
-  text-align: center;
-  color: white;
-  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  overflow: hidden;
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, $primary, $accent, $secondary);
-    border-radius: 30px;
-    opacity: 0;
-    transition: opacity 0.5s;
-    z-index: -1;
-  }
-  
-  &:hover {
-    transform: translateY(-20px) rotateX(10deg) scale(1.05);
-    box-shadow: 0 30px 60px rgba(102, 126, 234, 0.5);
-    
-    &::before {
-      opacity: 1;
-    }
-    
-    .feature-icon {
-      transform: rotateY(360deg) scale(1.2);
-    }
-    
-    .feature-shine {
-      left: 150%;
-    }
-  }
-}
-
-.feature-number {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  font-size: 4rem;
-  font-weight: 900;
-  @include gradient-bg;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  opacity: 0.2;
-}
-
-.feature-icon {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 2rem;
-  @include gradient-bg;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  transition: all 0.8s;
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-}
-
-.feature-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-}
-
-.feature-description {
-  font-size: 1.05rem;
-  opacity: 0.8;
-  line-height: 1.6;
-}
-
-.feature-shine {
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: skewX(-25deg);
-  transition: left 0.8s;
-}
-
-// ============================================
-// WHY CHOOSE US SECTION
-// ============================================
-.why-choose-us {
-  position: relative;
-  padding: 8rem 2rem;
-  background: linear-gradient(180deg, #1a1535 0%, #0f0c29 100%);
-  color: white;
-  z-index: 1;
-}
-
-.image-stack {
-  position: relative;
-  width: 100%;
-  height: 500px;
-  
-  .stack-layer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 30px;
-    transition: all 0.6s;
-    
-    &.layer-1 {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-      transform: rotate(-5deg);
-      z-index: 1;
-    }
-    
-    &.layer-2 {
-      background: linear-gradient(135deg, rgba(118, 75, 162, 0.7), rgba(240, 147, 251, 0.7));
-      transform: rotate(3deg);
-      z-index: 2;
-    }
-    
-    &.layer-3 {
-      background: linear-gradient(135deg, rgba(240, 147, 251, 0.6), rgba(102, 126, 234, 0.6));
-      transform: rotate(-2deg);
-      z-index: 3;
-    }
-  }
-  
-  &:hover {
-    .layer-1 {
-      transform: rotate(-8deg) translateY(-10px);
-    }
-    .layer-2 {
-      transform: rotate(5deg) translateY(-5px);
-    }
-    .layer-3 {
-      transform: rotate(-3deg) translateY(-15px);
-    }
-  }
-}
-
-.benefits-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.benefit-item {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-  @include glass-effect;
-  padding: 2rem;
-  border-radius: 20px;
-  transition: all 0.4s;
-  
-  &:hover {
-    transform: translateX(10px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
-  }
-}
-
-.benefit-icon {
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
-  @include gradient-bg;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-}
-
-.benefit-content {
-  h4 {
-    font-size: 1.35rem;
+  .btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    font-size: 1rem;
-    opacity: 0.8;
-    margin: 0;
-    line-height: 1.6;
-  }
-}
-
-// ============================================
-// CTA SECTION
-// ============================================
-.cta-section {
-  position: relative;
-  padding: 8rem 2rem;
-  background: linear-gradient(135deg, $primary 0%, $secondary 50%, $accent 100%);
-  overflow: hidden;
-  z-index: 1;
-  
-  .cta-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.1;
-    background-image: radial-gradient(circle, white 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-}
-
-.cta-content {
-  position: relative;
-  z-index: 2;
-  color: white;
-}
-
-.cta-title {
-  font-size: 3.5rem;
-  font-weight: 900;
-  margin-bottom: 1rem;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.cta-subtitle {
-  font-size: 1.35rem;
-  opacity: 0.95;
-  margin-bottom: 3rem;
-}
-
-.btn-cta {
-  @include glass-effect;
-  padding: 1.5rem 4rem;
-  font-size: 1.25rem;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-8px) scale(1.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  }
-}
-
-// ============================================
-// FOOTER
-// ============================================
-.footer-3d {
-  position: relative;
-  background: #0a0817;
-  color: white;
-  padding: 4rem 2rem 2rem;
-  z-index: 1;
-  overflow: hidden;
-  
-  .footer-glow {
-    position: absolute;
-    top: -50%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
-    pointer-events: none;
-  }
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 2;
-}
-
-.footer-brand {
-  h3 {
-    font-size: 2rem;
-    font-weight: 900;
-    @include gradient-bg;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    opacity: 0.7;
-    max-width: 300px;
-  }
-}
-
-.footer-links {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  
-  a {
-    color: white;
-    text-decoration: none;
-    opacity: 0.8;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
     transition: all 0.3s;
-    position: relative;
     
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: linear-gradient(90deg, $primary, $accent);
-      transition: width 0.3s;
+    &.btn-primary {
+      background: white;
+      color: #667eea;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+      }
     }
     
-    &:hover {
-      opacity: 1;
-      transform: translateY(-2px);
+    &.btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
       
-      &::after {
-        width: 100%;
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
       }
     }
   }
 }
 
-.footer-bottom {
-  text-align: center;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-  z-index: 2;
+.features {
+  padding: 5rem 2rem;
+  background: #f8f9fa;
   
-  p {
-    opacity: 0.6;
-    margin: 0;
-  }
-}
-
-// ============================================
-// ANIMATIONS
-// ============================================
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-  }
-  50% {
-    box-shadow: 0 8px 32px rgba(240, 147, 251, 0.5);
-  }
-}
-
-// ============================================
-// RESPONSIVE DESIGN
-// ============================================
-@media (max-width: 1024px) {
-  .hero-title {
-    font-size: 3.5rem;
-  }
-  
-  .section-title {
+  h2 {
     font-size: 2.5rem;
-  }
-  
-  .cta-title {
-    font-size: 2.5rem;
-  }
-  
-  .image-stack {
-    height: 400px;
+    font-weight: 800;
+    color: #2d3748;
     margin-bottom: 3rem;
   }
 }
 
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
+.feature-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
   }
   
-  .hero-subtitle {
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #4a5568;
+    font-size: 1.05rem;
+  }
+}
+
+.footer {
+  background: #2d3748;
+  color: white;
+  padding: 2rem 0;
+  
+  p {
+    margin: 0;
+    opacity: 0.9;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .hero p {
     font-size: 1.1rem;
   }
   
   .hero-buttons {
     flex-direction: column;
     
-    .btn-3d {
+    .btn {
       width: 100%;
-      justify-content: center;
     }
   }
   
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  
-  .stat-card {
-    padding: 1.5rem;
-  }
-  
-  .stat-number {
+  .features h2 {
     font-size: 2rem;
-  }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .section-subtitle {
-    font-size: 1rem;
-  }
-  
-  .feature-card-3d {
-    padding: 2rem 1.5rem;
-  }
-  
-  .image-stack {
-    height: 300px;
-  }
-  
-  .benefit-item {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .cta-title {
-    font-size: 2rem;
-  }
-  
-  .cta-subtitle {
-    font-size: 1.1rem;
-  }
-  
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .footer-links {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .section-title {
-    font-size: 1.75rem;
-  }
-  
-  .btn-3d {
-    padding: 1rem 2rem;
-    font-size: 1rem;
   }
 }
