@@ -252,7 +252,15 @@ export class ModerationPanelComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.adminService.updateComplaint(this.selectedReport._id, { 
+    // Use reportedItemId (the actual complaint ID) not the moderation report ID
+    const complaintId = this.selectedReport.reportedItemId?._id || this.selectedReport.reportedItemId;
+    
+    if (!complaintId) {
+      this.error = 'Complaint ID not found';
+      return;
+    }
+    
+    this.adminService.updateComplaint(complaintId, { 
       assignedTo: this.selectedWorkerId,
       status: 'in-progress' // Auto-set to in-progress when assigned
     })
@@ -340,6 +348,18 @@ export class ModerationPanelComponent implements OnInit, OnDestroy {
       'high': 'bi-exclamation-triangle-fill'
     };
     return icons[priority?.toLowerCase()] || 'bi-question-circle';
+  }
+
+  getReasonBadgeClass(reason: string): string {
+    const classes: any = {
+      'inappropriate': 'bg-danger',
+      'spam': 'bg-warning',
+      'offensive': 'bg-danger',
+      'harassment': 'bg-danger',
+      'misinformation': 'bg-warning',
+      'other': 'bg-info'
+    };
+    return classes[reason?.toLowerCase()] || 'bg-secondary';
   }
 
   // Bulk Operations

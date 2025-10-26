@@ -198,9 +198,17 @@ export class RewardsManagementComponent implements OnInit, OnDestroy {
   }
 
   submitAddBadge(): void {
-    if (this.badgeForm.invalid || !this.selectedStudent) return;
+    if (this.badgeForm.invalid || !this.selectedStudent) {
+      console.error('Form invalid or no student selected');
+      console.error('badgeForm.invalid:', this.badgeForm.invalid);
+      console.error('badgeForm.value:', this.badgeForm.value);
+      console.error('selectedStudent:', this.selectedStudent);
+      return;
+    }
     
     const { badgeName, description } = this.badgeForm.value;
+    
+    console.log('Submitting badge:', { userId: this.selectedStudent._id, badgeName, description });
     
     this.adminService.addBadge(this.selectedStudent._id, badgeName, description)
       .pipe(takeUntil(this.destroy$))
@@ -214,6 +222,7 @@ export class RewardsManagementComponent implements OnInit, OnDestroy {
           }
         },
         error: (err) => {
+          console.error('Badge add error:', err);
           this.error = err.error?.message || 'Failed to add badge';
           setTimeout(() => this.error = '', 3000);
         }

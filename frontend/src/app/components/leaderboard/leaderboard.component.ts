@@ -76,13 +76,4 @@ export class LeaderboardComponent implements OnInit {
       default: return 'badge-default';
     }
   }
-
-  getRankIcon(rank: number): string {
-    switch (rank) {
-      case 1: return 'bi-trophy-fill';
-      case 2: return 'bi-award-fill';
-      case 3: return 'bi-star-fill';
-      default: return 'bi-hash';
-    }
-  }
 }

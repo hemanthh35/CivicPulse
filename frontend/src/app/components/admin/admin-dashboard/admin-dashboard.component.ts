@@ -494,8 +494,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   getResolvedTodayCount(): number {
-    // Mock calculation - would need API enhancement for real data
-    return Math.floor((this.stats?.complaints.total || 0) * 0.05);
+    // Return the actual resolved complaint count from stats
+    return this.stats?.complaints.byStatus['resolved'] || 0;
   }
 
   getSystemHealth(): string {

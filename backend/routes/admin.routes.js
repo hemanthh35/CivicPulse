@@ -4,6 +4,7 @@ const { protect, authorize } = require('../middlewares/auth.middleware');
 const User = require('../models/user.model');
 const Complaint = require('../models/complaint.model');
 const ModerationQueue = require('../models/moderation.model');
+const Reward = require('../models/reward.model');
 
 // ==========================================
 // ADMIN DASHBOARD STATISTICS
@@ -46,7 +47,7 @@ router.get('/stats', protect, authorize('admin'), async (req, res) => {
       .select('-password');
 
     // Response time analysis
-    const resolvedComplaints = await Complaint.find({ status: 'Resolved' });
+    const resolvedComplaints = await Complaint.find({ status: 'resolved' });
     let avgResponseTime = 0;
     if (resolvedComplaints.length > 0) {
       const totalTime = resolvedComplaints.reduce((sum, complaint) => {
@@ -86,7 +87,7 @@ router.get('/stats', protect, authorize('admin'), async (req, res) => {
         analytics: {
           avgResponseTime: parseFloat(avgResponseTime),
           resolutionRate: totalComplaints > 0 
-            ? ((complaintsByStatus.find(s => s._id === 'Resolved')?.count || 0) / totalComplaints * 100).toFixed(2)
+            ? ((complaintsByStatus.find(s => s._id === 'resolved')?.count || 0) / totalComplaints * 100).toFixed(2)
             : 0
         },
         recentActivity: {
@@ -429,6 +430,9 @@ router.get('/complaints', protect, authorize('admin'), async (req, res) => {
 router.put('/complaints/:id', protect, authorize('admin'), async (req, res) => {
   try {
     const { status, priority, assignedTo } = req.body;
+    
+    console.log('📝 Updating complaint:', req.params.id);
+    console.log('   Body:', { status, priority, assignedTo });
 
     const complaint = await Complaint.findById(req.params.id)
       .populate('createdBy', 'name email');
@@ -445,7 +449,7 @@ router.put('/complaints/:id', protect, authorize('admin'), async (req, res) => {
     // Update fields
     if (status) {
       complaint.status = status;
-      if (status === 'Resolved') {
+      if (status === 'resolved') {
         complaint.resolvedAt = new Date();
       }
     }
@@ -453,6 +457,8 @@ router.put('/complaints/:id', protect, authorize('admin'), async (req, res) => {
     if (assignedTo) complaint.assignedTo = assignedTo;
 
     await complaint.save();
+    
+    console.log('✅ Complaint updated successfully');
 
     // Send notification if worker was newly assigned or reassigned
     if (assignedTo && assignedTo.toString() !== oldAssignee?.toString()) {
@@ -537,7 +543,8 @@ router.put('/complaints/:id', protect, authorize('admin'), async (req, res) => {
         .populate('assignedTo', 'name email')
     });
   } catch (error) {
-    console.error(error);
+    console.error('❌ Error updating complaint:', error);
+    console.error('   Stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'
@@ -610,7 +617,7 @@ router.get('/analytics/trends', protect, authorize('admin'), async (req, res) =>
     const complaintsResolved = await Complaint.aggregate([
       {
         $match: {
-          status: 'Resolved',
+          status: 'resolved',
           resolvedAt: { $gte: startDate }
         }
       },
@@ -812,7 +819,7 @@ router.put('/moderation/:id/approve', protect, authorize('admin'), async (req, r
 
     // If action is delete, mark complaint as resolved
     if (action === 'delete') {
-      await Complaint.findByIdAndUpdate(report.reportedItemId, { status: 'Resolved' });
+      await Complaint.findByIdAndUpdate(report.reportedItemId, { status: 'resolved' });
     }
 
     await report.save();
@@ -1594,8 +1601,6 @@ router.post('/complaints/bulk-assign', protect, authorize('admin'), async (req, 
 // REWARDS MANAGEMENT
 // ==========================================
 
-const Reward = require('../models/reward.model');
-
 // @route   GET /api/admin/rewards/stats
 // @desc    Get rewards system statistics
 // @access  Private/Admin
@@ -1695,7 +1700,13 @@ router.post('/rewards/add-badge', protect, authorize('admin'), async (req, res) 
   try {
     const { userId, badgeName, description } = req.body;
     
+    console.log('🏆 Add Badge Request:');
+    console.log('  userId:', userId);
+    console.log('  badgeName:', badgeName);
+    console.log('  description:', description);
+    
     if (!userId || !badgeName) {
+      console.error('❌ Missing required fields');
       return res.status(400).json({
         success: false,
         message: 'userId and badgeName are required'
@@ -1705,11 +1716,14 @@ router.post('/rewards/add-badge', protect, authorize('admin'), async (req, res) 
     // Check if user is a student
     const user = await User.findById(userId);
     if (!user || user.role !== 'student') {
+      console.error('❌ User not found or not a student');
       return res.status(400).json({
         success: false,
         message: 'User not found or is not a student'
       });
     }
+    
+    console.log('✅ User found:', user.name);
     
     // Find or create reward record
     let reward = await Reward.findOne({ userId });
@@ -1721,6 +1735,8 @@ router.post('/rewards/add-badge', protect, authorize('admin'), async (req, res) 
     if (!reward.badges.includes(badgeName)) {
       reward.badges.push(badgeName);
       await reward.save();
+      
+      console.log('✅ Badge added successfully:', badgeName);
       
       res.json({
         success: true,
@@ -1734,6 +1750,7 @@ router.post('/rewards/add-badge', protect, authorize('admin'), async (req, res) 
         }
       });
     } else {
+      console.error('❌ Badge already exists');
       res.status(400).json({
         success: false,
         message: `${user.name} already has the "${badgeName}" badge`

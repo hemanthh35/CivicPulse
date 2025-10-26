@@ -90,20 +90,25 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
     });
 
     // If user is a student with travel flag on, add to moderation queue
-    if (req.user.role === 'student' && req.user.travelFlag) {
-      const moderationItem = new ModerationQueue({
-        reportType: 'complaint',
-        reportedItemId: complaint._id,
-        title: complaint.title,
-        description: complaint.description,
-        reason: 'travel_flag_required_moderation',
-        severity: 'medium',
-        reportedBy: req.user.id,
-        AI_flagged: false, // Later integrate with AI for auto-flagging
-        status: 'pending'
-      });
-      await moderationItem.save();
-      console.log(`✅ Moderation item created for flagged complaint:`, moderationItem._id);
+    try {
+      if (req.user.role === 'student' && req.user.travelFlag) {
+        const moderationItem = new ModerationQueue({
+          reportType: 'complaint',
+          reportedItemId: complaint._id,
+          title: complaint.title,
+          description: complaint.description,
+          reason: 'other', // Use 'other' from enum - represents travel flag moderation need
+          severity: 'medium',
+          reportedBy: req.user.id,
+          AI_flagged: false, // Later integrate with AI for auto-flagging
+          status: 'pending'
+        });
+        await moderationItem.save();
+        console.log(`✅ Moderation item created for travel-flagged complaint:`, moderationItem._id);
+      }
+    } catch (modError) {
+      console.error('⚠️ Error creating moderation item:', modError.message);
+      // Don't fail the complaint creation if moderation creation fails
     }
 
     res.status(201).json({
@@ -112,6 +117,7 @@ router.post('/create', protect, upload.array('images', 5), async (req, res) => {
     });
   } catch (error) {
     console.error('Complaint creation error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message || 'Server Error'

@@ -262,7 +262,7 @@ export class ComplaintManagementComponent implements OnInit, OnDestroy {
   }
 
   getInProgressCount(): number {
-    return this.complaints.filter(c => c.status === 'In Progress').length;
+    return this.complaints.filter(c => c.status === 'in-progress').length;
   }
 
   getResolvedCount(): number {

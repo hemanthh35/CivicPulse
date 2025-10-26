@@ -74,10 +74,9 @@
             (change)="onFilterChange()"
           >
             <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-            <option value="Rejected">Rejected</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
           </select>
         </div>
       </div>
@@ -137,14 +136,11 @@
         <strong>{{ selectedComplaints.size }}</strong> complaint(s) selected
       </p>
       <div class="btn-group" role="group">
-        <button class="btn btn-sm btn-warning" (click)="bulkUpdateStatus('In Progress')">
+        <button class="btn btn-sm btn-warning" (click)="bulkUpdateStatus('in-progress')">
           <i class="bi bi-play-circle"></i> Mark In Progress
         </button>
-        <button class="btn btn-sm btn-success" (click)="bulkUpdateStatus('Resolved')">
+        <button class="btn btn-sm btn-success" (click)="bulkUpdateStatus('resolved')">
           <i class="bi bi-check-circle"></i> Mark Resolved
-        </button>
-        <button class="btn btn-sm btn-danger" (click)="bulkUpdateStatus('Rejected')">
-          <i class="bi bi-x-circle"></i> Mark Rejected
         </button>
       </div>
     </div>
@@ -598,10 +594,9 @@
             <div class="form-group mb-3">
               <label class="form-label">Status</label>
               <select class="form-select" formControlName="status">
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-                <option value="Rejected">Rejected</option>
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="resolved">Resolved</option>
               </select>
             </div>
             <div class="form-group mb-3">
