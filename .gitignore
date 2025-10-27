@@ -8,7 +8,14 @@ backend/node_modules/
 .env.local
 .env.development
 .env.production
+.env.example
 *.env
+
+# Documentation (keep only main README)
+*.txt
+COMMENTS_UI_UPDATE.txt
+PDF_DOWNLOAD_COMPLETE.txt
+WHERE_COMMENTS_SHOW_ADMIN_WORKER.txt
 
 # Utility/Test Scripts (may contain sensitive operations)
 check-*.js
