@@ -10,6 +10,16 @@ backend/node_modules/
 .env.production
 *.env
 
+# Utility/Test Scripts (may contain sensitive operations)
+check-*.js
+list-*.js
+find-*.js
+test-*.js
+add-*.js
+reset-*.js
+register-*.js
+migrate-*.js
+
 # Build outputs
 frontend/dist/
 frontend/.angular/
