@@ -3,6 +3,11 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
+# Batch files (local development only)
+*.bat
+start-all.bat
+start-backend.bat
+
 # Environment variables (IMPORTANT - Don't push secrets!)
 .env
 .env.local

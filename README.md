@@ -1,159 +1,141 @@
-# CivicPulse - Community Complaint Management System
+# CivicPulse
 
-A modern web application for citizens to report civic issues and for municipal workers to resolve them efficiently.
+## Empowering Communities Through Civic Engagement
 
-## 🚀 Features
+**CivicPulse** is a modern civic engagement platform that connects citizens with municipal authorities to report, track, and resolve civic issues efficiently.
 
-- **Citizen Portal**: Report issues with photos, location, and description
-- **Worker Dashboard**: View assigned complaints and update status
-- **Admin Panel**: Manage users, complaints, and system settings
-- **Real-time Updates**: Get notifications on complaint status changes
-- **Leaderboard**: Recognition for active citizens and workers
-- **Rewards System**: Badges and points for community engagement
-- **AI-Powered**: Gemini AI for auto-filling complaint details from images
+## 🌟 Features
 
-## 🔧 Setup Instructions
+### For Citizens
+- **Easy Reporting**: Submit complaints about civic issues with photos and location
+- **Real-time Tracking**: Monitor complaint status and resolution progress
+- **Notifications**: Get instant updates when issues are resolved
+- **Community Recognition**: Earn badges and points for active participation
+- **Leaderboard**: See top contributors in your community
 
-### Prerequisites
-- Node.js 18+ 
-- MongoDB (local or Atlas)
-- Gmail account for email notifications (or other SMTP service)
-- Google Gemini API key (optional, for AI features)
+### For Municipal Workers
+- **Assigned Tasks**: View complaints assigned to you
+- **Status Updates**: Update progress and mark issues as resolved
+- **Mobile-Friendly**: Manage work on the go
+- **Performance Tracking**: Track your resolution metrics
 
-### Installation
+### For Administrators
+- **System Management**: Manage users, complaints, and workers
+- **Analytics Dashboard**: View real-time statistics and trends
+- **Moderation Panel**: Review and manage complaint quality
+- **Rewards System**: Award badges to recognize top contributors
+- **Full Control**: Complete system oversight and configuration
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/hemanthh35/CivicPulse.git
-   cd CivicPulse
-   ```
+---
 
-2. **Install backend dependencies**
-   ```bash
-   npm install
-   ```
+## 🎯 Key Highlights
 
-3. **Install frontend dependencies**
-   ```bash
-   cd frontend
-   npm install
-   cd ..
-   ```
+✨ **User-Friendly Interface** - Clean, modern design for all devices  
+✨ **Real-Time Updates** - Live notifications and status changes  
+✨ **Secure Authentication** - Two-factor authentication for accounts  
+✨ **Location-Based Services** - Map integration for precise issue location  
+✨ **Gamification** - Points, badges, and leaderboards for engagement  
+✨ **Responsive Design** - Works perfectly on desktop, tablet, and mobile  
+✨ **Data Analytics** - Comprehensive dashboards with insights  
+✨ **Performance Metrics** - Track resolution times and worker efficiency
 
-4. **Configure environment variables**
-   - Copy `.env.example` to `.env`
-   - Fill in your actual credentials (see Configuration section below)
+---
 
-5. **Run the application**
-   ```bash
-   # Start backend (from root)
-   npm start
-
-   # Start frontend (in another terminal)
-   cd frontend
-   npm start
-   ```
-
-6. **Access the application**
-   - Frontend: http://localhost:4200
-   - Backend API: http://localhost:5000
-
-## ⚙️ Configuration
-
-Create a `.env` file in the root directory with the following:
-
-```env
-NODE_ENV=production
-PORT=5000
-
-# MongoDB Connection
-MONGODB_URI=your-mongodb-connection-string
-
-# JWT Secret (generate a secure random string)
-JWT_SECRET=your-secure-jwt-secret
-JWT_EXPIRE=7d
-
-# Email Configuration
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
-EMAIL_FROM=CivicPulse <your-email@gmail.com>
-
-# Frontend URL
-FRONTEND_URL=http://localhost:4200
-
-# Gemini AI (optional)
-GEMINI_API_KEY=your-gemini-api-key
-```
-
-### Getting API Keys
-
-**MongoDB Atlas:**
-1. Create free account at https://www.mongodb.com/cloud/atlas
-2. Create a cluster
-3. Get connection string from "Connect" button
-
-**Gmail App Password:**
-1. Enable 2FA on your Gmail account
-2. Go to Google Account → Security → 2-Step Verification → App Passwords
-3. Generate app password for "Mail"
-
-**Gemini API:**
-1. Visit https://ai.google.dev/
-2. Get API key from Google AI Studio
-
-## 🔒 Security Notes
-
-- ⚠️ **Never commit `.env` file to Git**
-- ⚠️ **Never share your API keys or passwords**
-- ⚠️ **Use strong, unique passwords in production**
-- ⚠️ **Keep dependencies updated** (`npm audit fix`)
-
-## 📁 Project Structure
-
-```
-CivicPulse/
-├── backend/
-│   ├── models/        # Database models
-│   ├── routes/        # API routes
-│   ├── services/      # Business logic
-│   ├── middlewares/   # Auth & validation
-│   └── server.js      # Express app
-├── frontend/
-│   └── src/
-│       ├── app/
-│       │   ├── components/  # Angular components
-│       │   ├── services/    # HTTP services
-│       │   └── guards/      # Route guards
-│       └── environments/    # Environment configs
-└── .env.example       # Environment template
-```
-
-## 👥 User Roles
-
-- **Citizen**: Report complaints, track status, earn rewards
-- **Student**: Same as citizen + leaderboard ranking
-- **Worker**: View and resolve assigned complaints
-- **Admin**: Full system access and management
-
-## 🛠️ Tech Stack
-
-**Backend:**
-- Node.js + Express
-- MongoDB + Mongoose
-- JWT Authentication
-- Nodemailer (Email)
-- Multer (File uploads)
+## 🏗️ Tech Stack
 
 **Frontend:**
-- Angular 17+
-- Bootstrap 5
-- Chart.js (Analytics)
-- Leaflet (Maps)
+- Angular 17+ - Modern reactive framework
+- Bootstrap 5 - Responsive UI components
+- Chart.js - Data visualization
+- Leaflet - Interactive maps
 
-## 📝 License
+**Backend:**
+- Node.js + Express - Fast and scalable API
+- MongoDB - Flexible NoSQL database
+- JWT - Secure authentication
+- Nodemailer - Email notifications
 
-MIT License - feel free to use for educational purposes
+---
 
-## 👨‍💻 Author
+## � Live Demo
 
-Developed as part of academic project
+Visit the live application at: [CivicPulse Live](https://civicpulse.onrender.com)
+
+---
+
+## 📱 User Roles
+
+| Role | Capabilities |
+|------|---|
+| **Citizen** | Report issues, track status, earn badges, view leaderboard |
+| **Student** | Same as citizen + educational tracking |
+| **Worker** | Manage assigned complaints, update status, resolve issues |
+| **Admin** | Full system access, manage all data, view analytics |
+
+---
+
+## 🎨 Interface Highlights
+
+- **Dashboard**: Quick overview of system status and key metrics
+- **Complaint Management**: Comprehensive complaint tracking and filtering
+- **Worker Assignment**: Smart assignment of issues to workers
+- **Leaderboard**: Recognition system for top contributors
+- **Admin Panel**: Powerful tools for system administration
+
+---
+
+## 💡 How It Works
+
+1. **Report** - Citizens submit issues with photos and location
+2. **Assign** - Admin assigns issues to relevant workers
+3. **Resolve** - Workers update progress and resolve issues
+4. **Notify** - Automatic notifications keep citizens informed
+5. **Recognize** - Top contributors earn badges and rewards
+
+---
+
+## 🔒 Security Features
+
+- Secure user authentication with JWT
+- Two-factor authentication (2FA) support
+- Password hashing and encryption
+- Role-based access control
+- Safe data handling and storage
+
+---
+
+## 📊 Statistics & Analytics
+
+- Real-time complaint statistics
+- Resolution rate tracking
+- Average response time metrics
+- Worker performance analytics
+- Citizen engagement metrics
+- Monthly trends and insights
+
+---
+
+## 🌍 Community Impact
+
+CivicPulse helps create better communities by:
+- Enabling direct communication between citizens and authorities
+- Reducing response time for civic issues
+- Increasing transparency and accountability
+- Encouraging citizen participation
+- Building a culture of civic responsibility
+
+---
+
+## 📞 Support
+
+For questions or issues, please contact the development team or visit our documentation.
+
+---
+
+## � License
+
+MIT License - Feel free to use for educational and civic purposes
+
+---
+
+**CivicPulse** - Making Communities Better, One Issue at a Time 🚀
