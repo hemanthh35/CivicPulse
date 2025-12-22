@@ -96,6 +96,17 @@ app.use('/api/notifications', notificationsRoutes);
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../frontend/dist/civicpulse-frontend');
+  const projectRoot = path.join(__dirname, '..');
+
+  // Serve presentation files from project root
+  app.use('/presentation-images', express.static(path.join(projectRoot, 'presentation-images')));
+
+  // Serve the presentation HTML file
+  app.get('/CivicPulse_Presentation.html', (req, res) => {
+    res.sendFile(path.join(projectRoot, 'CivicPulse_Presentation.html'));
+  });
+
+  // Serve Angular frontend
   app.use(express.static(frontendPath));
 
   // Handle Angular routing - serve index.html for all non-API routes
