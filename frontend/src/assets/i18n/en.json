@@ -1,0 +1,590 @@
+{
+  "app": {
+    "title": "CivicPulse",
+    "tagline": "Empowering Communities Through Civic Engagement",
+    "description": "Report civic issues, track progress, and make your community better"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "dashboard": "Dashboard",
+    "complaints": "Complaints",
+    "leaderboard": "Leaderboard",
+    "admin": "Admin",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "language": "Language",
+    "reportIssue": "Report Issue",
+    "rewards": "Rewards",
+    "assignedIssues": "Assigned Issues"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "role": "Select Role",
+    "citizen": "Citizen",
+    "student": "Student",
+    "worker": "Worker",
+    "admin": "Admin",
+    "loginButton": "Login",
+    "registerButton": "Register",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "enterOtp": "Enter OTP",
+    "otpSent": "OTP sent to your email",
+    "resendOtp": "Resend OTP",
+    "verifyOtp": "Verify OTP",
+    "successLogin": "Login successful!",
+    "successRegister": "Registration successful! Please login.",
+    "invalidCredentials": "Invalid email or password",
+    "emailExists": "Email already registered",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "home": {
+    "welcome": "Welcome to CivicPulse",
+    "subtitle": "Making Communities Better, One Issue at a Time",
+    "description": "CivicPulse is a modern civic engagement platform that connects citizens with municipal authorities to report, track, and resolve civic issues efficiently.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "features": "Features",
+    "reporting": "Easy Reporting",
+    "reportingDesc": "Submit complaints about civic issues with photos and location",
+    "tracking": "Real-time Tracking",
+    "trackingDesc": "Monitor complaint status and resolution progress",
+    "notifications": "Notifications",
+    "notificationsDesc": "Get instant updates when issues are resolved",
+    "badges": "Earn Badges",
+    "badgesDesc": "Get recognized for active participation",
+    "leaderboardView": "View Leaderboard",
+    "leaderboardDesc": "See top contributors in your community",
+    "security": "Secure & Safe",
+    "securityDesc": "Two-factor authentication and encrypted data"
+  },
+  "landing": {
+    "badge": "🌟 Welcome to CivicPulse",
+    "heroTitle1": "Build Better Communities",
+    "heroTitle2": "One Report at a Time",
+    "heroSubtitle": "Empower your voice. Report issues. Track progress. Make a difference.",
+    "trustText": "Citizens & Workers trust CivicPulse",
+    "scrollText": "Scroll to explore",
+    "stats": {
+      "issuesReported": "Issues Reported",
+      "issuesResolved": "Issues Resolved",
+      "activeCitizens": "Active Citizens",
+      "partnerOrgs": "Partner Organizations"
+    },
+    "howItWorks": {
+      "tag": "HOW IT WORKS",
+      "title": "Simple Steps to Make a Difference",
+      "subtitle": "Our streamlined process ensures your concerns reach the right authorities quickly",
+      "step1": {
+        "title": "Report Issues",
+        "description": "Spot a problem in your community? Take a photo, pinpoint the location, and describe the issue. Our smart system categorizes it automatically."
+      },
+      "step2": {
+        "title": "Track Progress",
+        "description": "Monitor your report in real-time. See when it's assigned, under repair, and resolved. Get instant notifications every step of the way."
+      },
+      "step3": {
+        "title": "Earn Rewards",
+        "description": "Contribute to your community and climb the leaderboard. Earn badges, points, and recognition for your civic participation."
+      },
+      "step4": {
+        "title": "Community Power",
+        "description": "Vote on issues that matter most. When many citizens report the same problem, it gets prioritized for faster resolution."
+      },
+      "step5": {
+        "title": "Analytics",
+        "description": "Track trends in your area. View resolution rates, common issues, and community impact statistics."
+      },
+      "step6": {
+        "title": "Smart Alerts",
+        "description": "Stay informed with personalized notifications. Never miss updates about issues you care about."
+      },
+      "learnMore": "Learn More"
+    },
+    "categories": {
+      "tag": "ISSUE CATEGORIES",
+      "title": "Report What Matters",
+      "subtitle": "Choose from various civic issue categories",
+      "roads": "Roads & Infrastructure",
+      "lighting": "Street Lighting",
+      "sanitation": "Sanitation & Waste",
+      "parks": "Parks & Recreation",
+      "water": "Water & Supply",
+      "utilities": "Utilities & Power",
+      "reports": "Reports"
+    },
+    "testimonials": {
+      "tag": "TESTIMONIALS",
+      "title": "What Our Community Says",
+      "subtitle": "Real stories from real people making real change",
+      "testimonial0": {
+        "text": "CivicPulse transformed how I report issues in my neighborhood. The process is so simple and I get updates immediately!",
+        "name": "Rajesh Kumar",
+        "role": "Community Volunteer"
+      },
+      "testimonial1": {
+        "text": "As a municipal worker, this platform helps me prioritize issues and serve my community better. Highly recommended!",
+        "name": "Priya Sharma",
+        "role": "Municipal Officer"
+      },
+      "testimonial2": {
+        "text": "I earned badges and climbed the leaderboard just by reporting issues around my area. It's fun and meaningful!",
+        "name": "Aarav Patel",
+        "role": "Active Citizen"
+      }
+    },
+    "cta": {
+      "title": "Ready to Make Your Community Better?",
+      "subtitle": "Join thousands of citizens already making a difference with CivicPulse.",
+      "feature1": "Instant Issue Reporting",
+      "feature2": "Real-time Tracking",
+      "feature3": "Community Recognition",
+      "ctaReport": "Report an Issue",
+      "ctaSignIn": "Sign In to Dashboard",
+      "button": "Report an Issue",
+      "signIn": "Sign In to Dashboard"
+    }
+  },
+  "about": {
+    "title": "About CivicPulse",
+    "description": "Empowering communities through technology. Connecting citizens with their local government to create cleaner, safer, and better neighborhoods.",
+    "mission": {
+      "label": "Our Mission",
+      "text1": "CivicPulse is a revolutionary MEAN stack platform designed to bridge the gap between citizens and municipal services. We believe that every voice matters and every issue deserves attention. Our platform makes it easy for residents to report civic issues, track their resolution, and be rewarded for their active participation in community improvement.",
+      "text2": "By leveraging modern technology, we're transforming the way communities interact with local government, making civic engagement accessible, transparent, and rewarding for everyone."
+    },
+    "stats": {
+      "resolved": {
+        "value": "1000+",
+        "label": "Issues Resolved"
+      },
+      "citizens": {
+        "value": "500+",
+        "label": "Active Citizens"
+      },
+      "workers": {
+        "value": "50+",
+        "label": "Municipal Workers"
+      },
+      "satisfaction": {
+        "value": "95%",
+        "label": "Satisfaction Rate"
+      }
+    },
+    "why": {
+      "label": "Why Choose CivicPulse?",
+      "feature0": {
+        "title": "Easy Reporting",
+        "description": "Report civic issues instantly with photos and location data. Your voice matters in building a better community."
+      },
+      "feature1": {
+        "title": "Community Driven",
+        "description": "Connect with fellow citizens who care about their neighborhood. Together, we create positive change."
+      },
+      "feature2": {
+        "title": "Fast Response",
+        "description": "Issues are quickly assigned to municipal workers who can address them efficiently and effectively."
+      },
+      "feature3": {
+        "title": "Rewards System",
+        "description": "Earn points and recognition for active participation. Your engagement helps build a better city."
+      },
+      "feature4": {
+        "title": "Transparency",
+        "description": "Track the status of reported issues in real-time. See the impact of your contributions."
+      },
+      "feature5": {
+        "title": "Moderation",
+        "description": "Quality-controlled platform ensures legitimate issues get attention while spam is filtered out."
+      }
+    },
+    "howItWorks": {
+      "label": "How It Works",
+      "step0": {
+        "title": "Spot an Issue",
+        "description": "Notice a pothole, broken streetlight, or other civic problem in your neighborhood."
+      },
+      "step1": {
+        "title": "Report It",
+        "description": "Take a photo, add location details, and submit your complaint through our easy-to-use platform."
+      },
+      "step2": {
+        "title": "Get Verified",
+        "description": "Our moderation team reviews submissions to ensure quality and legitimacy."
+      },
+      "step3": {
+        "title": "Track Progress",
+        "description": "Municipal workers are assigned to fix the issue. Follow updates until completion."
+      },
+      "step4": {
+        "title": "Earn Rewards",
+        "description": "Gain points for verified reports and climb the leaderboard as a civic champion!"
+      }
+    },
+    "whoCanUse": {
+      "label": "Who Can Use CivicPulse?",
+      "user0": {
+        "role": "Citizens",
+        "description": "Report issues, track progress, and earn rewards for making your community better."
+      },
+      "user1": {
+        "role": "Students",
+        "description": "Engage in civic activities, compete on leaderboards, and build a portfolio of community service."
+      },
+      "user2": {
+        "role": "Municipal Workers",
+        "description": "Receive assigned tasks, manage workload efficiently, and resolve issues quickly."
+      },
+      "user3": {
+        "role": "Administrators",
+        "description": "Oversee platform operations, moderate content, and ensure smooth civic engagement."
+      }
+    },
+    "vision": {
+      "label": "Our Vision",
+      "text1": "We envision a future where every citizen is an active participant in shaping their community. Through CivicPulse, we're building a platform that not only solves problems but also fosters a sense of ownership and pride in our neighborhoods.",
+      "text2": "Our goal is to expand across cities, creating a network of engaged communities working together with local governments to build smarter, more responsive urban environments."
+    },
+    "cta": {
+      "title": "Ready to Make a Difference?",
+      "text": "Join thousands of citizens already making their communities better."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "subtitle": "Making your community better, one report at a time",
+    "overview": "Overview",
+    "quickActions": "Quick Actions",
+    "personalInfo": "Personal Information & Security",
+    "fullName": "Full Name",
+    "emailAddress": "Email Address",
+    "mobileNumber": "Mobile Number",
+    "accountType": "Account Type",
+    "notProvided": "Not provided",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "twoFactorEnabled": "Enhanced security is enabled. You'll receive an OTP via email when logging in.",
+    "twoFactorDisabled": "Add an extra layer of security by enabling email verification on login.",
+    "enableTwoFactor": "Enable Two-Factor Authentication",
+    "travelFlag": "Travel Flag",
+    "travelFlagEnabled": "Enabled: Your complaints will be moderated before assignment to workers.",
+    "travelFlagDisabled": "Enable when traveling to have your complaints reviewed by admin first.",
+    "enableTravelFlag": "Enable Travel Flag",
+    "totalReports": "Total Reports",
+    "resolved": "Resolved",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "trackReports": "Track Your Reports",
+    "reportNewIssue": "Report New Issue",
+    "viewLeaderboard": "View Leaderboard",
+    "myRewards": "My Rewards",
+    "allReports": "All Your Reports",
+    "total": "Total",
+    "loading": "Loading your reports...",
+    "noReports": "No reports yet",
+    "noReportsDesc": "Start making a difference by reporting issues in your community",
+    "createFirstReport": "Create Your First Report",
+    "reported": "Reported",
+    "reportedOn": "Reported:",
+    "id": "ID:",
+    "totalComplaints": "Total Complaints",
+    "recentActivity": "Recent Activity",
+    "myComplaints": "My Complaints",
+    "assignedComplaints": "Assigned Complaints",
+    "points": "Points",
+    "badges": "Badges",
+    "rating": "Rating",
+    "performance": "Performance",
+    "resolutionTime": "Avg. Resolution Time",
+    "satisfactionRate": "Satisfaction Rate"
+  },
+  "complaints": {
+    "title": "Complaints",
+    "myComplaints": "My Complaints",
+    "allComplaints": "All Complaints",
+    "reportIssue": "Report Issue",
+    "createComplaint": "Create Complaint",
+    "complaintType": "Issue Type",
+    "complaintTitle": "Issue Title",
+    "complaintDescription": "Description",
+    "location": "Location",
+    "address": "Address",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "uploadImage": "Upload Image",
+    "addImage": "Add Image",
+    "priority": "Priority",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "status": "Status",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "resolved": "Resolved",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "statusHistory": "Status History",
+    "assignmentHistory": "Assignment History",
+    "feedback": "Feedback",
+    "rating": "Rating",
+    "comment": "Comment",
+    "submitFeedback": "Submit Feedback",
+    "comments": "Comments",
+    "addComment": "Add Comment",
+    "postComment": "Post Comment",
+    "resolutionProof": "Resolution Proof",
+    "search": "Search Complaints",
+    "filter": "Filter",
+    "noComplaints": "No complaints found",
+    "successCreate": "Complaint created successfully!",
+    "successUpdate": "Complaint updated successfully!",
+    "successDelete": "Complaint deleted successfully!",
+    "roadInfrastructure": "Roads & Infrastructure",
+    "waterSanitation": "Water & Sanitation",
+    "electricity": "Electricity",
+    "publicSafety": "Public Safety",
+    "garbage": "Garbage & Waste",
+    "parks": "Parks & Environment",
+    "noise": "Noise & Disturbance",
+    "transport": "Public Transport",
+    "other": "Other",
+    "reportCivicIssue": "Report a Civic Issue",
+    "helpImprove": "Help us improve your community by reporting problems",
+    "issueDetails": "Issue Details",
+    "issueTitle": "Issue Title",
+    "category": "Category",
+    "description": "Description",
+    "issueTitlePlaceholder": "Enter a concise title for the issue",
+    "selectCategory": "Select a category",
+    "detailedDescription": "Provide a detailed description of the issue",
+    "addPhotos": "Add Photos",
+    "noFileChosen": "No file chosen",
+    "takePhoto": "Take Photo",
+    "uploadImages": "Upload Images",
+    "photosTip": "You can add up to 5 photos (JPG, PNG)",
+    "locationDetails": "Location Details",
+    "useGPS": "Use GPS",
+    "locationTip": "Tip: Click \"Use GPS\" to auto-fill your location",
+    "streetAddress": "Street Address",
+    "streetAddressPlaceholder": "Street address or landmark",
+    "city": "City",
+    "state": "State",
+    "pinCode": "PIN Code",
+    "pinCodePlaceholder": "6-digit",
+    "findOnMap": "Find on Map",
+    "submitReport": "Submit Report",
+    "required": "Required"
+  },
+  "worker": {
+    "title": "Worker Dashboard",
+    "assignedComplaints": "Assigned Complaints",
+    "myAssignments": "My Assignments",
+    "totalAssigned": "Total Assigned",
+    "totalResolved": "Total Resolved",
+    "updateStatus": "Update Status",
+    "markResolved": "Mark as Resolved",
+    "addProof": "Add Resolution Proof",
+    "startWork": "Start Work",
+    "specializations": "Specializations",
+    "workArea": "Work Area",
+    "settings": "Settings",
+    "performance": "Performance Metrics",
+    "resolvedToday": "Resolved Today",
+    "resolvedMonth": "Resolved This Month",
+    "averageTime": "Average Resolution Time",
+    "satisfactionScore": "Customer Satisfaction"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "menu": "Admin Menu",
+    "dashboard": "Dashboard",
+    "userManagement": "User Management",
+    "complaintManagement": "Complaint Management",
+    "moderationPanel": "Moderation Panel",
+    "rewardsManagement": "Rewards Management",
+    "leaderboard": "Leaderboard",
+    "settings": "Settings",
+    "statistics": "Statistics",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "totalComplaints": "Total Complaints",
+    "resolvedComplaints": "Resolved Complaints",
+    "pendingComplaints": "Pending Complaints",
+    "averageResolutionTime": "Avg Resolution Time",
+    "userList": "User List",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "deleteUser": "Delete User",
+    "changeRole": "Change Role",
+    "assignWorker": "Assign Worker",
+    "moderateComplaint": "Moderate Complaint",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending Review",
+    "addBadge": "Add Badge",
+    "viewRewards": "View Rewards",
+    "systemLogs": "System Logs",
+    "successUserAdded": "User added successfully!",
+    "successUserDeleted": "User deleted successfully!",
+    "successAssignment": "Assignment completed successfully!"
+  },
+  "moderation": {
+    "title": "Moderation Panel",
+    "queue": "Moderation Queue",
+    "flagged": "Flagged Complaints",
+    "review": "Review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reason": "Reason",
+    "validIssue": "Valid Issue",
+    "notValid": "Not Valid",
+    "duplicate": "Duplicate",
+    "inappropriate": "Inappropriate",
+    "requestInfo": "Request More Information",
+    "notes": "Notes",
+    "submit": "Submit Review",
+    "noComplaints": "No complaints to review"
+  },
+  "rewards": {
+    "title": "Rewards & Badges",
+    "badges": "Badges",
+    "points": "Points",
+    "leaderboard": "Leaderboard",
+    "yourBadges": "Your Badges",
+    "earnedBadges": "Earned Badges",
+    "badge": "Badge",
+    "description": "Description",
+    "earnedOn": "Earned On",
+    "addBadge": "Add Badge",
+    "selectUser": "Select User",
+    "selectBadge": "Select Badge",
+    "reason": "Reason",
+    "submit": "Award Badge",
+    "topContributors": "Top Contributors",
+    "rank": "Rank",
+    "name": "Name",
+    "totalPoints": "Total Points",
+    "totalBadges": "Total Badges"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "topContributors": "Top Contributors",
+    "rank": "Rank",
+    "name": "Name",
+    "points": "Points",
+    "badges": "Badges",
+    "resolved": "Resolved",
+    "viewProfile": "View Profile",
+    "monthly": "Monthly",
+    "allTime": "All Time",
+    "noData": "No data available"
+  },
+  "profile": {
+    "title": "Profile",
+    "myProfile": "My Profile",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "joinedOn": "Joined On",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "save": "Save",
+    "cancel": "Cancel",
+    "successUpdate": "Profile updated successfully!",
+    "successPasswordChange": "Password changed successfully!",
+    "myBadges": "My Badges",
+    "myPoints": "My Points",
+    "totalComplaints": "Total Complaints"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "noData": "No data available",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "needHelp": "Need Help?",
+    "contactSupport": "Contact Support",
+    "copy": "Copy",
+    "share": "Share",
+    "print": "Print",
+    "refresh": "Refresh",
+    "settings": "Settings",
+    "logout": "Logout",
+    "selectAll": "Select All",
+    "selectNone": "Select None",
+    "getStarted": "Get Started",
+    "viewDashboard": "View Dashboard"
+  },
+  "messages": {
+    "welcome": "Welcome!",
+    "goodbye": "Goodbye!",
+    "sessionExpired": "Your session has expired. Please login again.",
+    "unauthorized": "You are not authorized to access this page.",
+    "notFound": "Page not found.",
+    "serverError": "Server error occurred. Please try again later.",
+    "networkError": "Network error. Please check your internet connection.",
+    "confirmDelete": "Are you sure you want to delete this?",
+    "confirmLogout": "Are you sure you want to logout?"
+  },
+  "footer": {
+    "copyright": "© 2025 CivicPulse. All rights reserved.",
+    "tagline": "Building Better Communities",
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us",
+    "cookies": "Cookie Policy",
+    "quickLinks": "Quick Links",
+    "reportIssue": "Report Issue",
+    "trackProgress": "Track Progress",
+    "leaderboard": "Leaderboard",
+    "community": "Community",
+    "resources": "Resources",
+    "helpCenter": "Help Center",
+    "faqs": "FAQs",
+    "guidelines": "Guidelines",
+    "social": "Follow Us",
+    "stayUpdated": "Stay Updated",
+    "subscribeText": "Subscribe to our newsletter for updates on civic issues in your area",
+    "emailPlaceholder": "Enter your email address"
+  }
+}

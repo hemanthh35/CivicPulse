@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // Initialize language
     const savedLanguage = localStorage.getItem('language') || 'en';
     this.currentLanguage = savedLanguage;
-    this.translate.setDefaultLang('en');
+    this.translate.setDefaultLanguage('en');
     this.translate.use(this.currentLanguage);
 
     // Subscribe to user changes

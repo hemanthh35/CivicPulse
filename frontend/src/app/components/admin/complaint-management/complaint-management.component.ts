@@ -405,7 +405,7 @@ export class ComplaintManagementComponent implements OnInit, OnDestroy {
     }
     
     // Otherwise, construct the URL with the backend server
-    const baseUrl = 'http://localhost:5000';
+    const baseUrl = 'http://localhost:5001';
     // Remove leading slash if present to avoid double slashes
     const cleanPath = mediaURL.startsWith('/') ? mediaURL : `/${mediaURL}`;
     return `${baseUrl}${cleanPath}`;
@@ -617,7 +617,7 @@ export class ComplaintManagementComponent implements OnInit, OnDestroy {
           // Fix the image URL to point to backend server
           const fullImageUrl = imageUrl.startsWith('http') 
             ? imageUrl 
-            : `http://localhost:5000${imageUrl}`;
+            : `http://localhost:5001${imageUrl}`;
           
           console.log(`🔄 Loading image ${idx + 1}:`, fullImageUrl);
           

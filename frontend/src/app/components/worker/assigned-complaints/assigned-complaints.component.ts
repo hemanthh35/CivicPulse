@@ -377,7 +377,7 @@ export class AssignedComplaintsComponent implements OnInit {
           // Fix the image URL to point to backend server
           const fullImageUrl = imageUrl.startsWith('http') 
             ? imageUrl 
-            : `http://localhost:5000${imageUrl}`;
+            : `http://localhost:5001${imageUrl}`;
           
           console.log(`🔄 Loading image ${idx + 1}:`, fullImageUrl);
           

@@ -239,7 +239,7 @@ body {
   .complaint-header {
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: flex-start;
     margin-bottom: $spacing-md;
 
     .title {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,13 +6,15 @@ import { AuthService } from '../../services/auth.service';
 import { ComplaintsService } from '../../services/complaints.service';
 import { User } from '../../models/user.model';
 import { Complaint } from '../../models/complaint.model';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule]
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
+  encapsulation: ViewEncapsulation.None
 })
 export class DashboardComponent implements OnInit {
   user: User | null = null;
@@ -37,15 +39,29 @@ export class DashboardComponent implements OnInit {
   // 2FA toggle
   twoFactorEnabled = false;
   toggling2FA = false;
-  
+
+  // Language switcher
+  currentLanguage: string = 'en';
+  dropdownOpen = false;
+  languageNames: { [key: string]: string } = {
+    'en': 'English',
+    'hi': 'हिन्दी',
+    'te': 'తెలుగు'
+  };
+
   constructor(
     private authService: AuthService,
-    private complaintsService: ComplaintsService
+    private complaintsService: ComplaintsService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
     this.twoFactorEnabled = this.user?.twoFactorEnabled || false;
+    const savedLanguage = localStorage.getItem('language') || 'en';
+    this.currentLanguage = savedLanguage;
+    this.translate.setDefaultLang('en');
+    this.translate.use(this.currentLanguage);
     if (this.user && this.hasRole(['citizen', 'student'])) {
       this.loadUserComplaints();
     }
@@ -85,7 +101,7 @@ export class DashboardComponent implements OnInit {
     if (!photoPath) return '';
     if (photoPath.startsWith('http')) return photoPath;
     const cleanPath = photoPath.startsWith('/') ? photoPath.substring(1) : photoPath;
-    return `http://localhost:5000/${cleanPath}`;
+    return `http://localhost:5001/${cleanPath}`;
   }
 
   getStatusBadgeClass(status: string): string {
@@ -281,5 +297,11 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+  }
+
+  changeLanguage(language: string): void {
+    this.currentLanguage = language;
+    this.translate.use(language);
+    localStorage.setItem('language', language);
   }
 }

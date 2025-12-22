@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - Project Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Slide Container */
+        .presentation {
+            width: 100%;
+        }
+
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Slide 1 - Title */
+        .slide-1 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .slide-1::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .slide-1::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .title-slide {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .title-left h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .title-left .tagline {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .title-left .subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            line-height: 1.8;
+            max-width: 500px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #a5b4fc;
+            margin-bottom: 30px;
+        }
+
+        .title-right img {
+            width: 100%;
+            max-width: 550px;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Slide 2 - Problem & Solution */
+        .slide-2 {
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        .section-title span {
+            background: linear-gradient(135deg, #f472b6, #e879f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .problem-box,
+        .solution-box {
+            padding: 40px;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .problem-box {
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .solution-box {
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05));
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .box-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .problem-box .box-icon {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .solution-box .box-icon {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .box-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .box-list {
+            list-style: none;
+        }
+
+        .box-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+
+        .box-list li:last-child {
+            border-bottom: none;
+        }
+
+        .list-icon {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        /* Slide 3 - Features */
+        .slide-3 {
+            background: linear-gradient(135deg, #0c0a1d 0%, #1a1637 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Slide 4 - Tech Stack */
+        .slide-4 {
+            background: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%);
+        }
+
+        .tech-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .tech-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .tech-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .tech-item {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: scale(1.02);
+        }
+
+        .tech-item .tech-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .tech-item h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .tech-item p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .frontend-tech {
+            border-top: 3px solid #ef4444;
+        }
+
+        .backend-tech {
+            border-top: 3px solid #22c55e;
+        }
+
+        .database-tech {
+            border-top: 3px solid #3b82f6;
+        }
+
+        .tools-tech {
+            border-top: 3px solid #f59e0b;
+        }
+
+        /* Slide 5 - User Roles */
+        .slide-5 {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+
+        .roles-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .roles-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .roles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .role-item {
+            display: flex;
+            gap: 20px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .role-item:nth-child(1) {
+            border-left-color: #6366f1;
+        }
+
+        .role-item:nth-child(2) {
+            border-left-color: #22c55e;
+        }
+
+        .role-item:nth-child(3) {
+            border-left-color: #f59e0b;
+        }
+
+        .role-item:nth-child(4) {
+            border-left-color: #ec4899;
+        }
+
+        .role-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(10px);
+        }
+
+        .role-icon {
+            font-size: 2rem;
+        }
+
+        .role-info h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #f1f5f9;
+        }
+
+        .role-info p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        /* Slide 6 - Impact */
+        .slide-6 {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f4c75 100%);
+        }
+
+        .impact-content {
+            text-align: center;
+        }
+
+        .impact-content img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            margin: 40px auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .impact-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 50px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .impact-points {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .impact-point {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 50px;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Slide Navigation */
+        .slide-nav {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: #6366f1;
+            transform: scale(1.3);
+        }
+
+        /* Slide Number */
+        .slide-number {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+        }
+
+        /* Decorative Elements */
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 40px;
+            }
+
+            .title-slide,
+            .two-column,
+            .tech-content,
+            .roles-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .title-left h1 {
+                font-size: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .features-grid,
+            .tech-list {
+                grid-template-columns: 1fr;
+            }
+
+            .impact-stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .slide-nav {
+                display: none;
+            }
+        }
+
+        /* Print Styles for PDF Export */
+        @media print {
+            .slide {
+                page-break-after: always;
+                min-height: 100vh;
+            }
+
+            .slide-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Dots -->
+    <nav class="slide-nav">
+        <button class="nav-dot active" onclick="scrollToSlide(1)"></button>
+        <button class="nav-dot" onclick="scrollToSlide(2)"></button>
+        <button class="nav-dot" onclick="scrollToSlide(3)"></button>
+        <button class="nav-dot" onclick="scrollToSlide(4)"></button>
+        <button class="nav-dot" onclick="scrollToSlide(5)"></button>
+        <button class="nav-dot" onclick="scrollToSlide(6)"></button>
+    </nav>
+
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <section class="slide slide-1" id="slide-1">
+            <div class="slide-content">
+                <div class="title-slide">
+                    <div class="title-left">
+                        <span class="badge" style="display: inline-flex; align-items: center; gap: 12px;">
+                            <i class="devicon-mongodb-plain colored"></i>
+                            <i class="devicon-express-original" style="color: #fff;"></i>
+                            <i class="devicon-angularjs-plain colored"></i>
+                            <i class="devicon-nodejs-plain colored"></i>
+                            MEAN Stack Project
+                        </span>
+                        <h1>CivicPulse</h1>
+                        <p class="tagline">Empowering Communities Through Civic Engagement</p>
+                        <p class="subtitle">
+                            A modern civic engagement platform connecting citizens with municipal authorities
+                            to report, track, and resolve civic issues efficiently.
+                        </p>
+                    </div>
+                    <div class="title-right">
+                        <img src="C:/Users/naduk/.gemini/antigravity/brain/d9b0df92-4cba-4dca-b3bf-cb8dc58d6746/smart_city_hero_1766367143110.png"
+                            alt="Smart City Illustration">
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">01 / 06</div>
+        </section>
+
+        <!-- Slide 2: Problem & Solution -->
+        <section class="slide slide-2" id="slide-2">
+            <div class="slide-content">
+                <h2 class="section-title">The <span>Problem</span> & Our <span>Solution</span></h2>
+                <div class="two-column">
+                    <div class="problem-box">
+                        <div class="box-header">
+                            <div class="box-icon">⚠️</div>
+                            <h3 class="box-title">The Problem</h3>
+                        </div>
+                        <ul class="box-list">
+                            <li><span class="list-icon">❌</span> Inefficient complaint registration processes</li>
+                            <li><span class="list-icon">❌</span> No transparency in issue resolution</li>
+                            <li><span class="list-icon">❌</span> Delayed response from municipal authorities</li>
+                            <li><span class="list-icon">❌</span> Lack of citizen participation</li>
+                            <li><span class="list-icon">❌</span> No accountability for workers</li>
+                        </ul>
+                    </div>
+                    <div class="solution-box">
+                        <div class="box-header">
+                            <div class="box-icon">✨</div>
+                            <h3 class="box-title">Our Solution</h3>
+                        </div>
+                        <ul class="box-list">
+                            <li><span class="list-icon">✅</span> One-click issue reporting with photos & GPS</li>
+                            <li><span class="list-icon">✅</span> Real-time status tracking & notifications</li>
+                            <li><span class="list-icon">✅</span> Smart worker assignment system</li>
+                            <li><span class="list-icon">✅</span> Gamification with points & badges</li>
+                            <li><span class="list-icon">✅</span> Complete analytics dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">02 / 06</div>
+        </section>
+
+        <!-- Slide 3: Key Features -->
+        <section class="slide slide-3" id="slide-3">
+            <div class="slide-content">
+                <h2 class="section-title">Key <span>Features</span></h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>Easy Reporting</h3>
+                        <p>Submit complaints with photos, descriptions, and precise GPS location in seconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🗺️</div>
+                        <h3>Interactive Maps</h3>
+                        <p>Visualize all complaints on a map with Leaflet integration for geographic insights.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔔</div>
+                        <h3>Real-time Notifications</h3>
+                        <p>Get instant updates when your complaint status changes or is resolved.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>Gamification</h3>
+                        <p>Earn points and badges for active participation. Compete on the leaderboard!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Analytics Dashboard</h3>
+                        <p>Comprehensive charts and metrics for admins to track performance.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔐</div>
+                        <h3>Secure Auth</h3>
+                        <p>JWT authentication with optional 2FA OTP verification for enhanced security.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">03 / 06</div>
+        </section>
+
+        <!-- Slide 4: Tech Stack -->
+        <section class="slide slide-4" id="slide-4">
+            <div class="slide-content">
+                <h2 class="section-title">Technology <span>Stack</span></h2>
+                <div class="tech-content" style="grid-template-columns: 1fr;">
+                    <div class="tech-list" style="grid-template-columns: repeat(3, 1fr); gap: 25px;">
+                        <div class="tech-item frontend-tech">
+                            <div class="tech-icon"><i class="devicon-angularjs-plain colored"
+                                    style="font-size: 3rem;"></i></div>
+                            <h4>Angular 17+</h4>
+                            <p>Modern reactive frontend framework with TypeScript</p>
+                        </div>
+                        <div class="tech-item backend-tech">
+                            <div class="tech-icon"><i class="devicon-nodejs-plain colored" style="font-size: 3rem;"></i>
+                            </div>
+                            <h4>Node.js</h4>
+                            <p>JavaScript runtime for server-side applications</p>
+                        </div>
+                        <div class="tech-item" style="border-top: 3px solid #64748b;">
+                            <div class="tech-icon"><i class="devicon-express-original"
+                                    style="font-size: 3rem; color: #fff;"></i></div>
+                            <h4>Express.js</h4>
+                            <p>Fast, minimalist web framework for Node.js</p>
+                        </div>
+                        <div class="tech-item database-tech">
+                            <div class="tech-icon"><i class="devicon-mongodb-plain colored"
+                                    style="font-size: 3rem;"></i></div>
+                            <h4>MongoDB</h4>
+                            <p>Flexible NoSQL database with Mongoose ODM</p>
+                        </div>
+                        <div class="tech-item tools-tech">
+                            <div class="tech-icon"><i class="devicon-bootstrap-plain colored"
+                                    style="font-size: 3rem;"></i></div>
+                            <h4>Bootstrap 5</h4>
+                            <p>Responsive UI component library</p>
+                        </div>
+                        <div class="tech-item" style="border-top: 3px solid #10b981;">
+                            <div class="tech-icon"><i class="devicon-typescript-plain colored"
+                                    style="font-size: 3rem;"></i></div>
+                            <h4>TypeScript</h4>
+                            <p>Type-safe JavaScript for robust code</p>
+                        </div>
+                    </div>
+                    <!-- Additional tools row -->
+                    <div style="display: flex; justify-content: center; gap: 30px; margin-top: 40px; flex-wrap: wrap;">
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <i class="devicon-npm-original-wordmark colored" style="font-size: 2rem;"></i>
+                            <span style="color: #94a3b8;">npm</span>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <i class="devicon-git-plain colored" style="font-size: 2rem;"></i>
+                            <span style="color: #94a3b8;">Git</span>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <i class="devicon-sass-original colored" style="font-size: 2rem;"></i>
+                            <span style="color: #94a3b8;">SCSS</span>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="Leaflet"
+                                style="height: 28px;">
+                            <span style="color: #94a3b8;">Leaflet Maps</span>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="28" height="28">
+                                <circle cx="20" cy="20" r="18" fill="#ff6384" />
+                                <circle cx="15" cy="15" r="5" fill="#fff" />
+                                <circle cx="25" cy="18" r="3" fill="#fff" />
+                            </svg>
+                            <span style="color: #94a3b8;">Chart.js</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">04 / 06</div>
+        </section>
+
+        <!-- Slide 5: User Roles -->
+        <section class="slide slide-5" id="slide-5">
+            <div class="slide-content">
+                <h2 class="section-title">User <span>Roles</span> & Workflow</h2>
+                <div class="roles-content">
+                    <div class="roles-list">
+                        <div class="role-item">
+                            <div class="role-icon">👤</div>
+                            <div class="role-info">
+                                <h4>Citizen</h4>
+                                <p>Report issues, track status, earn rewards & view leaderboard</p>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-icon">👷</div>
+                            <div class="role-info">
+                                <h4>Worker</h4>
+                                <p>View assigned tasks, update progress, mark issues resolved</p>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-icon">👨‍💼</div>
+                            <div class="role-info">
+                                <h4>Admin</h4>
+                                <p>Manage users, assign workers, view analytics, award badges</p>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-icon">🎓</div>
+                            <div class="role-info">
+                                <h4>Student</h4>
+                                <p>Learn civic responsibility with educational tracking features</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="roles-image">
+                        <img src="C:/Users/naduk/.gemini/antigravity/brain/d9b0df92-4cba-4dca-b3bf-cb8dc58d6746/user_roles_diagram_1766367203615.png"
+                            alt="User Roles">
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">05 / 06</div>
+        </section>
+
+        <!-- Slide 6: Impact & Thank You -->
+        <section class="slide slide-6" id="slide-6">
+            <div class="slide-content">
+                <div class="impact-content">
+                    <h2 class="section-title">Community <span>Impact</span></h2>
+                    <img src="C:/Users/naduk/.gemini/antigravity/brain/d9b0df92-4cba-4dca-b3bf-cb8dc58d6746/community_impact_1766367205227.png"
+                        alt="Community Impact">
+
+                    <div class="impact-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">10+</div>
+                            <div class="stat-label">Issue Categories</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">User Roles</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Languages</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Responsive</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-points">
+                        <div class="impact-point">🤝 Direct Citizen-Authority Communication</div>
+                        <div class="impact-point">⚡ Faster Response Times</div>
+                        <div class="impact-point">📈 Increased Transparency</div>
+                        <div class="impact-point">🌱 Civic Responsibility Culture</div>
+                    </div>
+
+                    <a href="https://civicpulse.onrender.com" target="_blank" class="cta-button">
+                        🌐 View Live Demo
+                    </a>
+                </div>
+            </div>
+            <div class="slide-number">06 / 06</div>
+        </section>
+    </div>
+
+    <script>
+        // Smooth scroll to slide
+        function scrollToSlide(slideNum) {
+            document.getElementById(`slide-${slideNum}`).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update active nav dot on scroll
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.querySelectorAll('.nav-dot');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const slideId = entry.target.id;
+                    const slideNum = parseInt(slideId.split('-')[1]) - 1;
+
+                    navDots.forEach((dot, index) => {
+                        dot.classList.toggle('active', index === slideNum);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const currentSlide = Array.from(slides).findIndex(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= 0 && rect.top < window.innerHeight / 2;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    scrollToSlide(currentSlide + 2);
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    scrollToSlide(currentSlide);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

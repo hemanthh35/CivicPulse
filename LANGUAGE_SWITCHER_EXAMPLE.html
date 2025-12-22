@@ -1,0 +1,122 @@
+<!-- Language Switcher - Add this to your app.component.html navbar -->
+
+<!-- Simple Dropdown Language Selector (Add to Navbar) -->
+<div class="language-selector me-3" dropdown>
+  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+          id="languageDropdown" 
+          dropdownToggle
+          type="button">
+    <i class="bi bi-translate me-1"></i>
+    {{ currentLanguage === 'en' ? 'English' : currentLanguage === 'hi' ? 'हिन्दी' : 'తెలుగు' }}
+  </button>
+  
+  <div class="dropdown-menu" *dropdownMenu>
+    <a class="dropdown-item" 
+       [class.active]="currentLanguage === 'en'"
+       (click)="changeLanguage('en')">
+      <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'en'"></i>
+      English
+    </a>
+    <a class="dropdown-item" 
+       [class.active]="currentLanguage === 'hi'"
+       (click)="changeLanguage('hi')">
+      <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'hi'"></i>
+      हिन्दी (Hindi)
+    </a>
+    <a class="dropdown-item" 
+       [class.active]="currentLanguage === 'te'"
+       (click)="changeLanguage('te')">
+      <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'te'"></i>
+      తెలుగు (Telugu)
+    </a>
+  </div>
+</div>
+
+<!-- Alternative: Simple Button Group -->
+<div class="btn-group me-3" role="group">
+  <button type="button" 
+          class="btn btn-sm"
+          [class.btn-primary]="currentLanguage === 'en'"
+          [class.btn-outline-primary]="currentLanguage !== 'en'"
+          (click)="changeLanguage('en')">
+    EN
+  </button>
+  <button type="button" 
+          class="btn btn-sm"
+          [class.btn-primary]="currentLanguage === 'hi'"
+          [class.btn-outline-primary]="currentLanguage !== 'hi'"
+          (click)="changeLanguage('hi')">
+    HI
+  </button>
+  <button type="button" 
+          class="btn btn-sm"
+          [class.btn-primary]="currentLanguage === 'te'"
+          [class.btn-outline-primary]="currentLanguage !== 'te'"
+          (click)="changeLanguage('te')">
+    TE
+  </button>
+</div>
+
+<!-- Example: Add a dedicated button to open language switcher modal -->
+<button class="btn btn-success ms-3" (click)="openLanguageModal()">
+  <i class="bi bi-translate me-1"></i> Change Language
+</button>
+
+<!-- Styling (Add to app.component.scss) -->
+<style>
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-selector .dropdown-toggle::after {
+  display: none;
+}
+
+.language-selector .dropdown-toggle i {
+  font-size: 1.1rem;
+}
+
+.language-selector .dropdown-menu {
+  min-width: 150px;
+}
+
+.language-selector .dropdown-item {
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.language-selector .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #667eea;
+}
+
+.language-selector .dropdown-item.active {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.btn-group .btn {
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+}
+
+.btn-group .btn.btn-primary {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.btn-group .btn.btn-outline-primary {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.btn-group .btn.btn-outline-primary:hover {
+  background-color: #667eea;
+  color: white;
+}
+</style>

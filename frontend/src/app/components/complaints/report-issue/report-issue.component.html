@@ -1,300 +1,361 @@
-<div class="row">
-  <div class="col-lg-8 mx-auto">
-    <div class="card shadow">
-      <div class="card-header bg-primary text-white">
-        <h2 class="h4 mb-0">
-          <i class="bi bi-flag-fill me-2"></i>Report a Civic Issue
-        </h2>
+<div class="report-container">
+  <!-- Hero Header -->
+  <div class="report-hero">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="bi bi-flag-fill"></i>
       </div>
-      <div class="card-body">
-        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-          {{ errorMessage }}
-          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-        </div>
-        
-        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-          {{ successMessage }}
-          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
-        </div>
+      <div class="hero-text">
+        <h1>{{ 'complaints.reportCivicIssue' | translate }}</h1>
+        <p>{{ 'complaints.helpImprove' | translate }}</p>
+      </div>
+    </div>
+    <div class="hero-decoration">
+      <div class="deco-circle deco-1"></div>
+      <div class="deco-circle deco-2"></div>
+    </div>
+  </div>
 
-        <div *ngIf="analyzingImage" class="alert alert-info" role="alert">
-          <div class="d-flex align-items-center">
-            <span class="spinner-border spinner-border-sm me-2"></span>
-            <strong>🤖 AI is analyzing your image...</strong>
-            <span class="ms-2">This may take a few seconds</span>
-          </div>
-        </div>
+  <!-- Main Content -->
+  <div class="report-content">
+    <!-- Alert Messages -->
+    <div class="alerts-container">
+      <div *ngIf="errorMessage" class="alert alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ errorMessage }}</span>
+        <button type="button" class="alert-close" (click)="errorMessage = ''">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
 
-        <div *ngIf="aiSuggestion" class="alert alert-success" role="alert">
-          <i class="bi bi-robot me-2"></i>{{ aiSuggestion }}
-        </div>
-        
-        <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
-          
-          <!-- AI IMAGE UPLOAD -->
-          <div class="mb-4 ai-upload-section">
-            <div class="card shadow-sm">
-              <div class="card-header text-white">
-                <h5 class="mb-0">
-                  <i class="bi bi-cloud-upload-fill me-2"></i>Smart Upload - AI Auto-Fill
-                </h5>
-              </div>
-              <div class="card-body">
-                <!-- Normal Upload State -->
-                <div class="text-center py-4" *ngIf="!analyzingImage">
-                  <i class="bi bi-robot display-3 mb-3"></i>
-                  <h5>Upload a Photo & Let AI Do the Work</h5>
-                  <p class="text-muted mb-4">Our AI will automatically analyze the image and fill out the form for you</p>
-                  
-                  <div class="upload-container position-relative">
-                    <input type="file" class="form-control" id="images" 
-                           multiple accept="image/*" 
-                           (change)="onFileSelect($event)">
-                  </div>
-                  
-                  <small class="form-text text-muted d-block mt-3">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Supported formats: JPG, PNG, JPEG • AI will detect issue type, description & location
-                  </small>
-                </div>
-                
-                <!-- AI Analyzing State -->
-                <div class="text-center py-5" *ngIf="analyzingImage">
-                  <div class="ai-loading-overlay">
-                    <div class="ai-loader mb-4">
-                      <div class="spinner-border text-primary" role="status" style="width: 3.5rem; height: 3.5rem;"></div>
-                    </div>
-                    <h5 class="fw-bold mb-2">🤖 AI is analyzing your image...</h5>
-                    <p class="text-muted mb-4">This may take a few seconds</p>
-                    <div class="progress mx-auto" style="width: 70%; height: 8px;">
-                      <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                           style="width: 100%"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Image Previews -->
-                <div class="image-previews mt-3 d-flex flex-wrap gap-2" *ngIf="previewUrls.length > 0">
-                  <div class="position-relative preview-item" *ngFor="let preview of previewUrls; let i = index">
-                    <img [src]="preview" class="img-thumbnail shadow-sm" alt="Preview">
-                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
-                      (click)="removeImage(i)" title="Remove">
-                      <i class="bi bi-x-lg"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <div *ngIf="successMessage" class="alert alert-success" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ successMessage }}</span>
+        <button type="button" class="alert-close" (click)="successMessage = ''">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
+
+      <!-- Issue Details Section -->
+      <section class="form-section">
+        <div class="section-card">
+          <div class="section-header">
+            <i class="bi bi-file-text-fill"></i>
+            <h2>{{ 'complaints.issueDetails' | translate }}</h2>
           </div>
 
-          <!-- Title -->
-          <div class="mb-3">
-            <label for="title" class="form-label">Issue Title <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="title" formControlName="title" 
-              placeholder="Enter a concise title for the issue" 
-              [ngClass]="{'is-invalid': f['title'].touched && f['title'].invalid}">
-            <div class="invalid-feedback" *ngIf="f['title'].touched && f['title'].errors?.['required']">
-              Title is required
-            </div>
-            <div class="invalid-feedback" *ngIf="f['title'].touched && f['title'].errors?.['minlength']">
-              Title must be at least 5 characters
-            </div>
-          </div>
-          
-          <!-- Category -->
-          <div class="mb-3">
-            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
-            <select class="form-select" id="category" formControlName="category" 
-              [ngClass]="{'is-invalid': f['category'].touched && f['category'].invalid}">
-              <option value="" disabled>Select a category</option>
-              <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
-            </select>
-            <div class="invalid-feedback" *ngIf="f['category'].touched && f['category'].errors?.['required']">
-              Category is required
-            </div>
-          </div>
-          
-          <!-- Description -->
-          <div class="mb-3">
-            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-            <textarea class="form-control" id="description" formControlName="description" rows="5" 
-              placeholder="Provide a detailed description of the issue"
-              [ngClass]="{'is-invalid': f['description'].touched && f['description'].invalid}"></textarea>
-            <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['required']">
-              Description is required
-            </div>
-            <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['minlength']">
-              Description must be at least 20 characters
-            </div>
-            <small class="form-text text-muted">
-              Please provide clear details about the issue to help in quick resolution.
-            </small>
-          </div>
-          
-          <!-- Location -->
-          <div class="card mb-3 location-card">
-            <div class="card-header text-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">
-                <i class="bi bi-geo-alt-fill me-2"></i>Location Details <span class="text-white">*</span>
-              </h5>
-              <button type="button" class="btn btn-sm btn-light" 
-                      (click)="getCurrentLocation()" 
-                      [disabled]="fetchingLocation">
-                <span class="spinner-border spinner-border-sm me-2" *ngIf="fetchingLocation"></span>
-                <i class="bi bi-crosshair me-2" *ngIf="!fetchingLocation"></i>
-                {{ fetchingLocation ? 'Getting Location...' : 'Use My Current Location' }}
-              </button>
-            </div>
-            <div class="card-body" formGroupName="location">
-              <div *ngIf="locationError" class="alert alert-warning alert-dismissible fade show" role="alert">
-                {{ locationError }}
-                <button type="button" class="btn-close" (click)="locationError = ''"></button>
+          <div class="section-body">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="title" class="form-label">
+                {{ 'complaints.issueTitle' | translate }} <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="bi bi-pencil input-icon"></i>
+                <input type="text" class="form-input" id="title" formControlName="title"
+                  [placeholder]="'complaints.issueTitlePlaceholder' | translate"
+                  [class.has-error]="f['title'].touched && f['title'].invalid"
+                  style="padding-right: 45px;">
+                <button type="button" class="voice-btn" 
+                  *ngIf="voiceSupported"
+                  (click)="isListeningTitle ? stopVoiceInput() : startVoiceInput('title')"
+                  [class.listening]="isListeningTitle"
+                  [title]="isListeningTitle ? 'Stop' : 'Voice Input'">
+                  <i class="bi" [ngClass]="isListeningTitle ? 'bi-mic-fill' : 'bi-mic'"></i>
+                </button>
               </div>
-              
-              <div *ngIf="!coordinates.lat && !coordinates.lng" class="alert alert-info" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <strong>Tip:</strong> Click "Use My Current Location" to automatically populate your location with GPS, or fill them manually.
+              <div class="error-message" *ngIf="f['title'].touched && f['title'].errors?.['required']">
+                <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
               </div>
-              
-              <!-- Accuracy Indicator -->
-              <div *ngIf="locationAccuracy !== null && coordinates.lat && coordinates.lng" class="alert mb-3" 
-                   [ngClass]="{'alert-success': locationAccuracy <= 50, 'alert-info': locationAccuracy > 50 && locationAccuracy <= 100, 'alert-warning': locationAccuracy > 100}">
-                <div class="d-flex align-items-center justify-content-between">
-                  <div>
-                    <i class="bi me-2" [ngClass]="{'bi-check-circle': locationAccuracy <= 100, 'bi-exclamation-triangle': locationAccuracy > 100}"></i>
-                    <strong>📍 Location Accuracy: {{ locationAccuracy }}m</strong>
-                    <div class="small mt-1">
-                      <span *ngIf="locationAccuracy <= 50">🎯 Excellent precision (within 50m) - Very reliable</span>
-                      <span *ngIf="locationAccuracy > 50 && locationAccuracy <= 100">✅ Good accuracy (within 100m) - Reliable</span>
-                      <span *ngIf="locationAccuracy > 100 && locationAccuracy <= 300">⚠️ Moderate accuracy ({{ locationAccuracy }}m) - Acceptable but may vary</span>
-                      <span *ngIf="locationAccuracy > 300">❌ Poor accuracy ({{ locationAccuracy }}m) - Try getting GPS in open area or re-enter manually</span>
-                    </div>
+              <div class="error-message" *ngIf="f['title'].touched && f['title'].errors?.['minlength']">
+                <i class="bi bi-exclamation-circle"></i> Title must be at least 5 characters
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+              <label for="category" class="form-label">
+                {{ 'complaints.category' | translate }} <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="bi bi-tag input-icon"></i>
+                <select class="form-select" id="category" formControlName="category"
+                  [class.has-error]="f['category'].touched && f['category'].invalid">
+                  <option value="" disabled>{{ 'complaints.selectCategory' | translate }}</option>
+                  <option *ngFor="let category of categories" [value]="category">{{ category | translate }}</option>
+                </select>
+                <i class="bi bi-chevron-down select-arrow"></i>
+              </div>
+              <div class="error-message" *ngIf="f['category'].touched && f['category'].errors?.['required']">
+                <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+              <label for="description" class="form-label">
+                {{ 'complaints.description' | translate }} <span class="required">*</span>
+              </label>
+              <div class="textarea-wrapper" style="position: relative;">
+                <textarea class="form-textarea" id="description" formControlName="description" rows="4"
+                  [placeholder]="'complaints.detailedDescription' | translate"
+                  [class.has-error]="f['description'].touched && f['description'].invalid"
+                  style="padding-right: 45px;"></textarea>
+                <button type="button" class="voice-btn voice-btn-textarea" 
+                  *ngIf="voiceSupported"
+                  (click)="isListeningDescription ? stopVoiceInput() : startVoiceInput('description')"
+                  [class.listening]="isListeningDescription"
+                  [title]="isListeningDescription ? 'Stop' : 'Voice Input'">
+                  <i class="bi" [ngClass]="isListeningDescription ? 'bi-mic-fill' : 'bi-mic'"></i>
+                </button>
+              </div>
+              <div class="error-message" *ngIf="f['description'].touched && f['description'].errors?.['required']">
+                <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+              </div>
+              <div class="error-message" *ngIf="f['description'].touched && f['description'].errors?.['minlength']">
+                <i class="bi bi-exclamation-circle"></i> Description must be at least 20 characters
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Photo Upload Section -->
+      <section class="form-section">
+        <div class="section-card">
+          <div class="section-header">
+            <i class="bi bi-camera-fill"></i>
+            <h2>{{ 'complaints.addPhotos' | translate }}</h2>
+          </div>
+
+          <div class="section-body">
+            <div class="photo-upload-area">
+              <!-- Camera and Upload Buttons -->
+              <div class="upload-buttons">
+                <label class="upload-option camera-option">
+                  <input type="file" accept="image/*" capture="environment" (change)="onFileSelect($event)">
+                  <div class="option-content">
+                    <i class="bi bi-camera"></i>
+                    <span>{{ 'complaints.takePhoto' | translate }}</span>
                   </div>
-                  <button type="button" class="btn btn-sm btn-outline-primary" 
-                          (click)="getCurrentLocation()" 
-                          [disabled]="fetchingLocation"
-                          title="Retry to get better accuracy">
-                    <i class="bi bi-arrow-clockwise me-1" *ngIf="!fetchingLocation"></i>
-                    <span class="spinner-border spinner-border-sm me-1" *ngIf="fetchingLocation"></span>
-                    Retry
+                </label>
+
+                <label class="upload-option gallery-option">
+                  <input type="file" accept="image/*" multiple (change)="onFileSelect($event)">
+                  <div class="option-content">
+                    <i class="bi bi-images"></i>
+                    <span>{{ 'complaints.uploadImages' | translate }}</span>
+                  </div>
+                </label>
+              </div>
+
+              <p class="upload-hint">
+                <i class="bi bi-info-circle"></i>
+                {{ 'complaints.photosTip' | translate }}
+              </p>
+
+              <!-- Image Previews -->
+              <div class="image-previews" *ngIf="previewUrls.length > 0">
+                <div class="preview-item" *ngFor="let preview of previewUrls; let i = index">
+                  <img [src]="preview" alt="Preview">
+                  <button type="button" class="remove-btn" (click)="removeImage(i)">
+                    <i class="bi bi-x-lg"></i>
                   </button>
                 </div>
               </div>
-              
-              <div class="mb-3">
-                <label for="address" class="form-label">Street Address</label>
-                <div class="input-group">
-                  <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
-                    <i class="bi bi-geo-alt-fill text-success"></i>
-                  </span>
-                  <input type="text" class="form-control" id="address" formControlName="address" 
-                    placeholder="Street address, building number, or landmark"
-                    [ngClass]="{'is-invalid': locationControls['address'].touched && locationControls['address'].invalid}">
-                  <div class="invalid-feedback" *ngIf="locationControls['address'].touched && locationControls['address'].errors?.['required']">
-                    Street address is required
-                  </div>
-                </div>
-                <small class="form-text text-muted" *ngIf="coordinates.lat && coordinates.lng">
-                  <i class="bi bi-check-circle text-success me-1"></i>
-                  GPS Coordinates: {{ coordinates.lat | number:'1.4-4' }}, {{ coordinates.lng | number:'1.4-4' }}
-                  <span *ngIf="locationAccuracy" class="ms-2">
-                    (±{{ locationAccuracy }}m accuracy)
-                  </span>
-                </small>
-              </div>
-              
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label for="city" class="form-label">City/Town</label>
-                  <div class="input-group">
-                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
-                      <i class="bi bi-building text-success"></i>
-                    </span>
-                    <input type="text" class="form-control" id="city" formControlName="city" 
-                      placeholder="City or town name"
-                      [ngClass]="{'is-invalid': locationControls['city'].touched && locationControls['city'].invalid}">
-                    <div class="invalid-feedback" *ngIf="locationControls['city'].touched && locationControls['city'].errors?.['required']">
-                      City is required
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="col-md-4 mb-3">
-                  <label for="state" class="form-label">State/Region</label>
-                  <div class="input-group">
-                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
-                      <i class="bi bi-map text-success"></i>
-                    </span>
-                    <input type="text" class="form-control" id="state" formControlName="state" 
-                      placeholder="State or region"
-                      [ngClass]="{'is-invalid': locationControls['state'].touched && locationControls['state'].invalid}">
-                    <div class="invalid-feedback" *ngIf="locationControls['state'].touched && locationControls['state'].errors?.['required']">
-                      State is required
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="col-md-4 mb-3">
-                  <label for="pincode" class="form-label">PIN/ZIP Code</label>
-                  <div class="input-group">
-                    <span class="input-group-text" *ngIf="coordinates.lat && coordinates.lng">
-                      <i class="bi bi-mailbox text-success"></i>
-                    </span>
-                    <input type="text" class="form-control" id="pincode" formControlName="pincode" 
-                      placeholder="6-digit PIN code"
-                      [ngClass]="{'is-invalid': locationControls['pincode'].touched && locationControls['pincode'].invalid}">
-                    <div class="invalid-feedback" *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['required']">
-                      PIN code is required
-                    </div>
-                    <div class="invalid-feedback" *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['pattern']">
-                      Enter a valid 6-digit PIN code
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Geocode Button for Manual Address Entry -->
-              <div class="mb-3 d-flex gap-2">
-                <button type="button" class="btn btn-outline-primary flex-grow-1" 
-                        (click)="geocodeAddress()"
-                        [disabled]="fetchingLocation || !locationControls['address'].value || !locationControls['city'].value">
-                  <span class="spinner-border spinner-border-sm me-2" *ngIf="fetchingLocation"></span>
-                  <i class="bi bi-search-location me-2" *ngIf="!fetchingLocation"></i>
-                  {{ fetchingLocation ? 'Geocoding Address...' : 'Find Coordinates from Address' }}
-                </button>
-              </div>
             </div>
           </div>
-          
-          <!-- Priority -->
-          <div class="mb-3">
-            <label class="form-label d-block">Priority <span class="text-danger">*</span></label>
-            <div class="btn-group" role="group" aria-label="Priority selection">
-              <input type="radio" class="btn-check" formControlName="priority" id="lowPriority" value="low">
-              <label class="btn btn-outline-secondary" for="lowPriority">
-                <i class="bi bi-dash-circle me-1"></i>Low
-              </label>
-              
-              <input type="radio" class="btn-check" formControlName="priority" id="mediumPriority" value="medium">
-              <label class="btn btn-outline-warning" for="mediumPriority">
-                <i class="bi bi-exclamation-circle me-1"></i>Medium
-              </label>
-              
-              <input type="radio" class="btn-check" formControlName="priority" id="highPriority" value="high">
-              <label class="btn btn-outline-danger" for="highPriority">
-                <i class="bi bi-exclamation-triangle-fill me-1"></i>High
-              </label>
+        </div>
+      </section>
+
+      <!-- Location Section -->
+      <section class="form-section">
+        <div class="section-card location-card">
+          <div class="section-header location-header">
+            <div class="header-left">
+              <i class="bi bi-geo-alt-fill"></i>
+              <h2>{{ 'complaints.locationDetails' | translate }} <span class="required">*</span></h2>
             </div>
-          </div>
-          
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
-              <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
-              {{ isSubmitting ? 'Submitting...' : 'Submit Report' }}
+            <button type="button" class="gps-btn" (click)="getCurrentLocation()" [disabled]="fetchingLocation">
+              <span class="spinner-sm" *ngIf="fetchingLocation"></span>
+              <i class="bi bi-crosshair" *ngIf="!fetchingLocation"></i>
+              <span>{{ fetchingLocation ? 'Getting...' : ('complaints.useGPS' | translate) }}</span>
             </button>
           </div>
-        </form>
+
+          <div class="section-body" formGroupName="location">
+            <!-- Location Error -->
+            <div *ngIf="locationError" class="location-alert alert-warning">
+              <i class="bi bi-exclamation-triangle"></i>
+              <span>{{ locationError }}</span>
+              <button type="button" class="alert-close" (click)="locationError = ''">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <!-- GPS Tip -->
+            <div *ngIf="!coordinates.lat && !coordinates.lng" class="location-alert alert-info">
+              <i class="bi bi-lightbulb"></i>
+              <span>{{ 'complaints.locationTip' | translate }}</span>
+            </div>
+
+            <!-- Accuracy Indicator -->
+            <div *ngIf="locationAccuracy !== null && coordinates.lat && coordinates.lng" class="accuracy-card"
+              [class.excellent]="locationAccuracy <= 50" [class.good]="locationAccuracy > 50 && locationAccuracy <= 100"
+              [class.moderate]="locationAccuracy > 100 && locationAccuracy <= 300"
+              [class.poor]="locationAccuracy > 300">
+              <div class="accuracy-info">
+                <div class="accuracy-icon">
+                  <i class="bi" [ngClass]="{
+                    'bi-bullseye': locationAccuracy <= 50,
+                    'bi-check-circle': locationAccuracy > 50 && locationAccuracy <= 100,
+                    'bi-exclamation-circle': locationAccuracy > 100
+                  }"></i>
+                </div>
+                <div class="accuracy-text">
+                  <strong>📍 Accuracy: {{ locationAccuracy }}m</strong>
+                  <span *ngIf="locationAccuracy <= 50">Excellent</span>
+                  <span *ngIf="locationAccuracy > 50 && locationAccuracy <= 100">Good</span>
+                  <span *ngIf="locationAccuracy > 100 && locationAccuracy <= 300">Moderate</span>
+                  <span *ngIf="locationAccuracy > 300">Try again outdoors</span>
+                </div>
+              </div>
+              <button type="button" class="retry-btn" (click)="getCurrentLocation()" [disabled]="fetchingLocation">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
+
+            <!-- Address Input -->
+            <div class="form-group">
+              <label for="address" class="form-label">{{ 'complaints.streetAddress' | translate }}</label>
+              <div class="input-wrapper" [class.has-gps]="coordinates.lat && coordinates.lng">
+                <i class="bi input-icon"
+                  [ngClass]="coordinates.lat ? 'bi-geo-alt-fill text-success' : 'bi-geo-alt'"></i>
+                <input type="text" class="form-input" id="address" formControlName="address"
+                  [placeholder]="'complaints.streetAddressPlaceholder' | translate"
+                  [class.has-error]="locationControls['address'].touched && locationControls['address'].invalid">
+              </div>
+              <div class="gps-coords" *ngIf="coordinates.lat && coordinates.lng">
+                <i class="bi bi-pin-map-fill"></i>
+                {{ coordinates.lat | number:'1.4-4' }}, {{ coordinates.lng | number:'1.4-4' }}
+              </div>
+              <div class="error-message"
+                *ngIf="locationControls['address'].touched && locationControls['address'].errors?.['required']">
+                <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+              </div>
+            </div>
+
+            <!-- City, State, Pincode Grid -->
+            <div class="location-grid">
+              <div class="form-group">
+                <label for="city" class="form-label">{{ 'complaints.city' | translate }}</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-building input-icon"></i>
+                  <input type="text" class="form-input" id="city" formControlName="city" [placeholder]="'complaints.city' | translate"
+                    [class.has-error]="locationControls['city'].touched && locationControls['city'].invalid">
+                </div>
+                <div class="error-message"
+                  *ngIf="locationControls['city'].touched && locationControls['city'].errors?.['required']">
+                  <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="state" class="form-label">{{ 'complaints.state' | translate }}</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-map input-icon"></i>
+                  <input type="text" class="form-input" id="state" formControlName="state" [placeholder]="'complaints.state' | translate"
+                    [class.has-error]="locationControls['state'].touched && locationControls['state'].invalid">
+                </div>
+                <div class="error-message"
+                  *ngIf="locationControls['state'].touched && locationControls['state'].errors?.['required']">
+                  <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="pincode" class="form-label">{{ 'complaints.pinCode' | translate }}</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-mailbox input-icon"></i>
+                  <input type="text" class="form-input" id="pincode" formControlName="pincode" [placeholder]="'complaints.pinCodePlaceholder' | translate"
+                    [class.has-error]="locationControls['pincode'].touched && locationControls['pincode'].invalid">
+                </div>
+                <div class="error-message"
+                  *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['required']">
+                  <i class="bi bi-exclamation-circle"></i> {{ 'complaints.required' | translate }}
+                </div>
+                <div class="error-message"
+                  *ngIf="locationControls['pincode'].touched && locationControls['pincode'].errors?.['pattern']">
+                  <i class="bi bi-exclamation-circle"></i> Invalid PIN
+                </div>
+              </div>
+            </div>
+
+            <!-- Geocode Button -->
+            <button type="button" class="geocode-btn" (click)="geocodeAddress()"
+              [disabled]="fetchingLocation || !locationControls['address'].value || !locationControls['city'].value">
+              <span class="spinner-sm" *ngIf="fetchingLocation"></span>
+              <i class="bi bi-search-heart" *ngIf="!fetchingLocation"></i>
+              <span>{{ 'complaints.findOnMap' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Priority Section -->
+      <section class="form-section">
+        <div class="section-card">
+          <div class="section-header">
+            <i class="bi bi-flag-fill"></i>
+            <h2>{{ 'complaints.priority' | translate }} <span class="required">*</span></h2>
+          </div>
+
+          <div class="section-body">
+            <div class="priority-grid">
+              <label class="priority-option" [class.selected]="f['priority'].value === 'low'">
+                <input type="radio" formControlName="priority" value="low">
+                <div class="priority-card low">
+                  <i class="bi bi-dash-circle"></i>
+                  <span>{{ 'complaints.low' | translate }}</span>
+                </div>
+              </label>
+
+              <label class="priority-option" [class.selected]="f['priority'].value === 'medium'">
+                <input type="radio" formControlName="priority" value="medium">
+                <div class="priority-card medium">
+                  <i class="bi bi-exclamation-circle"></i>
+                  <span>{{ 'complaints.medium' | translate }}</span>
+                </div>
+              </label>
+
+              <label class="priority-option" [class.selected]="f['priority'].value === 'high'">
+                <input type="radio" formControlName="priority" value="high">
+                <div class="priority-card high">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <span>{{ 'complaints.high' | translate }}</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Submit Button -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting" class="btn-content">
+            <i class="bi bi-send-fill"></i>
+            <span>{{ 'complaints.submitReport' | translate }}</span>
+          </span>
+          <span *ngIf="isSubmitting" class="btn-content loading">
+            <span class="spinner"></span>
+            <span>Submitting...</span>
+          </span>
+        </button>
       </div>
-    </div>
+    </form>
   </div>
 </div>

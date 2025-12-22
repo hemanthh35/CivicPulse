@@ -1,47 +1,266 @@
-<!-- Simple Hero Section -->
+<!-- Premium Hero Section with Animated Background -->
 <section class="hero">
+  <!-- Animated Background Elements -->
+  <div class="hero-bg">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-shape shape-4"></div>
+    <div class="floating-shape shape-5"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
   <div class="container">
-    <div class="hero-content text-center">
-      <h1>Welcome to CivicPulse</h1>
-      <p>Report civic issues and make your community better</p>
-      <div class="hero-buttons">
-        <button class="btn btn-primary" (click)="navigateToReportIssue()">Report Issue</button>
-        <button class="btn btn-secondary" (click)="navigateToLogin()">Sign In</button>
+    <div class="hero-content">
+      <div class="hero-badge animate-fade-in">
+        <span class="badge-icon">🌟</span>
+        <span>{{ 'landing.badge' | translate }}</span>
+      </div>
+
+      <h1 class="hero-title animate-slide-up">
+        {{ 'landing.heroTitle1' | translate }}<br>
+        <span class="gradient-text">{{ 'landing.heroTitle2' | translate }}</span>
+      </h1>
+
+      <p class="hero-subtitle animate-slide-up delay-1">
+        {{ 'landing.heroSubtitle' | translate }}
+      </p>
+
+      <div class="hero-buttons animate-slide-up delay-2">
+        <button class="btn btn-primary btn-glow" (click)="navigateToReportIssue()">
+          <span class="btn-icon">📢</span>
+          {{ 'landing.cta.ctaReport' | translate }}
+          <span class="btn-arrow">→</span>
+        </button>
+        <button class="btn btn-secondary" (click)="navigateToLogin()">
+          <span class="btn-icon">👤</span>
+          {{ 'landing.cta.ctaSignIn' | translate }}
+        </button>
+      </div>
+
+      <div class="hero-trust animate-fade-in delay-3">
+        <div class="trust-avatars">
+          <div class="avatar" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);"></div>
+          <div class="avatar" style="background: linear-gradient(135deg, #4ECDC4, #44A08D);"></div>
+          <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+          <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+        </div>
+        <span class="trust-text">
+          <strong>8,900+</strong> {{ 'landing.trustText' | translate }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator animate-bounce">
+    <div class="mouse">
+      <div class="wheel"></div>
+    </div>
+    <span>{{ 'landing.scrollText' | translate }}</span>
+  </div>
+</section>
+
+<!-- Live Statistics Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card" *ngFor="let stat of stats; let i = index">
+        <div class="stat-icon">{{ stat.icon }}</div>
+        <div class="stat-number" [attr.data-target]="stat.target">{{ stat.current | number }}</div>
+        <div class="stat-label">
+          <ng-container [ngSwitch]="i">
+            <span *ngSwitchCase="0">{{ 'landing.stats.issuesReported' | translate }}</span>
+            <span *ngSwitchCase="1">{{ 'landing.stats.issuesResolved' | translate }}</span>
+            <span *ngSwitchCase="2">{{ 'landing.stats.activeCitizens' | translate }}</span>
+            <span *ngSwitchCase="3">{{ 'landing.stats.partnerOrgs' | translate }}</span>
+          </ng-container>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" [style.width]="stat.percentage + '%'"></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="features">
+<!-- How It Works Section -->
+<section class="features-section">
   <div class="container">
-    <h2 class="text-center mb-5">How It Works</h2>
-    <div class="row">
-      <div class="col-md-4 mb-4">
-        <div class="feature-box">
-          <h3>Report</h3>
-          <p>Submit civic issues with photos and details</p>
+    <div class="section-header">
+      <span class="section-tag">{{ 'landing.howItWorks.tag' | translate }}</span>
+      <h2 class="section-title">{{ 'landing.howItWorks.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'landing.howItWorks.subtitle' | translate }}</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features; let i = index">
+        <div class="feature-number">0{{ i + 1 }}</div>
+        <div class="feature-icon-wrapper">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <div class="feature-glow"></div>
         </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="feature-box">
-          <h3>Track</h3>
-          <p>Monitor progress and get updates</p>
-        </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="feature-box">
-          <h3>Earn Rewards</h3>
-          <p>Get badges for your contributions</p>
+        <h3 class="feature-title">{{ 'landing.howItWorks.step' + (i + 1) + '.title' | translate }}</h3>
+        <p class="feature-description">{{ 'landing.howItWorks.step' + (i + 1) + '.description' | translate }}</p>
+        <div class="feature-link">
+          <span>{{ 'landing.howItWorks.learnMore' | translate }}</span>
+          <span class="arrow">→</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Footer -->
+<!-- Categories Section -->
+<section class="categories-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">{{ 'landing.categories.tag' | translate }}</span>
+      <h2 class="section-title">{{ 'landing.categories.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'landing.categories.subtitle' | translate }}</p>
+    </div>
+
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories">
+        <div class="category-icon">{{ category.icon }}</div>
+        <h4 class="category-title">
+          <ng-container [ngSwitch]="category.name">
+            <span *ngSwitchCase="'Roads'">{{ 'landing.categories.roads' | translate }}</span>
+            <span *ngSwitchCase="'Lighting'">{{ 'landing.categories.lighting' | translate }}</span>
+            <span *ngSwitchCase="'Sanitation'">{{ 'landing.categories.sanitation' | translate }}</span>
+            <span *ngSwitchCase="'Parks'">{{ 'landing.categories.parks' | translate }}</span>
+            <span *ngSwitchCase="'Water'">{{ 'landing.categories.water' | translate }}</span>
+            <span *ngSwitchCase="'Utilities'">{{ 'landing.categories.utilities' | translate }}</span>
+          </ng-container>
+        </h4>
+        <span class="category-count">{{ category.count }}+ {{ 'landing.categories.reports' | translate }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">{{ 'landing.testimonials.tag' | translate }}</span>
+      <h2 class="section-title">{{ 'landing.testimonials.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'landing.testimonials.subtitle' | translate }}</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials; let i = index">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">{{ 'landing.testimonials.testimonial' + i + '.text' | translate }}</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" [style.background]="testimonial.avatarColor"></div>
+          <div class="author-info">
+            <strong>{{ 'landing.testimonials.testimonial' + i + '.name' | translate }}</strong>
+            <span>{{ 'landing.testimonials.testimonial' + i + '.role' | translate }}</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">
+          <span *ngFor="let star of [1,2,3,4,5]">⭐</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-bg">
+    <div class="cta-shape cta-shape-1"></div>
+    <div class="cta-shape cta-shape-2"></div>
+  </div>
+  <div class="container">
+    <div class="cta-content">
+      <h2 class="cta-title">{{ 'landing.cta.title' | translate }}</h2>
+      <p class="cta-subtitle">{{ 'landing.cta.subtitle' | translate }}</p>
+      <div class="cta-buttons">
+        <button class="btn btn-cta-primary" (click)="navigateToRegister()">
+          {{ 'landing.cta.button' | translate }}
+          <span class="btn-arrow">→</span>
+        </button>
+        <button class="btn btn-cta-secondary" (click)="navigateToLogin()">
+          {{ 'landing.cta.signIn' | translate }}
+        </button>
+      </div>
+      <div class="cta-features">
+        <div class="cta-feature">
+          <span class="check">✓</span>
+          <span>{{ 'landing.cta.feature1' | translate }}</span>
+        </div>
+        <div class="cta-feature">
+          <span class="check">✓</span>
+          <span>{{ 'landing.cta.feature2' | translate }}</span>
+        </div>
+        <div class="cta-feature">
+          <span class="check">✓</span>
+          <span>{{ 'landing.cta.feature3' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Premium Footer -->
 <footer class="footer">
-  <div class="container text-center">
-    <p>&copy; 2025 CivicPulse. Making communities better.</p>
+  <div class="footer-wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" fill="currentColor" />
+    </svg>
+  </div>
+
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-icon">🏛️</span>
+          <span class="logo-text">{{ 'app.title' | translate }}</span>
+        </div>
+        <p class="footer-tagline">{{ 'footer.tagline' | translate }}</p>
+        <div class="social-links">
+          <a href="#" class="social-link">📘</a>
+          <a href="#" class="social-link">🐦</a>
+          <a href="#" class="social-link">📷</a>
+          <a href="#" class="social-link">💼</a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4>{{ 'footer.quickLinks' | translate }}</h4>
+        <a (click)="navigateToReportIssue()" style="cursor: pointer;">{{ 'footer.reportIssue' | translate }}</a>
+        <a routerLink="/my-complaints">{{ 'footer.trackProgress' | translate }}</a>
+        <a routerLink="/leaderboard">{{ 'footer.leaderboard' | translate }}</a>
+        <a href="#">{{ 'footer.community' | translate }}</a>
+      </div>
+
+      <div class="footer-links">
+        <h4>{{ 'footer.resources' | translate }}</h4>
+        <a href="#">{{ 'footer.helpCenter' | translate }}</a>
+        <a href="#">{{ 'footer.faqs' | translate }}</a>
+        <a href="#">{{ 'footer.guidelines' | translate }}</a>
+        <a href="#">{{ 'footer.contact' | translate }}</a>
+      </div>
+
+      <div class="footer-newsletter">
+        <h4>{{ 'footer.stayUpdated' | translate }}</h4>
+        <p>{{ 'footer.subscribeText' | translate }}</p>
+        <div class="newsletter-form">
+          <input type="email" [placeholder]="'footer.emailPlaceholder' | translate">
+          <button class="newsletter-btn">→</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>{{ 'footer.copyright' | translate }}</p>
+      <div class="footer-bottom-links">
+        <a href="#">{{ 'footer.privacy' | translate }}</a>
+        <a href="#">{{ 'footer.terms' | translate }}</a>
+        <a href="#">{{ 'footer.cookies' | translate }}</a>
+      </div>
+    </div>
   </div>
 </footer>

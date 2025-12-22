@@ -15,16 +15,29 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: transparent !important;
 }
 
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: transparent !important;
 }
 
 main {
   flex: 1;
+  background: transparent !important;
+}
+
+/* Override Bootstrap container and card defaults */
+.container,
+.container-fluid {
+  background: transparent !important;
+}
+
+.card {
+  background: white !important; /* Keep cards white */
 }
 
 /* Custom Navbar styles */

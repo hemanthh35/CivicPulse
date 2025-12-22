@@ -27,7 +27,12 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection with better error handling
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/civicpulse';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('❌ ERROR: MONGODB_URI environment variable is not set!');
+  process.exit(1);
+}
 
 mongoose.connect(MONGODB_URI, {
   serverSelectionTimeoutMS: 15000,

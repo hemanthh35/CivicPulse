@@ -3,11 +3,8 @@
   <section class="hero-section">
     <div class="container">
       <div class="hero-content">
-        <h1 class="hero-title">About CivicPulse</h1>
-        <p class="hero-subtitle">
-          Empowering communities through technology. Connecting citizens with their local government 
-          to create cleaner, safer, and better neighborhoods.
-        </p>
+        <h1 class="hero-title">{{ 'about.title' | translate }}</h1>
+        <p class="hero-subtitle">{{ 'about.description' | translate }}</p>
       </div>
     </div>
   </section>
@@ -16,17 +13,9 @@
   <section class="mission-section">
     <div class="container">
       <div class="mission-content">
-        <h2 class="section-title">Our Mission</h2>
-        <p class="mission-text">
-          CivicPulse is a revolutionary MEAN stack platform designed to bridge the gap between citizens 
-          and municipal services. We believe that every voice matters and every issue deserves attention. 
-          Our platform makes it easy for residents to report civic issues, track their resolution, and 
-          be rewarded for their active participation in community improvement.
-        </p>
-        <p class="mission-text">
-          By leveraging modern technology, we're transforming the way communities interact with local 
-          government, making civic engagement accessible, transparent, and rewarding for everyone.
-        </p>
+        <h2 class="section-title">{{ 'about.mission.label' | translate }}</h2>
+        <p class="mission-text">{{ 'about.mission.text1' | translate }}</p>
+        <p class="mission-text">{{ 'about.mission.text2' | translate }}</p>
       </div>
     </div>
   </section>
@@ -35,9 +24,21 @@
   <section class="stats-section">
     <div class="container">
       <div class="stats-grid">
-        <div class="stat-card" *ngFor="let stat of stats">
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
+        <div class="stat-card">
+          <div class="stat-value">{{ 'about.stats.resolved.value' | translate }}</div>
+          <div class="stat-label">{{ 'about.stats.resolved.label' | translate }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ 'about.stats.citizens.value' | translate }}</div>
+          <div class="stat-label">{{ 'about.stats.citizens.label' | translate }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ 'about.stats.workers.value' | translate }}</div>
+          <div class="stat-label">{{ 'about.stats.workers.label' | translate }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ 'about.stats.satisfaction.value' | translate }}</div>
+          <div class="stat-label">{{ 'about.stats.satisfaction.label' | translate }}</div>
         </div>
       </div>
     </div>
@@ -46,12 +47,12 @@
   <!-- Features Section -->
   <section class="features-section">
     <div class="container">
-      <h2 class="section-title">Why Choose CivicPulse?</h2>
+      <h2 class="section-title">{{ 'about.why.label' | translate }}</h2>
       <div class="features-grid">
-        <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-card" *ngFor="let feature of features; let i = index">
           <div class="feature-icon">{{ feature.icon }}</div>
-          <h3 class="feature-title">{{ feature.title }}</h3>
-          <p class="feature-description">{{ feature.description }}</p>
+          <h3 class="feature-title">{{ ('about.why.feature' + i + '.title') | translate }}</h3>
+          <p class="feature-description">{{ ('about.why.feature' + i + '.description') | translate }}</p>
         </div>
       </div>
     </div>
@@ -60,12 +61,12 @@
   <!-- How It Works Section -->
   <section class="how-it-works-section">
     <div class="container">
-      <h2 class="section-title">How It Works</h2>
+      <h2 class="section-title">{{ 'about.howItWorks.label' | translate }}</h2>
       <div class="steps-container">
-        <div class="step-card" *ngFor="let step of howItWorks">
-          <div class="step-number">{{ step.step }}</div>
-          <h3 class="step-title">{{ step.title }}</h3>
-          <p class="step-description">{{ step.description }}</p>
+        <div class="step-card" *ngFor="let step of howItWorks; let i = index">
+          <div class="step-number">{{ i + 1 }}</div>
+          <h3 class="step-title">{{ ('about.howItWorks.step' + i + '.title') | translate }}</h3>
+          <p class="step-description">{{ ('about.howItWorks.step' + i + '.description') | translate }}</p>
         </div>
       </div>
     </div>
@@ -74,11 +75,11 @@
   <!-- Who Can Use Section -->
   <section class="users-section">
     <div class="container">
-      <h2 class="section-title">Who Can Use CivicPulse?</h2>
+      <h2 class="section-title">{{ 'about.whoCanUse.label' | translate }}</h2>
       <div class="users-grid">
-        <div class="user-card" *ngFor="let user of team">
-          <h3 class="user-role">{{ user.role }}</h3>
-          <p class="user-description">{{ user.description }}</p>
+        <div class="user-card" *ngFor="let user of team; let i = index">
+          <h3 class="user-role">{{ ('about.whoCanUse.user' + i + '.role') | translate }}</h3>
+          <p class="user-description">{{ ('about.whoCanUse.user' + i + '.description') | translate }}</p>
         </div>
       </div>
     </div>
@@ -88,16 +89,9 @@
   <section class="vision-section">
     <div class="container">
       <div class="vision-content">
-        <h2 class="section-title">Our Vision</h2>
-        <p class="vision-text">
-          We envision a future where every citizen is an active participant in shaping their community. 
-          Through CivicPulse, we're building a platform that not only solves problems but also fosters 
-          a sense of ownership and pride in our neighborhoods.
-        </p>
-        <p class="vision-text">
-          Our goal is to expand across cities, creating a network of engaged communities working together 
-          with local governments to build smarter, more responsive urban environments.
-        </p>
+        <h2 class="section-title">{{ 'about.vision.label' | translate }}</h2>
+        <p class="vision-text">{{ 'about.vision.text1' | translate }}</p>
+        <p class="vision-text">{{ 'about.vision.text2' | translate }}</p>
       </div>
     </div>
   </section>
@@ -106,11 +100,11 @@
   <section class="cta-section">
     <div class="container">
       <div class="cta-content">
-        <h2 class="cta-title">Ready to Make a Difference?</h2>
-        <p class="cta-text">Join thousands of citizens already making their communities better.</p>
+        <h2 class="cta-title">{{ 'about.cta.title' | translate }}</h2>
+        <p class="cta-text">{{ 'about.cta.text' | translate }}</p>
         <div class="cta-buttons">
-          <a routerLink="/register" class="btn btn-primary">Get Started</a>
-          <a routerLink="/dashboard" class="btn btn-outline">View Dashboard</a>
+          <a routerLink="/register" class="btn btn-primary">{{ 'common.getStarted' | translate }}</a>
+          <a routerLink="/dashboard" class="btn btn-outline">{{ 'common.viewDashboard' | translate }}</a>
         </div>
       </div>
     </div>

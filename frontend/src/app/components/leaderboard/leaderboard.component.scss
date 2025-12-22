@@ -1,417 +1,720 @@
-.leaderboard-container {
+// ============================================
+// CivicPulse Leaderboard - Professional Styling
+// ============================================
+
+$primary: #667eea;
+$secondary: #764ba2;
+$success: #10b981;
+$danger: #ef4444;
+$light: #f8f9fa;
+$dark: #2c3e50;
+$text-muted: #95a5a6;
+$border-color: #e9ecef;
+
+// ============================================
+// Main Wrapper
+// ============================================
+.leaderboard-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 50%, #f8fafc 100%);
 }
 
-// Header Section
-.header-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 2rem;
-  margin-bottom: 3rem;
+// ============================================
+// Hero Section
+// ============================================
+.leaderboard-hero {
+  position: relative;
+  padding: 60px 30px;
   text-align: center;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: white;
+  overflow: hidden;
 
-  .header-content {
-    max-width: 600px;
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+  }
+
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+
+    &.orb-1 {
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.4);
+      top: -100px;
+      right: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    &.orb-2 {
+      width: 250px;
+      height: 250px;
+      background: rgba(255, 255, 255, 0.3);
+      bottom: -50px;
+      left: -50px;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
     margin: 0 auto;
   }
 
-  .page-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.5px;
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0 0 15px 0;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   }
 
-  .page-subtitle {
+  .hero-subtitle {
     font-size: 1.1rem;
     opacity: 0.9;
-    font-weight: 300;
+    margin: 0;
+    font-weight: 400;
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(25px); }
+}
+
+// ============================================
+// Main Content
+// ============================================
+.leaderboard-main {
+  max-width: 1400px;
+  margin: -40px auto 0;
+  padding: 20px 15px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+// ============================================
 // Loading State
-.loading-state {
+// ============================================
+.loading-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
-  background: white;
+  min-height: 400px;
+  padding: 30px;
+
+  .loading-spinner {
+    text-align: center;
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px;
+      border: 4px solid $border-color;
+      border-top-color: $primary;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      color: $text-muted;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// Error Banner
+// ============================================
+.error-banner {
+  background: linear-gradient(135deg, #fee8e8 0%, #fdd 100%);
+  border: 1px solid #f5a5a5;
   border-radius: 12px;
-  margin: 2rem;
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
 
-  .spinner-border {
-    width: 3rem;
-    height: 3rem;
+  .error-icon {
+    font-size: 20px;
+    color: $danger;
+    flex-shrink: 0;
   }
 
-  p {
-    color: #6c757d;
-    font-weight: 500;
+  .error-content {
+    h3 {
+      color: $danger;
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+    }
+
+    p {
+      color: #c33;
+      margin: 0;
+      font-size: 0.95rem;
+    }
   }
 }
 
-// Content Section
-.content-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+// ============================================
+// Leaderboard Grid
+// ============================================
+.leaderboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 25px;
 }
 
-// Leaderboard Cards
-.leaderboard-card {
+// ============================================
+// Leaderboard Section
+// ============================================
+.leaderboard-section {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  height: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-  }
-
-  &.citizens-card {
-    .card-header-custom {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-  }
-
-  &.workers-card {
-    .card-header-custom {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    }
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
   }
 }
 
-// Card Header
-.card-header-custom {
-  color: white;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
+// ============================================
+// Section Header
+// ============================================
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid $border-color;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
   }
 
-  .header-title {
-    position: relative;
-    z-index: 1;
+  .icon-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
+    &.citizens-badge {
+      background: linear-gradient(135deg, $primary 0%, $secondary 100%);
     }
 
-    .header-subtitle {
-      font-size: 0.95rem;
-      opacity: 0.9;
+    &.workers-badge {
+      background: linear-gradient(135deg, $success 0%, #059669 100%);
+    }
+  }
+
+  .header-text {
+    flex: 1;
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: $dark;
+      margin: 0 0 5px 0;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: $text-muted;
       margin: 0;
       font-weight: 400;
     }
   }
+
+  .header-decoration {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, $primary, transparent);
+    border-radius: 2px;
+  }
 }
 
-// Card Body
-.card-body-custom {
+// ============================================
+// Section Content
+// ============================================
+.section-content {
   padding: 0;
 }
 
-// Leaderboard List
-.leaderboard-list {
-  .leaderboard-row {
+// ============================================
+// Table Structure
+// ============================================
+.leaderboard-table {
+  width: 100%;
+
+  .table-header {
     display: grid;
-    grid-template-columns: 70px 1fr 120px;
+    grid-template-columns: 80px 1fr 120px;
+    gap: 15px;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
-    transition: all 0.3s ease;
-    position: relative;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 2px solid $border-color;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: $text-muted;
+  }
 
-    &:last-child {
-      border-bottom: none;
-    }
+  .table-body {
+    .table-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 120px;
+      gap: 15px;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid $border-color;
+      transition: all 0.25s ease;
 
-    &:hover {
-      background: #f8f9fa;
-      padding-left: 2rem;
-
-      .rank-badge {
-        transform: scale(1.1);
+      &:last-child {
+        border-bottom: none;
       }
-    }
 
-    // Rank styling
-    &.rank-1 {
-      background: rgba(255, 215, 0, 0.05);
+      &:hover {
+        background: #f8f9fa;
 
-      .rank-badge {
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        .rank-badge {
+          transform: scale(1.12);
+        }
+
+        .user-avatar {
+          transform: scale(1.08);
+        }
       }
-    }
 
-    &.rank-2 {
-      background: rgba(192, 192, 192, 0.05);
-    }
+      &.rank-1 {
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+      }
 
-    &.rank-3 {
-      background: rgba(205, 127, 50, 0.05);
+      &.rank-2 {
+        background: linear-gradient(90deg, rgba(192, 192, 192, 0.05) 0%, transparent 100%);
+      }
+
+      &.rank-3 {
+        background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, transparent 100%);
+      }
     }
   }
 }
 
-// Rank Column
-.rank-column {
+// ============================================
+// Rank Badge
+// ============================================
+.col-rank {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-// Rank Badge
 .rank-badge {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 28px;
   font-weight: 700;
-  transition: all 0.3s ease;
-  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
 
-  &.badge-gold {
+  &.rank-1 {
     background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
     color: #856404;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.35);
   }
 
-  &.badge-silver {
+  &.rank-2 {
     background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
     color: #495057;
-    box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+    box-shadow: 0 4px 15px rgba(192, 192, 192, 0.35);
   }
 
-  &.badge-bronze {
+  &.rank-3 {
     background: linear-gradient(135deg, #cd7f32 0%, #e69966 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(205, 127, 50, 0.4);
+    box-shadow: 0 4px 15px rgba(205, 127, 50, 0.35);
   }
 
-  &.badge-default {
-    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-    color: #6c757d;
-    box-shadow: 0 4px 15px rgba(233, 236, 239, 0.4);
+  .rank-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
+// ============================================
 // User Column
-.user-column {
-  .user-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0 0 0.25rem 0;
-    line-height: 1.2;
+// ============================================
+.col-user {
+  flex: 1;
+  min-width: 0;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .user-email {
-    font-size: 0.85rem;
-    color: #95a5a6;
-    margin: 0;
+  .user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    transition: all 0.3s ease;
+  }
+
+  .user-details {
+    min-width: 0;
+    flex: 1;
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: $dark;
+      margin: 0 0 4px 0;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: $text-muted;
+      margin: 0;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
-// Count Column
-.count-column {
+// ============================================
+// Stats Column
+// ============================================
+.col-stats {
   display: flex;
   justify-content: flex-end;
-}
+  align-items: center;
 
-.count-display {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
+  .stat-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    text-align: right;
+  }
 
-  .count-value {
-    font-size: 1.75rem;
+  .stat-value {
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #667eea;
+    background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
   }
 
-  .count-label {
-    font-size: 0.8rem;
-    color: #95a5a6;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .stat-label {
+    font-size: 0.75rem;
+    text-transform: lowercase;
+    color: $text-muted;
+    font-weight: 600;
+    letter-spacing: 0.3px;
   }
 }
 
+// ============================================
 // Empty State
+// ============================================
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
-  color: #95a5a6;
+  padding: 60px 20px;
+  color: $text-muted;
+  background: #f8f9fa;
 
-  .empty-icon {
-    font-size: 3rem;
-    color: #bdc3c7;
-    margin-bottom: 1rem;
+  .empty-illustration {
+    font-size: 64px;
+    color: $border-color;
+    margin-bottom: 20px;
+    opacity: 0.6;
+  }
+
+  h4 {
+    color: $dark;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
   }
 
   p {
     margin: 0;
+    font-size: 0.95rem;
+    max-width: 400px;
+    text-align: center;
   }
 }
 
-// Footer Info
-.footer-info {
-  text-align: center;
-  padding: 2rem;
-  color: #95a5a6;
-  font-size: 0.95rem;
-  margin-top: 2rem;
-}
-
-// Alert Custom
-.alert-custom {
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
-  color: #c33;
-  border-left: 4px solid #e55;
-
-  .alert-content {
-    font-weight: 500;
-  }
-}
-
+// ============================================
 // Responsive Design
-@media (max-width: 768px) {
-  .header-section {
-    padding: 2.5rem 1rem;
-    margin-bottom: 2rem;
+// ============================================
+@media (max-width: 1200px) {
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .page-title {
-      font-size: 2rem;
+  .leaderboard-hero {
+    padding: 50px 20px;
+
+    .hero-title {
+      font-size: 2.8rem;
     }
 
-    .page-subtitle {
+    .hero-subtitle {
       font-size: 1rem;
     }
   }
 
-  .leaderboard-row {
-    gap: 1rem;
-    padding: 1rem 1rem;
-    grid-template-columns: 50px 1fr 90px;
+  .leaderboard-main {
+    margin-top: -30px;
+    padding: 20px 15px 40px;
+  }
+}
 
-    &:hover {
-      padding-left: 1rem;
+@media (max-width: 768px) {
+  .leaderboard-hero {
+    padding: 40px 20px;
+
+    .hero-title {
+      font-size: 2.2rem;
     }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+    }
+  }
+
+  .leaderboard-main {
+    margin-top: -20px;
+    padding: 20px 10px 30px;
+  }
+
+  .section-header {
+    padding: 15px;
+    gap: 10px;
+
+    .icon-badge {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+    }
+
+    .header-text h2 {
+      font-size: 1.2rem;
+    }
+
+    .header-decoration {
+      display: none;
+    }
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 60px 1fr 90px;
+    gap: 10px;
+    padding: 12px 15px;
   }
 
   .rank-badge {
-    width: 50px;
-    height: 50px;
-    font-size: 1.25rem;
+    width: 55px;
+    height: 55px;
+    font-size: 20px;
   }
 
-  .user-name {
+  .col-user .user-avatar {
+    width: 40px;
+    height: 40px;
     font-size: 0.95rem;
   }
 
-  .user-email {
-    font-size: 0.8rem;
-  }
-
-  .count-value {
+  .stat-value {
     font-size: 1.5rem;
   }
 
-  .count-label {
-    font-size: 0.75rem;
+  .stat-label {
+    font-size: 0.7rem;
   }
 
-  .card-header-custom {
-    padding: 1.5rem;
+  .empty-state {
+    padding: 40px 15px;
 
-    h2 {
-      font-size: 1.25rem;
+    .empty-illustration {
+      font-size: 50px;
+      margin-bottom: 15px;
     }
 
-    .header-subtitle {
+    h4 {
+      font-size: 1.1rem;
+    }
+
+    p {
       font-size: 0.9rem;
     }
   }
 }
 
 @media (max-width: 480px) {
-  .leaderboard-container {
-    padding: 1rem 0;
-  }
+  .leaderboard-hero {
+    padding: 30px 15px;
 
-  .header-section {
-    padding: 2rem 1rem;
-    margin-bottom: 1.5rem;
-
-    .page-title {
-      font-size: 1.5rem;
+    .hero-title {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
     }
 
-    .page-subtitle {
-      font-size: 0.95rem;
+    .hero-subtitle {
+      font-size: 0.9rem;
     }
   }
 
-  .leaderboard-row {
-    grid-template-columns: 45px 1fr 80px;
-    gap: 0.75rem;
-    padding: 0.75rem;
+  .leaderboard-main {
+    margin-top: 0;
+    padding: 20px 8px 20px;
+  }
+
+  .leaderboard-grid {
+    gap: 15px;
+  }
+
+  .section-header {
+    padding: 12px;
+
+    .icon-badge {
+      width: 45px;
+      height: 45px;
+      font-size: 20px;
+    }
+
+    .header-text {
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .table-header {
+    grid-template-columns: 50px 1fr 75px;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 0.65rem;
+  }
+
+  .table-body .table-row {
+    grid-template-columns: 50px 1fr 75px;
+    gap: 8px;
+    padding: 10px 12px;
   }
 
   .rank-badge {
-    width: 45px;
-    height: 45px;
-    font-size: 1.1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
   }
 
-  .count-display {
-    .count-value {
-      font-size: 1.25rem;
+  .col-user {
+    .user-avatar {
+      width: 35px;
+      height: 35px;
+      font-size: 0.85rem;
     }
 
-    .count-label {
-      font-size: 0.7rem;
+    .user-details h4 {
+      font-size: 0.9rem;
     }
+
+    .user-details p {
+      font-size: 0.75rem;
+    }
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
   }
 
   .empty-state {
-    padding: 2rem 1rem;
+    padding: 30px 12px;
 
-    .empty-icon {
-      font-size: 2.5rem;
+    .empty-illustration {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.85rem;
     }
   }
-
-  .footer-info {
-    padding: 1.5rem 1rem;
-    font-size: 0.9rem;
-  }
 }
+

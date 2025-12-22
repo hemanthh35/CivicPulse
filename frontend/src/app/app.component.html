@@ -27,13 +27,13 @@
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active" (click)="closeMobileMenu()">
               <i class="bi bi-house-door"></i>
-              <span>Home</span>
+              <span>{{ 'nav.home' | translate }}</span>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/about']" routerLinkActive="active" (click)="closeMobileMenu()">
               <i class="bi bi-info-circle"></i>
-              <span>About</span>
+              <span>{{ 'nav.about' | translate }}</span>
             </a>
           </li>
           
@@ -43,13 +43,13 @@
               <li class="nav-item">
                 <a class="nav-link" [routerLink]="['/dashboard']" routerLinkActive="active" (click)="closeMobileMenu()">
                   <i class="bi bi-speedometer2"></i>
-                  <span>Dashboard</span>
+                  <span>{{ 'nav.dashboard' | translate }}</span>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" [routerLink]="['/report-issue']" routerLinkActive="active" (click)="closeMobileMenu()">
                   <i class="bi bi-plus-circle"></i>
-                  <span>Report Issue</span>
+                  <span>{{ 'nav.reportIssue' | translate }}</span>
                 </a>
               </li>
             </ng-container>
@@ -58,7 +58,7 @@
             <li class="nav-item">
               <a class="nav-link" [routerLink]="['/leaderboard']" routerLinkActive="active" (click)="closeMobileMenu()">
                 <i class="bi bi-trophy"></i>
-                <span>Leaderboard</span>
+                <span>{{ 'nav.leaderboard' | translate }}</span>
               </a>
             </li>
             
@@ -67,7 +67,7 @@
               <li class="nav-item">
                 <a class="nav-link" [routerLink]="['/rewards']" routerLinkActive="active" (click)="closeMobileMenu()">
                   <i class="bi bi-gift"></i>
-                  <span>Rewards</span>
+                  <span>{{ 'nav.rewards' | translate }}</span>
                 </a>
               </li>
             </ng-container>
@@ -77,13 +77,13 @@
               <li class="nav-item">
                 <a class="nav-link" [routerLink]="['/worker/dashboard']" routerLinkActive="active" (click)="closeMobileMenu()">
                   <i class="bi bi-speedometer2"></i>
-                  <span>Dashboard</span>
+                  <span>{{ 'nav.dashboard' | translate }}</span>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" [routerLink]="['/worker/assigned-complaints']" routerLinkActive="active" (click)="closeMobileMenu()">
                   <i class="bi bi-tools"></i>
-                  <span>Assigned Issues</span>
+                  <span>{{ 'nav.assignedIssues' | translate }}</span>
                 </a>
               </li>
             </ng-container>
@@ -144,11 +144,11 @@
           <ng-container *ngIf="!isLoggedIn()">
             <a class="btn-nav btn-login" [routerLink]="['/login']">
               <i class="bi bi-box-arrow-in-right"></i>
-              <span>Login</span>
+              <span>{{ 'nav.login' | translate }}</span>
             </a>
             <a class="btn-nav btn-register" [routerLink]="['/register']">
               <i class="bi bi-person-plus"></i>
-              <span>Register</span>
+              <span>{{ 'nav.register' | translate }}</span>
             </a>
           </ng-container>
           
