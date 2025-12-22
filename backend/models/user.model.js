@@ -43,9 +43,11 @@ const userSchema = new mongoose.Schema({
   // Worker specialization
   specializations: [{
     type: String,
-    enum: ['Roads & Infrastructure', 'Water & Sanitation', 'Electricity', 'Public Safety', 
-           'Garbage & Waste', 'Parks & Environment', 'Noise & Disturbance', 'Public Transport', 
-           'garbage', 'road', 'water', 'lights', 'other']
+    enum: [
+      'Roads & Infrastructure', 'Water & Sanitation', 'Electricity', 'Public Safety',
+      'Garbage & Waste', 'Parks & Environment', 'Noise & Disturbance', 'Public Transport', 'Other',
+      'garbage', 'road', 'water', 'lights', 'other', 'electricity', 'safety', 'parks', 'noise', 'transport'
+    ]
   }],
   workArea: {
     lat: { type: Number },
@@ -93,7 +95,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
@@ -107,12 +109,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // Compare password method
-userSchema.methods.matchPassword = async function(enteredPassword) {
+userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Generate OTP
-userSchema.methods.generateOTP = function() {
+userSchema.methods.generateOTP = function () {
   // Generate 6-digit OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   this.otp = otp;
@@ -123,16 +125,16 @@ userSchema.methods.generateOTP = function() {
 };
 
 // Verify OTP
-userSchema.methods.verifyOTP = function(enteredOTP) {
+userSchema.methods.verifyOTP = function (enteredOTP) {
   if (!this.otp || !this.otpExpiry) {
     return false;
   }
-  
+
   // Check if OTP expired
   if (new Date() > this.otpExpiry) {
     return false;
   }
-  
+
   // Check if OTP matches
   return this.otp === enteredOTP;
 };

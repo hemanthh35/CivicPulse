@@ -4,7 +4,19 @@ const complaintSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['Roads & Infrastructure', 'Water & Sanitation', 'Electricity', 'Public Safety', 'Garbage & Waste', 'Parks & Environment', 'Noise & Disturbance', 'Public Transport', 'Other', 'garbage', 'road', 'water', 'lights', 'other']
+    enum: [
+      // Full names
+      'Roads & Infrastructure', 'Water & Sanitation', 'Electricity', 'Public Safety',
+      'Garbage & Waste', 'Parks & Environment', 'Noise & Disturbance', 'Public Transport', 'Other',
+      // Short names
+      'garbage', 'road', 'water', 'lights', 'other', 'electricity', 'safety', 'parks', 'noise', 'transport',
+      // Translation keys (complaints.X format from frontend)
+      'complaints.garbage', 'complaints.road', 'complaints.water', 'complaints.lights',
+      'complaints.electricity', 'complaints.safety', 'complaints.parks', 'complaints.noise',
+      'complaints.transport', 'complaints.other',
+      // Title case variants
+      'Garbage', 'Road', 'Water', 'Lights', 'Roads', 'Infrastructure'
+    ]
   },
   title: {
     type: String,
@@ -131,13 +143,13 @@ const complaintSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-complaintSchema.pre('save', function(next) {
+complaintSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
 // Middleware to track status changes
-complaintSchema.pre('save', function(next) {
+complaintSchema.pre('save', function (next) {
   if (this.isModified('status') && !this.isNew) {
     // Track status change in history
     const statusEntry = {
@@ -145,12 +157,12 @@ complaintSchema.pre('save', function(next) {
       changedBy: this._statusChangedBy || this.assignedTo || this.createdBy,
       changedAt: new Date()
     };
-    
+
     if (!this.statusHistory) {
       this.statusHistory = [];
     }
     this.statusHistory.push(statusEntry);
-    
+
     // Set resolvedAt timestamp when status becomes resolved
     if (this.status === 'resolved' && !this.resolvedAt) {
       this.resolvedAt = new Date();
@@ -160,14 +172,14 @@ complaintSchema.pre('save', function(next) {
 });
 
 // Middleware to track assignment changes
-complaintSchema.pre('save', function(next) {
+complaintSchema.pre('save', function (next) {
   if (this.isModified('assignedTo') && !this.isNew) {
     const assignmentEntry = {
       assignedTo: this.assignedTo,
       assignedBy: this._assignedBy || this.createdBy,
       assignedAt: new Date()
     };
-    
+
     if (!this.assignmentHistory) {
       this.assignmentHistory = [];
     }
