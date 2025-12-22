@@ -73,6 +73,16 @@ app.get('/api/test', (req, res) => {
   res.json({ success: true, message: 'Backend is working!' });
 });
 
+// Health check endpoint for keep-alive service
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    message: '🚀 CivicPulse is running!'
+  });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/rewards', rewardsRoutes);

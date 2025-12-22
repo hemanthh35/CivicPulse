@@ -57,10 +57,13 @@
                 <i class="bi bi-pencil input-icon"></i>
                 <input type="text" class="form-input" id="title" formControlName="title"
                   [placeholder]="'complaints.issueTitlePlaceholder' | translate"
-                  [class.has-error]="f['title'].touched && f['title'].invalid" style="padding-right: 45px;">
-                <button type="button" class="voice-btn" *ngIf="voiceSupported"
+                  [class.has-error]="f['title'].touched && f['title'].invalid"
+                  style="padding-right: 45px;">
+                <button type="button" class="voice-btn" 
+                  *ngIf="voiceSupported"
                   (click)="isListeningTitle ? stopVoiceInput() : startVoiceInput('title')"
-                  [class.listening]="isListeningTitle" [title]="isListeningTitle ? 'Stop' : 'Voice Input'">
+                  [class.listening]="isListeningTitle"
+                  [title]="isListeningTitle ? 'Stop' : 'Voice Input'">
                   <i class="bi" [ngClass]="isListeningTitle ? 'bi-mic-fill' : 'bi-mic'"></i>
                 </button>
               </div>
@@ -101,9 +104,11 @@
                   [placeholder]="'complaints.detailedDescription' | translate"
                   [class.has-error]="f['description'].touched && f['description'].invalid"
                   style="padding-right: 45px;"></textarea>
-                <button type="button" class="voice-btn voice-btn-textarea" *ngIf="voiceSupported"
+                <button type="button" class="voice-btn voice-btn-textarea" 
+                  *ngIf="voiceSupported"
                   (click)="isListeningDescription ? stopVoiceInput() : startVoiceInput('description')"
-                  [class.listening]="isListeningDescription" [title]="isListeningDescription ? 'Stop' : 'Voice Input'">
+                  [class.listening]="isListeningDescription"
+                  [title]="isListeningDescription ? 'Stop' : 'Voice Input'">
                   <i class="bi" [ngClass]="isListeningDescription ? 'bi-mic-fill' : 'bi-mic'"></i>
                 </button>
               </div>
@@ -249,8 +254,7 @@
                 <label for="city" class="form-label">{{ 'complaints.city' | translate }}</label>
                 <div class="input-wrapper">
                   <i class="bi bi-building input-icon"></i>
-                  <input type="text" class="form-input" id="city" formControlName="city"
-                    [placeholder]="'complaints.city' | translate"
+                  <input type="text" class="form-input" id="city" formControlName="city" [placeholder]="'complaints.city' | translate"
                     [class.has-error]="locationControls['city'].touched && locationControls['city'].invalid">
                 </div>
                 <div class="error-message"
@@ -263,8 +267,7 @@
                 <label for="state" class="form-label">{{ 'complaints.state' | translate }}</label>
                 <div class="input-wrapper">
                   <i class="bi bi-map input-icon"></i>
-                  <input type="text" class="form-input" id="state" formControlName="state"
-                    [placeholder]="'complaints.state' | translate"
+                  <input type="text" class="form-input" id="state" formControlName="state" [placeholder]="'complaints.state' | translate"
                     [class.has-error]="locationControls['state'].touched && locationControls['state'].invalid">
                 </div>
                 <div class="error-message"
@@ -277,8 +280,7 @@
                 <label for="pincode" class="form-label">{{ 'complaints.pinCode' | translate }}</label>
                 <div class="input-wrapper">
                   <i class="bi bi-mailbox input-icon"></i>
-                  <input type="text" class="form-input" id="pincode" formControlName="pincode"
-                    [placeholder]="'complaints.pinCodePlaceholder' | translate"
+                  <input type="text" class="form-input" id="pincode" formControlName="pincode" [placeholder]="'complaints.pinCodePlaceholder' | translate"
                     [class.has-error]="locationControls['pincode'].touched && locationControls['pincode'].invalid">
                 </div>
                 <div class="error-message"
@@ -355,46 +357,5 @@
         </button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- Success Modal -->
-<div class="success-modal-overlay" *ngIf="showSuccessModal" (click)="closeSuccessModal()">
-  <div class="success-modal" (click)="$event.stopPropagation()">
-    <div class="success-modal-content">
-      <!-- Animated Checkmark -->
-      <div class="success-checkmark">
-        <div class="check-icon">
-          <span class="icon-line line-tip"></span>
-          <span class="icon-line line-long"></span>
-          <div class="icon-circle"></div>
-          <div class="icon-fix"></div>
-        </div>
-      </div>
-
-      <!-- Success Message -->
-      <h2 class="success-title">🎉 {{ 'complaints.thankYou' | translate }}</h2>
-      <p class="success-message">
-        {{ 'complaints.complaintSubmitted' | translate }}
-      </p>
-
-      <!-- Info Box -->
-      <div class="success-info">
-        <i class="bi bi-info-circle"></i>
-        <span>{{ 'complaints.trackProgress' | translate }}</span>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="success-actions">
-        <button class="btn-secondary" (click)="closeSuccessModal()">
-          <i class="bi bi-plus-circle"></i>
-          {{ 'complaints.reportAnother' | translate }}
-        </button>
-        <button class="btn-primary" (click)="goToMyComplaints()">
-          <i class="bi bi-list-check"></i>
-          {{ 'complaints.viewMyComplaints' | translate }}
-        </button>
-      </div>
-    </div>
   </div>
 </div>

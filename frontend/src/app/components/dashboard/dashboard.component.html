@@ -1,473 +1,617 @@
-<div class="dashboard-wrapper">
-  <!-- Hero Header -->
-  <header class="dashboard-hero">
-    <div class="hero-content">
-      <div class="hero-left">
-        <div class="greeting-badge">
-          <i class="bi bi-stars"></i>
-          <span>{{ 'dashboard.welcome' | translate }}</span>
-        </div>
-        <h1 class="hero-title">
-          {{ user?.name || 'User' }}
-          <span class="wave">👋</span>
-        </h1>
-        <p class="hero-subtitle">
-          <i class="bi bi-heart-pulse-fill"></i>
-          {{ 'dashboard.subtitle' | translate }}
-        </p>
-      </div>
-      <div class="hero-right">
-        <div class="role-chip" [ngClass]="'role-' + user?.role">
-          <i class="bi" [ngClass]="{
-            'bi-person-fill': user?.role === 'citizen',
-            'bi-mortarboard-fill': user?.role === 'student',
-            'bi-tools': user?.role === 'worker',
-            'bi-shield-lock-fill': user?.role === 'admin'
-          }"></i>
-          <span>{{ user?.role | titlecase }}</span>
-        </div>
-
-        <!-- Language Selector -->
-        <div class="lang-dropdown-wrapper">
-          <button class="lang-btn" (click)="dropdownOpen = !dropdownOpen">
-            <i class="bi bi-translate"></i>
-            <span>{{ languageNames[currentLanguage] }}</span>
-            <i class="bi bi-chevron-down" [class.rotate]="dropdownOpen"></i>
-          </button>
-          <div class="lang-dropdown" [class.show]="dropdownOpen" *ngIf="dropdownOpen">
-            <button class="lang-option" [class.active]="currentLanguage === 'en'"
-              (click)="changeLanguage('en'); dropdownOpen = false;">
-              <i class="bi bi-check2" *ngIf="currentLanguage === 'en'"></i>
-              <span>English</span>
-            </button>
-            <button class="lang-option" [class.active]="currentLanguage === 'hi'"
-              (click)="changeLanguage('hi'); dropdownOpen = false;">
-              <i class="bi bi-check2" *ngIf="currentLanguage === 'hi'"></i>
-              <span>हिन्दी</span>
-            </button>
-            <button class="lang-option" [class.active]="currentLanguage === 'te'"
-              (click)="changeLanguage('te'); dropdownOpen = false;">
-              <i class="bi bi-check2" *ngIf="currentLanguage === 'te'"></i>
-              <span>తెలుగు</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-decoration">
-      <div class="deco-circle c1"></div>
-      <div class="deco-circle c2"></div>
-      <div class="deco-circle c3"></div>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="dashboard-main">
-    <!-- Statistics Cards - Citizen/Student -->
-    <section class="stats-section" *ngIf="hasRole(['citizen', 'student'])">
-      <div class="stats-grid">
-        <div class="stat-card stat-total">
-          <div class="stat-icon">
-            <i class="bi bi-file-earmark-text"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ complaintsStats.total }}</span>
-            <span class="stat-label">{{ 'dashboard.totalReports' | translate }}</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-pending">
-          <div class="stat-icon">
-            <i class="bi bi-hourglass-split"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ complaintsStats.pending }}</span>
-            <span class="stat-label">{{ 'dashboard.pending' | translate }}</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-progress">
-          <div class="stat-icon">
-            <i class="bi bi-gear-wide-connected"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ complaintsStats.inProgress }}</span>
-            <span class="stat-label">{{ 'dashboard.inProgress' | translate }}</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-resolved">
-          <div class="stat-icon">
-            <i class="bi bi-check-circle"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ complaintsStats.resolved }}</span>
-            <span class="stat-label">{{ 'dashboard.resolved' | translate }}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quick Actions - Citizen/Student -->
-    <section class="quick-actions-section" *ngIf="hasRole(['citizen', 'student'])">
-      <h2 class="section-title">
-        <i class="bi bi-lightning-charge-fill"></i>
-        {{ 'dashboard.quickActions' | translate }}
-      </h2>
-      <div class="actions-grid">
-        <a routerLink="/report-issue" class="action-card action-primary">
-          <div class="action-icon">
-            <i class="bi bi-plus-circle-fill"></i>
-          </div>
-          <div class="action-text">
-            <h3>{{ 'dashboard.reportNewIssue' | translate }}</h3>
-            <p>Report a civic problem</p>
-          </div>
-          <i class="bi bi-arrow-right action-arrow"></i>
-        </a>
-
-        <a routerLink="/my-complaints" class="action-card action-info">
-          <div class="action-icon">
-            <i class="bi bi-list-check"></i>
-          </div>
-          <div class="action-text">
-            <h3>{{ 'dashboard.trackReports' | translate }}</h3>
-            <p>View all your reports</p>
-          </div>
-          <i class="bi bi-arrow-right action-arrow"></i>
-        </a>
-
-        <a routerLink="/leaderboard" class="action-card action-success">
-          <div class="action-icon">
-            <i class="bi bi-trophy-fill"></i>
-          </div>
-          <div class="action-text">
-            <h3>{{ 'dashboard.viewLeaderboard' | translate }}</h3>
-            <p>See top contributors</p>
-          </div>
-          <i class="bi bi-arrow-right action-arrow"></i>
-        </a>
-
-        <a routerLink="/rewards" class="action-card action-warning" *ngIf="user?.role === 'student'">
-          <div class="action-icon">
-            <i class="bi bi-gift-fill"></i>
-          </div>
-          <div class="action-text">
-            <h3>{{ 'dashboard.myRewards' | translate }}</h3>
-            <p>{{ user?.points || 0 }} points earned</p>
-          </div>
-          <i class="bi bi-arrow-right action-arrow"></i>
-        </a>
-      </div>
-    </section>
-
-    <!-- Personal Info & Security - Citizen/Student -->
-    <section class="profile-section" *ngIf="hasRole(['citizen', 'student'])">
-      <div class="profile-card">
-        <h2 class="section-title">
-          <i class="bi bi-person-vcard-fill"></i>
-          {{ 'dashboard.personalInfo' | translate }}
-        </h2>
-
-        <div class="profile-grid">
-          <div class="profile-item">
-            <div class="item-icon"><i class="bi bi-person"></i></div>
-            <div class="item-content">
-              <span class="item-label">{{ 'dashboard.fullName' | translate }}</span>
-              <span class="item-value">{{ user?.name }}</span>
-            </div>
-          </div>
-
-          <div class="profile-item">
-            <div class="item-icon"><i class="bi bi-envelope"></i></div>
-            <div class="item-content">
-              <span class="item-label">{{ 'dashboard.emailAddress' | translate }}</span>
-              <span class="item-value">{{ user?.email }}</span>
-            </div>
-          </div>
-
-          <div class="profile-item">
-            <div class="item-icon"><i class="bi bi-phone"></i></div>
-            <div class="item-content">
-              <span class="item-label">{{ 'dashboard.mobileNumber' | translate }}</span>
-              <span class="item-value">{{ user?.mobile || ('dashboard.notProvided' | translate) }}</span>
-            </div>
-          </div>
-
-          <div class="profile-item">
-            <div class="item-icon"><i class="bi bi-shield-check"></i></div>
-            <div class="item-content">
-              <span class="item-label">{{ 'dashboard.accountType' | translate }}</span>
-              <span class="item-value role-tag">{{ user?.role | titlecase }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Security Toggles -->
-        <div class="security-section">
-          <div class="security-item">
-            <div class="security-left">
-              <div class="security-icon"><i class="bi bi-shield-lock"></i></div>
-              <div class="security-text">
-                <h4>{{ 'dashboard.twoFactorAuth' | translate }}</h4>
-                <p>{{ twoFactorEnabled ? ('dashboard.twoFactorEnabled' | translate) : ('dashboard.twoFactorDisabled' |
-                  translate) }}</p>
-              </div>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [checked]="twoFactorEnabled" [disabled]="toggling2FA" (change)="toggle2FA()">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="security-item travel" *ngIf="user?.role === 'student'">
-            <div class="security-left">
-              <div class="security-icon"><i class="bi bi-airplane"></i></div>
-              <div class="security-text">
-                <h4>{{ 'dashboard.travelFlag' | translate }}</h4>
-                <p>{{ user?.travelFlag ? ('dashboard.travelFlagEnabled' | translate) : ('dashboard.travelFlagDisabled' |
-                  translate) }}</p>
-              </div>
-            </div>
-            <label class="toggle-switch travel">
-              <input type="checkbox" [checked]="user?.travelFlag" (change)="toggleTravelFlag()">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Recent Reports - Citizen/Student -->
-    <section class="reports-section" *ngIf="hasRole(['citizen', 'student'])">
-      <div class="section-header">
-        <h2 class="section-title">
-          <i class="bi bi-clock-history"></i>
-          {{ 'dashboard.allReports' | translate }}
-        </h2>
-        <span class="report-count" *ngIf="userComplaints.length > 0">
-          {{ userComplaints.length }} {{ 'dashboard.total' | translate }}
-        </span>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-state" *ngIf="complaintsLoading">
-        <div class="spinner"></div>
-        <p>{{ 'dashboard.loading' | translate }}</p>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!complaintsLoading && userComplaints.length === 0">
-        <div class="empty-icon">
-          <i class="bi bi-inbox"></i>
-        </div>
-        <h3>{{ 'dashboard.noReports' | translate }}</h3>
-        <p>{{ 'dashboard.noReportsDesc' | translate }}</p>
-        <a routerLink="/report-issue" class="btn-primary-gradient">
-          <i class="bi bi-plus-circle"></i>
-          {{ 'dashboard.createFirstReport' | translate }}
-        </a>
-      </div>
-
-      <!-- Complaints Grid -->
-      <div class="complaints-grid" *ngIf="!complaintsLoading && userComplaints.length > 0">
-        <article class="complaint-card" *ngFor="let complaint of userComplaints">
-          <div class="card-header">
-            <span class="status-badge" [ngClass]="'status-' + complaint.status">
-              <i [ngClass]="getStatusIcon(complaint.status)"></i>
-              {{ complaint.status | titlecase }}
-            </span>
-            <span class="priority-badge" [ngClass]="'priority-' + complaint.priority">
-              {{ complaint.priority | titlecase }}
-            </span>
-          </div>
-
-          <!-- Progress Timeline -->
-          <div class="progress-timeline">
-            <div class="timeline-step" [class.active]="true" [class.completed]="complaint.status !== 'pending'">
-              <div class="step-dot"></div>
-              <span class="step-label">{{ 'dashboard.reported' | translate }}</span>
-            </div>
-            <div class="timeline-line"
-              [class.active]="complaint.status === 'in-progress' || complaint.status === 'resolved'"></div>
-            <div class="timeline-step"
-              [class.active]="complaint.status === 'in-progress' || complaint.status === 'resolved'"
-              [class.completed]="complaint.status === 'resolved'">
-              <div class="step-dot"></div>
-              <span class="step-label">{{ 'dashboard.inProgress' | translate }}</span>
-            </div>
-            <div class="timeline-line" [class.active]="complaint.status === 'resolved'"></div>
-            <div class="timeline-step" [class.active]="complaint.status === 'resolved'"
-              [class.completed]="complaint.status === 'resolved'">
-              <div class="step-dot"></div>
-              <span class="step-label">{{ 'dashboard.resolved' | translate }}</span>
-            </div>
-          </div>
-
-          <div class="card-body">
-            <h3 class="complaint-title">{{ complaint.title }}</h3>
-            <p class="complaint-category">
-              <i class="bi bi-tag"></i>
-              {{ complaint.type || complaint.category }}
+<div class="dashboard-container">
+  <div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+    <div class="col-12">
+      <div class="text-white rounded-4 p-4 mb-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="display-6 mb-2 text-white">
+              <i class="bi bi-person-circle me-3"></i>
+              {{ 'dashboard.welcome' | translate }}, {{ user?.name }}!
+            </h1>
+            <p class="lead mb-0 text-white opacity-90">
+              <i class="bi bi-geo-alt me-2"></i>
+              {{ 'dashboard.subtitle' | translate }}
             </p>
-            <p class="complaint-desc">{{ complaint.description | slice:0:100 }}...</p>
-            <div class="complaint-meta">
-              <span class="meta-item">
-                <i class="bi bi-geo-alt"></i>
-                {{ complaint.location?.city || 'Location' }}
-              </span>
-              <span class="meta-item">
-                <i class="bi bi-calendar3"></i>
-                {{ complaint.createdAt | date:'MMM d, y' }}
-              </span>
-            </div>
-
-            <!-- Complaint Image -->
-            <div class="complaint-image" *ngIf="complaint.mediaURL">
-              <img [src]="getImageUrl(complaint.mediaURL)" [alt]="complaint.title"
-                (click)="openImageModal(complaint.mediaURL, complaint.title)"
-                (error)="$event.target.style.display='none'">
+          </div>
+          <div class="col-md-4 text-md-end">
+            <div class="badge bg-light text-primary fs-6 px-3 py-2">
+              <i class="bi bi-person-badge me-1"></i>
+              {{ user?.role | titlecase }}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <div class="card-footer">
-            <span class="complaint-id">#{{ complaint._id.slice(-6) }}</span>
-            <div class="card-actions">
-              <button class="btn-feedback" *ngIf="complaint.status === 'resolved' && !complaint.feedback"
-                (click)="openFeedbackModal(complaint)">
-                <i class="bi bi-star"></i> Feedback
-              </button>
-              <span class="feedback-badge" *ngIf="complaint.feedback">
-                <i class="bi bi-star-fill"></i> {{ complaint.feedback.rating }}/5
+  <!-- Language Selector Dropdown (Angular-only, no external directives) -->
+  <div class="language-selector mb-4" style="position: relative; display: inline-block;">
+    <button class="btn btn-sm btn-outline-secondary" (click)="dropdownOpen = !dropdownOpen" type="button">
+      <i class="bi bi-translate me-1"></i>
+      {{ languageNames[currentLanguage] }}
+      <i class="bi bi-chevron-down ms-1"></i>
+    </button>
+    <div class="dropdown-menu" [class.show]="dropdownOpen" style="display: block; position: absolute; left: 0; top: 100%; min-width: 150px; z-index: 999;" *ngIf="dropdownOpen">
+      <button class="dropdown-item" [class.active]="currentLanguage === 'en'" (click)="changeLanguage('en'); dropdownOpen = false;" type="button" style="border: none; background: none; width: 100%; text-align: left;">
+        <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'en'"></i>
+        English
+      </button>
+      <button class="dropdown-item" [class.active]="currentLanguage === 'hi'" (click)="changeLanguage('hi'); dropdownOpen = false;" type="button" style="border: none; background: none; width: 100%; text-align: left;">
+        <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'hi'"></i>
+        हिन्दी (Hindi)
+      </button>
+      <button class="dropdown-item" [class.active]="currentLanguage === 'te'" (click)="changeLanguage('te'); dropdownOpen = false;" type="button" style="border: none; background: none; width: 100%; text-align: left;">
+        <i class="bi bi-check-circle me-2" *ngIf="currentLanguage === 'te'"></i>
+        తెలుగు (Telugu)
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Actions for Citizen/Student -->
+  <div *ngIf="hasRole(['citizen', 'student'])" class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm bg-gradient-light">
+        <div class="card-body">
+          <h5 class="mb-3">
+            <i class="bi bi-lightning-fill text-warning me-2"></i>{{ 'dashboard.quickActions' | translate }}
+          </h5>
+          <div class="row g-2">
+            <div class="col-md-3">
+              <a routerLink="/my-complaints" class="btn btn-outline-primary w-100">
+                <i class="bi bi-clipboard-check me-2"></i>{{ 'dashboard.trackReports' | translate }}
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a routerLink="/report-issue" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle me-2"></i>{{ 'dashboard.reportNewIssue' | translate }}
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a routerLink="/leaderboard" class="btn btn-outline-info w-100">
+                <i class="bi bi-trophy me-2"></i>{{ 'dashboard.viewLeaderboard' | translate }}
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a *ngIf="user?.role === 'student'" routerLink="/rewards" class="btn btn-outline-warning w-100">
+                <i class="bi bi-gift me-2"></i>{{ 'dashboard.myRewards' | translate }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citizen/Student Detailed Dashboard -->
+  <div *ngIf="hasRole(['citizen', 'student'])" class="row mb-4">
+    <div class="col-12">
+    
+    <!-- Personal Information & Security Card -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm border-0 personal-info">
+          <div class="card-header bg-light border-0">
+            <h5 class="mb-0">
+              <i class="bi bi-person-vcard text-primary me-2"></i>
+              {{ 'dashboard.personalInfo' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">{{ 'dashboard.fullName' | translate }}</label>
+                  <div class="personal-info-value">
+                    <i class="bi bi-person"></i>
+                    {{ user?.name }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">{{ 'dashboard.emailAddress' | translate }}</label>
+                  <div class="personal-info-value">
+                    <i class="bi bi-envelope"></i>
+                    {{ user?.email }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">{{ 'dashboard.mobileNumber' | translate }}</label>
+                  <div class="personal-info-value">
+                    <i class="bi bi-phone"></i>
+                    {{ user?.mobile || ('dashboard.notProvided' | translate) }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">{{ 'dashboard.accountType' | translate }}</label>
+                  <div class="personal-info-value">
+                    <span class="badge bg-primary-subtle px-3 py-2">
+                      <i class="bi bi-shield-check me-1"></i>
+                      {{ user?.role | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Two-Factor Authentication Toggle -->
+            <hr class="my-4">
+            <div class="row">
+              <div class="col-12">
+                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-shield-lock fs-3 text-primary me-3"></i>
+                    <div>
+                      <h6 class="mb-1">{{ 'dashboard.twoFactorAuth' | translate }}</h6>
+                      <small class="text-muted">
+                        {{ twoFactorEnabled ? ('dashboard.twoFactorEnabled' | translate) : ('dashboard.twoFactorDisabled' | translate) }}
+                      </small>
+                    </div>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      role="switch" 
+                      id="twoFactorToggle"
+                      [checked]="twoFactorEnabled"
+                      [disabled]="toggling2FA"
+                      (change)="toggle2FA()"
+                      style="width: 48px; height: 24px; cursor: pointer;">
+                    <label class="form-check-label visually-hidden" for="twoFactorToggle">
+                      {{ 'dashboard.enableTwoFactor' | translate }}
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Travel Flag for Students -->
+                <div *ngIf="user?.role === 'student'" class="d-flex align-items-center justify-content-between p-3 bg-info-subtle rounded">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-airplane-fill fs-3 text-info me-3"></i>
+                    <div>
+                      <h6 class="mb-1">{{ 'dashboard.travelFlag' | translate }}</h6>
+                      <small class="text-muted">
+                        {{ user?.travelFlag ? ('dashboard.travelFlagEnabled' | translate) : ('dashboard.travelFlagDisabled' | translate) }}
+                      </small>
+                    </div>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      role="switch" 
+                      id="travelFlagToggle"
+                      [checked]="user?.travelFlag"
+                      (change)="toggleTravelFlag()"
+                      style="width: 48px; height: 24px; cursor: pointer;">
+                    <label class="form-check-label visually-hidden" for="travelFlagToggle">
+                      {{ 'dashboard.enableTravelFlag' | translate }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 statistics-card">
+          <div class="card-body">
+            <div class="rounded-circle bg-primary-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-file-earmark-text text-primary fs-3"></i>
+            </div>
+            <h3 class="text-primary mb-1">{{ complaintsStats.total }}</h3>
+            <p class="mb-0">{{ 'dashboard.totalReports' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 statistics-card">
+          <div class="card-body">
+            <div class="rounded-circle bg-warning-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-clock text-warning fs-3"></i>
+            </div>
+            <h3 class="text-warning mb-1">{{ complaintsStats.pending }}</h3>
+            <p class="mb-0">{{ 'dashboard.pending' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 statistics-card">
+          <div class="card-body">
+            <div class="rounded-circle bg-info-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-gear text-info fs-3"></i>
+            </div>
+            <h3 class="text-info mb-1">{{ complaintsStats.inProgress }}</h3>
+            <p class="mb-0">{{ 'dashboard.inProgress' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 statistics-card">
+          <div class="card-body">
+            <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-check-circle text-success fs-3"></i>
+            </div>
+            <h3 class="text-success mb-1">{{ complaintsStats.resolved }}</h3>
+            <p class="mb-0">{{ 'dashboard.resolved' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm quick-actions">
+          <div class="card-header bg-light border-0">
+            <h5 class="mb-0">
+              <i class="bi bi-lightning text-warning me-2"></i>
+              {{ 'dashboard.quickActions' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <a [routerLink]="['/report-issue']" class="btn btn-primary btn-lg w-100">
+                  <i class="bi bi-plus-circle me-2"></i>
+                  {{ 'dashboard.reportNewIssue' | translate }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL Reports with Timeline -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm all-reports-section">
+          <div class="card-header bg-light border-0">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="bi bi-clipboard-check text-primary me-2"></i>
+                {{ 'dashboard.allReports' | translate }}
+              </h5>
+              <span class="badge bg-primary-subtle" *ngIf="userComplaints.length > 0">
+                {{ userComplaints.length }} {{ 'dashboard.total' | translate }}
               </span>
             </div>
           </div>
-        </article>
-      </div>
-    </section>
+          <div class="card-body">
+            <div *ngIf="complaintsLoading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">{{ 'dashboard.loading' | translate }}</p>
+            </div>
+            
+            <div *ngIf="!complaintsLoading && userComplaints.length === 0" class="text-center py-5">
+              <i class="bi bi-inbox display-1 text-muted"></i>
+              <h4 class="mt-3">{{ 'dashboard.noReports' | translate }}</h4>
+              <p class="mb-4">{{ 'dashboard.noReportsDesc' | translate }}</p>
+              <a [routerLink]="['/report-issue']" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>
+                {{ 'dashboard.createFirstReport' | translate }}
+              </a>
+            </div>
 
-    <!-- Student Rewards Section -->
-    <section class="rewards-section" *ngIf="hasRole('student')">
-      <div class="rewards-grid">
-        <div class="reward-card points">
-          <div class="reward-icon"><i class="bi bi-award-fill"></i></div>
-          <div class="reward-info">
-            <h3>{{ user?.points || 0 }}</h3>
-            <p>Total Points</p>
+            <div *ngIf="!complaintsLoading && userComplaints.length > 0" class="row">
+              <div class="col-lg-4 col-md-6 mb-4" *ngFor="let complaint of userComplaints">
+                <div class="card h-100 shadow-sm complaint-card">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
+                      <i [ngClass]="getStatusIcon(complaint.status)" class="me-1"></i>
+                      {{ complaint.status | titlecase }}
+                    </span>
+                    <span class="badge" [ngClass]="getPriorityBadgeClass(complaint.priority)">
+                      {{ complaint.priority | titlecase }}
+                    </span>
+                  </div>
+                  
+                  <!-- Status Progress Timeline -->
+                  <div class="progress-container">
+                    <div class="timeline-stepper">
+                      <div class="step" [class.completed]="complaint.status === 'pending' || complaint.status === 'in-progress' || complaint.status === 'resolved'">
+                        <div class="step-circle">
+                          <i class="bi bi-check" *ngIf="complaint.status === 'in-progress' || complaint.status === 'resolved'"></i>
+                        </div>
+                        <div class="step-label">{{ 'dashboard.reported' | translate }}</div>
+                      </div>
+                      <div class="step-line" [class.completed]="complaint.status === 'in-progress' || complaint.status === 'resolved'"></div>
+                      
+                      <div class="step" [class.completed]="complaint.status === 'in-progress' || complaint.status === 'resolved'">
+                        <div class="step-circle">
+                          <i class="bi bi-check" *ngIf="complaint.status === 'resolved'"></i>
+                        </div>
+                        <div class="step-label">{{ 'dashboard.inProgress' | translate }}</div>
+                      </div>
+                      <div class="step-line" [class.completed]="complaint.status === 'resolved'"></div>
+                      
+                      <div class="step" [class.completed]="complaint.status === 'resolved'">
+                        <div class="step-circle">
+                          <i class="bi bi-check" *ngIf="complaint.status === 'resolved'"></i>
+                        </div>
+                        <div class="step-label">{{ 'dashboard.resolved' | translate }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card-body">
+                    <h5 class="card-title">{{ complaint.title }}</h5>
+                    <p class="card-text text-muted mb-2">
+                      <i class="bi bi-tag me-1"></i>{{ complaint.category }}
+                    </p>
+                    <p class="card-text">
+                      {{ complaint.description | slice:0:80 }}
+                      <span *ngIf="complaint.description.length > 80">...</span>
+                    </p>
+                    <p class="card-text">
+                      <small class="text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        {{ complaint.location?.address }}, {{ complaint.location?.city }}
+                      </small>
+                    </p>
+                    
+                    <!-- Timeline Info -->
+                    <div class="timeline-info mt-3">
+                      <small class="d-block text-muted">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        <strong>{{ 'dashboard.reported' | translate }}:</strong> {{ complaint.createdAt | date:'MMM d, y' }}
+                      </small>
+                      <small class="d-block text-muted" *ngIf="complaint.status === 'resolved'">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <strong>{{ 'dashboard.resolved' | translate }}:</strong> {{ complaint.updatedAt | date:'MMM d, y' }}
+                      </small>
+                    </div>
+
+                    <!-- Image if available -->
+                    <div *ngIf="complaint.mediaURL" class="mt-3">
+                      <img 
+                        [src]="getImageUrl(complaint.mediaURL)" 
+                        class="img-fluid rounded complaint-thumbnail" 
+                        [alt]="complaint.title"
+                        style="width: 100%; max-height: 200px; object-fit: cover; cursor: pointer;"
+                        (click)="openImageModal(complaint.mediaURL, complaint.title)"
+                        (error)="$event.target.style.display='none'"
+                        title="Click to view full size"
+                      >
+                    </div>
+                  </div>
+                  
+                  <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        {{ 'dashboard.id' | translate }} #{{ complaint._id.slice(-6) }}
+                      </small>
+                      <div>
+                        <!-- Feedback button for resolved complaints -->
+                        <button 
+                          *ngIf="complaint.status === 'resolved' && !complaint.feedback"
+                          class="btn btn-sm btn-warning me-2"
+                          (click)="openFeedbackModal(complaint)"
+                          title="Rate Our Service">
+                          <i class="bi bi-star me-1"></i>Feedback
+                        </button>
+                        
+                        <!-- Show feedback if already submitted -->
+                        <span *ngIf="complaint.feedback" class="badge bg-success me-2">
+                          <i class="bi bi-star-fill"></i> {{ complaint.feedback.rating }}/5
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <a routerLink="/rewards" class="reward-link">View Rewards <i class="bi bi-arrow-right"></i></a>
         </div>
-        <div class="reward-card badges">
-          <div class="reward-icon"><i class="bi bi-trophy-fill"></i></div>
-          <div class="reward-info">
-            <h3>{{ user?.badges?.length || 0 }}</h3>
-            <p>Badges Earned</p>
+      </div>
+    </div>
+
+    <!-- Student-only Rewards Section -->
+    <div *ngIf="hasRole('student')" class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-award display-4 text-warning mb-3"></i>
+            <h5 class="card-title">My Points</h5>
+            <h3 class="text-primary">{{ user?.points || 0 }}</h3>
+            <a [routerLink]="['/rewards']" class="btn btn-outline-warning">
+              View Rewards
+            </a>
           </div>
-          <a routerLink="/leaderboard" class="reward-link">Leaderboard <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
-    </section>
-
-    <!-- Worker Dashboard -->
-    <section class="worker-section" *ngIf="hasRole('worker')">
-      <div class="worker-card">
-        <div class="worker-icon"><i class="bi bi-clipboard-check-fill"></i></div>
-        <div class="worker-content">
-          <h3>Assigned Issues</h3>
-          <p>View and manage all issues assigned to you for resolution.</p>
+      <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-trophy display-4 text-success mb-3"></i>
+            <h5 class="card-title">Badges</h5>
+            <p class="text-muted">{{ user?.badges?.length || 0 }} earned</p>
+            <a [routerLink]="['/leaderboard']" class="btn btn-outline-success">
+              View Leaderboard
+            </a>
+          </div>
         </div>
-        <a routerLink="/assigned-complaints" class="btn-primary-gradient">
-          <i class="bi bi-arrow-right"></i>
-          View Assignments
-        </a>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Admin Dashboard -->
-    <section class="admin-section" *ngIf="hasRole('admin')">
-      <h2 class="section-title">
-        <i class="bi bi-grid-fill"></i>
-        Admin Controls
-      </h2>
-      <div class="admin-grid">
-        <a routerLink="/admin-dashboard" class="admin-card">
-          <div class="admin-icon map"><i class="bi bi-map-fill"></i></div>
-          <h3>Map Dashboard</h3>
-          <p>View all reported issues on a map</p>
-          <i class="bi bi-arrow-right admin-arrow"></i>
-        </a>
-        <a routerLink="/complaint-management" class="admin-card">
-          <div class="admin-icon manage"><i class="bi bi-gear-wide-connected"></i></div>
-          <h3>Manage Complaints</h3>
-          <p>Assign workers and track status</p>
-          <i class="bi bi-arrow-right admin-arrow"></i>
-        </a>
-        <a routerLink="/moderation" class="admin-card">
-          <div class="admin-icon mod"><i class="bi bi-shield-check"></i></div>
-          <h3>Moderation Panel</h3>
-          <p>Review student reports</p>
-          <i class="bi bi-arrow-right admin-arrow"></i>
-        </a>
+  <!-- Other Role Dashboards (Worker, Admin) -->
+  <div *ngIf="hasRole('worker')" class="row mb-5">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-clipboard-check-fill text-primary"></i> 
+            Assigned Issues
+          </h5>
+          <p class="card-text">View and manage all issues assigned to you for resolution.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a [routerLink]="['/assigned-complaints']" class="btn btn-primary">View Assigned Issues</a>
+        </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <div *ngIf="hasRole('admin')" class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-map-fill text-primary"></i> 
+            Map Dashboard
+          </h5>
+          <p class="card-text">View all reported issues on a map for better geographic understanding.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a [routerLink]="['/admin-dashboard']" class="btn btn-primary">Open Dashboard</a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-gear-fill text-secondary"></i> 
+            Complaint Management
+          </h5>
+          <p class="card-text">Manage all reported issues, assign workers, and track resolution status.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a [routerLink]="['/complaint-management']" class="btn btn-primary">Manage Complaints</a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-shield-check text-success"></i> 
+            Moderation Panel
+          </h5>
+          <p class="card-text">Review student reports for eligibility and award points for valid submissions.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a [routerLink]="['/moderation']" class="btn btn-primary">Open Moderation</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Image Modal -->
-<div class="modal-overlay" *ngIf="selectedImageUrl" (click)="selectedImageUrl = ''">
-  <div class="image-modal" (click)="$event.stopPropagation()">
-    <button class="modal-close" (click)="selectedImageUrl = ''">
-      <i class="bi bi-x-lg"></i>
-    </button>
-    <img [src]="selectedImageUrl" [alt]="selectedImageTitle">
-    <div class="modal-footer">
-      <h4>{{ selectedImageTitle }}</h4>
-      <a [href]="selectedImageUrl" download class="btn-download">
-        <i class="bi bi-download"></i> Download
-      </a>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ selectedImageTitle }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img 
+          [src]="selectedImageUrl" 
+          class="img-fluid rounded" 
+          [alt]="selectedImageTitle"
+          style="max-height: 70vh; width: auto;"
+        >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a 
+          [href]="selectedImageUrl" 
+          download 
+          class="btn btn-primary"
+          target="_blank"
+        >
+          <i class="bi bi-download me-1"></i>
+          Download Image
+        </a>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Feedback Modal -->
-<div class="modal-overlay" *ngIf="showFeedbackModal" (click)="closeFeedbackModal()">
-  <div class="feedback-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3><i class="bi bi-star-fill"></i> Rate Our Service</h3>
-      <button class="modal-close" (click)="closeFeedbackModal()">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <div class="modal-body" *ngIf="selectedComplaint">
-      <div class="complaint-info">
-        <i class="bi bi-info-circle"></i>
-        <span>{{ selectedComplaint.title }}</span>
+<div class="modal fade" [class.show]="showFeedbackModal" [style.display]="showFeedbackModal ? 'block' : 'none'" 
+     tabindex="-1" *ngIf="showFeedbackModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title">
+          <i class="bi bi-star-fill me-2"></i>Rate Our Service
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeFeedbackModal()"></button>
       </div>
-
-      <div class="star-rating">
-        <p>How would you rate the resolution?</p>
-        <div class="stars">
-          <i *ngFor="let star of [1,2,3,4,5]" class="bi" [class.bi-star-fill]="star <= feedbackRating"
-            [class.bi-star]="star > feedbackRating" [class.active]="star <= feedbackRating"
-            (click)="setRating(star)"></i>
+      <div class="modal-body">
+        <div *ngIf="selectedComplaint">
+          <div class="alert alert-info mb-3">
+            <strong><i class="bi bi-info-circle me-1"></i>Complaint:</strong> {{ selectedComplaint.title }}
+          </div>
+          
+          <div class="mb-4 text-center">
+            <label class="form-label d-block mb-3">
+              <strong>How would you rate the resolution?</strong>
+            </label>
+            <div class="star-rating">
+              <i 
+                *ngFor="let star of [1,2,3,4,5]" 
+                class="bi star-icon"
+                [class.bi-star-fill]="star <= feedbackRating"
+                [class.bi-star]="star > feedbackRating"
+                [class.filled]="star <= feedbackRating"
+                (click)="setRating(star)"
+                style="cursor: pointer; font-size: 2rem; margin: 0 5px; transition: all 0.2s;">
+              </i>
+            </div>
+            <div class="mt-2" *ngIf="feedbackRating > 0">
+              <span class="badge bg-primary">{{ feedbackRating }} out of 5 stars</span>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="feedbackComment" class="form-label">
+              <strong>Additional Comments (Optional)</strong>
+            </label>
+            <textarea 
+              id="feedbackComment"
+              class="form-control" 
+              rows="4" 
+              [(ngModel)]="feedbackComment"
+              placeholder="Tell us more about your experience..."
+              maxlength="500"></textarea>
+            <small class="text-muted">{{ feedbackComment.length }}/500 characters</small>
+          </div>
         </div>
-        <span class="rating-text" *ngIf="feedbackRating > 0">{{ feedbackRating }} out of 5</span>
       </div>
-
-      <div class="feedback-comment">
-        <label>Additional Comments (Optional)</label>
-        <textarea [(ngModel)]="feedbackComment" placeholder="Tell us about your experience..."
-          maxlength="500"></textarea>
-        <span class="char-count">{{ feedbackComment.length }}/500</span>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeFeedbackModal()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          [disabled]="feedbackRating === 0 || feedbackSubmitting"
+          (click)="submitFeedback()">
+          <span *ngIf="!feedbackSubmitting">
+            <i class="bi bi-send me-1"></i>Submit Feedback
+          </span>
+          <span *ngIf="feedbackSubmitting">
+            <span class="spinner-border spinner-border-sm me-1"></span>Submitting...
+          </span>
+        </button>
       </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-secondary" (click)="closeFeedbackModal()">Cancel</button>
-      <button class="btn-primary-gradient" [disabled]="feedbackRating === 0 || feedbackSubmitting"
-        (click)="submitFeedback()">
-        <span *ngIf="!feedbackSubmitting"><i class="bi bi-send"></i> Submit</span>
-        <span *ngIf="feedbackSubmitting"><span class="spinner-sm"></span> Submitting...</span>
-      </button>
     </div>
   </div>
+  </div>
 </div>
+<div class="modal-backdrop fade" [class.show]="showFeedbackModal" *ngIf="showFeedbackModal"></div>

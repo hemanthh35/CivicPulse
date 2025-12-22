@@ -47,10 +47,6 @@ export class ReportIssueComponent implements OnInit {
   coordinates = { lat: 0, lng: 0 };
   locationAccuracy: number | null = null;
 
-  // Success modal
-  showSuccessModal = false;
-  submittedComplaintId: string | null = null;
-
   constructor(
     private formBuilder: FormBuilder,
     private complaintsService: ComplaintsService,
@@ -88,7 +84,7 @@ export class ReportIssueComponent implements OnInit {
       this.recognition = new SpeechRecognition();
       this.recognition.continuous = false;
       this.recognition.interimResults = false;
-
+      
       // Set language based on current selection
       const currentLang = localStorage.getItem('language') || 'en';
       this.recognition.lang = currentLang === 'hi' ? 'hi-IN' : currentLang === 'te' ? 'te-IN' : 'en-US';
@@ -507,33 +503,22 @@ export class ReportIssueComponent implements OnInit {
     this.complaintsService.createComplaint(formData)
       .subscribe({
         next: (response) => {
+          this.successMessage = 'Your complaint has been reported successfully!';
           this.isSubmitting = false;
-          this.submittedComplaintId = response.complaint?._id || null;
-          this.showSuccessModal = true;
 
-          // Reset form
-          this.reportForm.reset({
-            priority: 'medium'
-          });
-          this.uploadedImages = [];
-          this.previewUrls = [];
-          this.coordinates = { lat: 0, lng: 0 };
-          this.locationAccuracy = null;
+          // Reset form and image arrays after 2 seconds
+          setTimeout(() => {
+            this.reportForm.reset({
+              priority: 'medium'
+            });
+            this.uploadedImages = [];
+            this.previewUrls = [];
+          }, 2000);
         },
         error: (error) => {
           this.errorMessage = error.error?.message || 'Failed to report your complaint. Please try again.';
           this.isSubmitting = false;
         }
       });
-  }
-
-  closeSuccessModal(): void {
-    this.showSuccessModal = false;
-    this.submittedComplaintId = null;
-  }
-
-  goToMyComplaints(): void {
-    this.showSuccessModal = false;
-    this.router.navigate(['/my-complaints']);
   }
 }

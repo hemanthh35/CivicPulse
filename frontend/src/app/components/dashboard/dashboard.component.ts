@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit {
   };
   selectedImageUrl = '';
   selectedImageTitle = '';
-
+  
   // Feedback modal properties
   showFeedbackModal = false;
   selectedComplaint: Complaint | null = null;
@@ -52,19 +52,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private complaintsService: ComplaintsService,
-    private translate: TranslateService,
-    private elementRef: ElementRef
+    private translate: TranslateService
   ) { }
-
-  // Close dropdown when clicking outside
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    const langDropdown = this.elementRef.nativeElement.querySelector('.lang-dropdown-wrapper');
-    if (langDropdown && !langDropdown.contains(target)) {
-      this.dropdownOpen = false;
-    }
-  }
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -84,7 +73,7 @@ export class DashboardComponent implements OnInit {
 
   loadUserComplaints(): void {
     if (!this.user?.id) return;
-
+    
     this.complaintsLoading = true;
     this.complaintsService.getUserComplaints(this.user.id).subscribe({
       next: (response) => {
@@ -157,7 +146,7 @@ export class DashboardComponent implements OnInit {
   openImageModal(mediaURL: string, title: string): void {
     this.selectedImageUrl = this.getImageUrl(mediaURL);
     this.selectedImageTitle = title;
-
+    
     // Open Bootstrap modal
     const modal = new (window as any).bootstrap.Modal(document.getElementById('imageModal'));
     modal.show();
@@ -189,13 +178,13 @@ export class DashboardComponent implements OnInit {
     this.feedbackSubmitting = true;
 
     this.complaintsService.submitFeedback(
-      this.selectedComplaint._id,
-      this.feedbackRating,
+      this.selectedComplaint._id, 
+      this.feedbackRating, 
       this.feedbackComment
     ).subscribe({
       next: (response) => {
         console.log('Feedback submitted successfully:', response);
-
+        
         // Update the complaint in the list
         const index = this.userComplaints.findIndex(c => c._id === this.selectedComplaint!._id);
         if (index !== -1) {
@@ -205,10 +194,10 @@ export class DashboardComponent implements OnInit {
             submittedAt: new Date()
           };
         }
-
+        
         this.feedbackSubmitting = false;
         this.closeFeedbackModal();
-
+        
         // Show success message
         alert('Thank you for your feedback!');
       },
@@ -224,7 +213,7 @@ export class DashboardComponent implements OnInit {
     if (this.toggling2FA) return;
 
     const newState = !this.twoFactorEnabled;
-    const confirmMessage = newState
+    const confirmMessage = newState 
       ? 'Enable Two-Factor Authentication? You will need to enter an OTP from your email on every login.'
       : 'Disable Two-Factor Authentication? Your account will be less secure.';
 
@@ -239,7 +228,7 @@ export class DashboardComponent implements OnInit {
         console.log('2FA Toggle Response:', response);
         if (response.success) {
           this.twoFactorEnabled = response.twoFactorEnabled;
-
+          
           // Update user in storage
           if (this.user) {
             this.user.twoFactorEnabled = response.twoFactorEnabled;
@@ -257,7 +246,7 @@ export class DashboardComponent implements OnInit {
         console.error('Error Status:', error.status);
         console.error('Error Message:', error.message);
         console.error('Error Body:', error.error);
-
+        
         let errorMsg = 'Failed to update 2FA setting. ';
         if (error.status === 401) {
           errorMsg += 'Please log in again.';
@@ -268,7 +257,7 @@ export class DashboardComponent implements OnInit {
         } else {
           errorMsg += 'Please try again.';
         }
-
+        
         alert(errorMsg);
         this.toggling2FA = false;
       }
@@ -279,7 +268,7 @@ export class DashboardComponent implements OnInit {
     if (!this.user) return;
 
     const newState = !this.user.travelFlag;
-    const confirmMessage = newState
+    const confirmMessage = newState 
       ? 'Enable Travel Flag? Your complaints will be moderated by admin before assignment to workers.'
       : 'Disable Travel Flag? Your complaints will go directly to admin for assignment.';
 

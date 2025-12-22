@@ -386,12 +386,7 @@
     "pinCodePlaceholder": "6-digit",
     "findOnMap": "Find on Map",
     "submitReport": "Submit Report",
-    "required": "Required",
-    "thankYou": "Thank You!",
-    "complaintSubmitted": "Your complaint has been submitted successfully. Our team will review it and take action soon.",
-    "trackProgress": "You can track the progress of your complaint in the 'My Complaints' section.",
-    "reportAnother": "Report Another",
-    "viewMyComplaints": "View My Complaints"
+    "required": "Required"
   },
   "worker": {
     "title": "Worker Dashboard",
